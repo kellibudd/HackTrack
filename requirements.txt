@@ -1,3 +1,4 @@
+arrow==0.15.6
 certifi==2020.4.5.1
 chardet==3.0.4
 click==7.1.2
@@ -9,6 +10,12 @@ Jinja2==2.11.2
 MarkupSafe==1.1.1
 pkg-resources==0.0.0
 psycopg2-binary==2.8.5
+python-dateutil==2.8.1
+pytz==2020.1
+requests==2.23.0
+six==1.15.0
 SQLAlchemy==1.3.17
+stravalib==0.10.2
+units==0.7
 urllib3==1.25.9
 Werkzeug==1.0.1
