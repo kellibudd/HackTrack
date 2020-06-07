@@ -2,7 +2,7 @@
 
 from flask import (Flask, render_template, request, flash, session,
                    redirect, url_for, jsonify)
-from model import connect_to_db, User
+from model import connect_to_db, User, Activity, Team, Comment
 import crud
 from jinja2 import StrictUndefined
 from stravalib import Client
@@ -47,8 +47,8 @@ def logged_in():
         print(code)
         client = Client()
         token = client.exchange_code_for_token(client_id=48415,
-                                                      client_secret='ed4c1b2fa87eb5d3120bbb2a8a9c0f39451ca920',
-                                                      code=code)
+                                                client_secret='ed4c1b2fa87eb5d3120bbb2a8a9c0f39451ca920',
+                                                code=code)
         # Probably here you'd want to store this somewhere -- e.g. in a database.
         # token = access_token.json
         user = client.get_athlete()
@@ -59,14 +59,63 @@ def logged_in():
                                     user.profile,
                                     user.id,
                                     token['access_token'],
+                                    token['expires_at'],
                                     token['refresh_token'])
 
+        activities = client.get_activities()
+
+        for activity in activities:
+            if activity.has_heartrate:
+                effort_source = 'heartrate'
+            else:
+                effort_source = 'perceived exertion'
+            if activity.suffer_score:
+                effort = activity.suffer_score
+            else:
+                effort = 0
+            print('-'*20)
+            print(crud.create_activity(new_user.id,
+                                activity.id,
+                                activity.start_date,
+                                activity.name,
+                                activity.type,
+                                activity.workout_type,
+                                activity.distance.num,
+                                activity.moving_time.seconds,
+                                activity.average_speed.num,
+                                activity.max_speed.num,
+                                activity.has_heartrate,
+                                effort.real,
+                                effort_source,
+                                activity.total_elevation_gain.num))
+
+        # token_url = "https://www.strava.com/oauth/token"
+        # activities_url = "https://www.strava.com/api/v3/athlete/activities"
+
+        # payload = {
+        #     'client_id': 48415,
+        #     'client_secret': 'ed4c1b2fa87eb5d3120bbb2a8a9c0f39451ca920',
+        #     'refresh_token': user.strava_refresh_token,
+        #     'grant_type': "refresh_token",
+        #     'f': 'json'
+        # }
+
+        # print("Requesting Token...\n")
+        # res = requests.post(token_url, data=payload, verify=False)
+        # access_token = res.json()['access_token']
+        # print("Access Token = {}\n".format(access_token))
+
+        # header = {'Authorization': 'Bearer ' + access_token}
+        # param = {'per_page': 200, 'page': 1}
+        # my_dataset = requests.get(activities_url, headers=header, params=param).json()
+
         print(new_user)
-        print(token)
-        print("Access Token: ", token['access_token'])
-        print("Refresh Token: ", token['refresh_token'])
+        # print(token)
+        # print("Access Token: ", token['access_token'])
+        # print("Refresh Token: ", token['refresh_token'])
 
         return render_template('login_results.html', user=user, token=token)
+
 
 
 # # ... time passes ...
@@ -82,9 +131,9 @@ def logged_in():
 # activites_url = "https://www.strava.com/api/v3/athlete/activities"
 
 # payload = {
-#     'client_id': STRAVA_CLIENT_ID,
-#     'client_secret': STRAVA_CLIENT_SECRET,
-#     'refresh_token': 'da099cbb71f47fbd7f8433b1ef6c4145c78cbbe1',
+#     'client_id': 48415,
+#     'client_secret': 'ed4c1b2fa87eb5d3120bbb2a8a9c0f39451ca920',
+#     'refresh_token': user.strava_refresh_token,
 #     'grant_type': "refresh_token",
 #     'f': 'json'
 # }
