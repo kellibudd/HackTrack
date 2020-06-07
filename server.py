@@ -2,7 +2,8 @@
 
 from flask import (Flask, render_template, request, flash, session,
                    redirect, url_for, jsonify)
-from model import connect_to_db
+from model import connect_to_db, User
+import crud
 from jinja2 import StrictUndefined
 from stravalib import Client
 import requests
@@ -24,8 +25,8 @@ app.jinja_env.undefined = StrictUndefined
 def login():
     client = Client()
     url = client.authorization_url(client_id=48415,
-                              redirect_uri=url_for('.logged_in', _external=True),
-                              approval_prompt='auto')
+                                    redirect_uri=url_for('.logged_in', _external=True),
+                                    approval_prompt='auto')
     return render_template('login.html', authorize_url=url)
 
 
@@ -52,14 +53,15 @@ def logged_in():
         # token = access_token.json
         user = client.get_athlete()
 
-        # create_user(user.firstname,
-        #             user.lastname,
-        #             user.username,
-        #             user.profile,
-        #             user.id,
-        #                         )
+        new_user = crud.create_user(user.firstname,
+                                    user.lastname,
+                                    user.username,
+                                    user.profile,
+                                    user.id,
+                                    token['access_token'],
+                                    token['refresh_token'])
 
-        print(user)
+        print(new_user)
         print(token)
         print("Access Token: ", token['access_token'])
         print("Refresh Token: ", token['refresh_token'])
