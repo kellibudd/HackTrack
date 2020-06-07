@@ -22,6 +22,7 @@ class User(db.Model):
     prof_pic = db.Column(db.String)
     strava_id = db.Column(db.String)
     strava_access_token = db.Column(db.String)
+    strava_access_token_expir = db.Column(db.String)
     strava_refresh_token = db.Column(db.String)
 
     team = db.relationship('Team', backref='users')
@@ -54,7 +55,7 @@ class Activity(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     strava_activity_id = db.Column(db.String, nullable=False)
-    start_datetime_utc = db.Column(db.DateTime, nullable=False)
+    date_utc = db.Column(db.DateTime, nullable=False)
     desc = db.Column(db.String)
     exercise_type = db.Column(db.String, nullable=False)
     run_type = db.Column(db.String)
@@ -69,7 +70,7 @@ class Activity(db.Model):
 
     def __repr__(self):
         return f'''<Activity id={self.id} user={self.user_id} 
-                date={self.date} exercise_type={self.exercise_type}>'''
+                date={self.date_utc} exercise_type={self.exercise_type}>'''
 
 
 class Comment(db.Model):
