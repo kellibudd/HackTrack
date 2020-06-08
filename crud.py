@@ -49,6 +49,45 @@ def create_activity(user_id, strava_activity_id, date_utc,
 
     return activity
 
+def create_team(name, coach_id, logo, team_banner_img, team_color):
+    """Create and return a team."""
+    
+    team = Team(name=name, 
+                coach_id=coach_id,
+                logo=logo,
+                team_banner_img=team_banner_img,
+                team_color=team_color)
+
+    db.session.add(team)
+    db.session.commit()
+
+    return team
+
+def create_team_member(user_id, team_id, role):
+    """Create and return a team member."""
+    
+    team_member = Team_Member(user_id=user_id, 
+                            team_id=team_id,
+                            role=role)
+
+    db.session.add(team_member)
+    db.session.commit()
+
+    return team_member
+
+def create_comment(activity_id, author_id, date_utc, body):
+    """Create and return a comment."""
+
+    comment = Comment(activity_id=activity_id, 
+                        author_id=author_id,
+                        date_utc=date_utc,
+                        body=body)
+
+    db.session.add(comment)
+    db.session.commit()
+
+    return comment
+
 
 if __name__ == '__main__':
     from server import app
