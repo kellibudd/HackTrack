@@ -18,13 +18,14 @@ app = Flask(__name__)
 app.secret_key = "dev"
 app.jinja_env.undefined = StrictUndefined
 
-# STRAVA_CLIENT_ID = os.environ['STRAVA_CLIENT_ID']
-# STRAVA_CLIENT_SECRET = os.environ['STRAVA_CLIENT_SECRET']
+STRAVA_CLIENT_ID = os.environ['STRAVA_CLIENT_ID']
+STRAVA_CLIENT_SECRET = os.environ['STRAVA_CLIENT_SECRET']
 
 @app.route("/")
-def login():
+def register():
+
     client = Client()
-    url = client.authorization_url(client_id=48415,
+    url = client.authorization_url(client_id=STRAVA_CLIENT_ID,
                                     redirect_uri=url_for('.logged_in', _external=True),
                                     approval_prompt='auto')
     return render_template('login.html', authorize_url=url)
@@ -46,8 +47,8 @@ def logged_in():
         code = request.args.get('code')
         print(code)
         client = Client()
-        token = client.exchange_code_for_token(client_id=48415,
-                                                client_secret='ed4c1b2fa87eb5d3120bbb2a8a9c0f39451ca920',
+        token = client.exchange_code_for_token(client_id=STRAVA_CLIENT_ID,
+                                                client_secret=STRAVA_CLIENT_SECRET,
                                                 code=code)
         # Probably here you'd want to store this somewhere -- e.g. in a database.
         # token = access_token.json
@@ -55,7 +56,6 @@ def logged_in():
 
         new_user = crud.create_user(user.firstname,
                                     user.lastname,
-                                    user.username,
                                     user.profile,
                                     user.id,
                                     token['access_token'],
@@ -65,6 +65,7 @@ def logged_in():
         activities = client.get_activities()
 
         for activity in activities:
+
             if activity.has_heartrate:
                 effort_source = 'heartrate'
             else:
@@ -73,13 +74,13 @@ def logged_in():
                 effort = activity.suffer_score
             else:
                 effort = 0
+
             print('-'*20)
             print(crud.create_activity(new_user.id,
                                 activity.id,
                                 activity.start_date,
                                 activity.name,
                                 activity.type,
-                                activity.workout_type,
                                 activity.distance.num,
                                 activity.moving_time.seconds,
                                 activity.average_speed.num,
@@ -88,6 +89,8 @@ def logged_in():
                                 effort.real,
                                 effort_source,
                                 activity.total_elevation_gain.num))
+
+
 
         # token_url = "https://www.strava.com/oauth/token"
         # activities_url = "https://www.strava.com/api/v3/athlete/activities"
@@ -109,7 +112,6 @@ def logged_in():
         # param = {'per_page': 200, 'page': 1}
         # my_dataset = requests.get(activities_url, headers=header, params=param).json()
 
-        print(new_user)
         # print(token)
         # print("Access Token: ", token['access_token'])
         # print("Refresh Token: ", token['refresh_token'])
