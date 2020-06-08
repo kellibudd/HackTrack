@@ -24,8 +24,8 @@ class User(db.Model):
     strava_access_token_expir = db.Column(db.String)
     strava_refresh_token = db.Column(db.String)
 
-    team = db.relationship('Team', backref='users')
-    activity = db.relationship('Activity', backref='users')
+    teams = db.relationship('Team', backref='coach')
+    activities = db.relationship('Activity', backref='user')
 
     def __repr__(self):
         return f'<User id={self.id} first={self.firstname} last={self.lastname}>'
@@ -37,8 +37,9 @@ class Team(db.Model):
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String, nullable=False)
-    admin_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    coach_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     logo = db.Column(db.String)
+    team_banner_img = db.Column(db.String)
     team_color = db.Column(db.String)
 
     def __repr__(self):
@@ -95,17 +96,17 @@ class Comment(db.Model):
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     activity_id = db.Column(db.Integer, db.ForeignKey('activities.id'), nullable=False)
-    author_user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    date = db.Column(db.DateTime)
+    author_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    date_utc = db.Column(db.DateTime)
     body = db.Column(db.Text, nullable=False)
 
-    user = db.relationship('User', backref='comments')
+    author = db.relationship('User', backref='comments')
     activity = db.relationship('Activity', backref='comments')
 
 
     def __repr__(self):
         return f'''<Comment id={self.id} activity_id={self.activity_id}
-                    author={self.author_user_id} date={self.date}>'''
+                    author_id={self.author_id} date={self.date_utc}>'''
 
 
 def connect_to_db(flask_app, db_uri='postgresql:///run_app', echo=False):
