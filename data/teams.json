@@ -1,0 +1,16 @@
+[   
+    {   
+        "name": "University of Minnesota Women's Cross Country",
+        "coach_id": 4,
+        "logo": "https://dbukjj6eu5tsf.cloudfront.net/gophersports.com/images/logo.svg",
+        "team_banner_img": "https://gophersports.com/images/2018/9/27/facility_track_980.jpg",
+        "team_color": "#691c33"
+    },
+    {
+        "name": "Creighton University Women's Cross Country",
+        "coach_id": 5,
+        "logo": "https://upload.wikimedia.org/wikipedia/en/thumb/6/6f/Creighton_Bluejays_logo.svg/1200px-Creighton_Bluejays_logo.svg.png",
+        "team_banner_img": "https://www.creighton.edu/fileadmin/user/UCOM/social-papers/desktop/18-440_CreightonDigital_Desktop_1.jpg",
+        "team_color": "#005ca9"
+    }
+]
