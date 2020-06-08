@@ -15,12 +15,11 @@ class User(db.Model):
     id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     firstname = db.Column(db.String, nullable=False)
     lastname = db.Column(db.String, nullable=False)
-    # phone = db.Column(db.String, nullable=False)
-    username = db.Column(db.String, nullable=False, unique=True)
-    # email = db.Column(db.String, nullable=False, unique=True)
-    # password = db.Column(db.String, nullable=False)
+    phone = db.Column(db.String, nullable=False)
+    email = db.Column(db.String, nullable=False, unique=True)
+    password = db.Column(db.String, nullable=False)
     prof_pic = db.Column(db.String)
-    strava_id = db.Column(db.String)
+    strava_id = db.Column(db.Integer)
     strava_access_token = db.Column(db.String)
     strava_access_token_expir = db.Column(db.String)
     strava_refresh_token = db.Column(db.String)
@@ -29,8 +28,7 @@ class User(db.Model):
     activity = db.relationship('Activity', backref='users')
 
     def __repr__(self):
-        return f'''<User id={self.id} first={self.firstname}
-        last={self.lastname} username={self.username}>'''
+        return f'<User id={self.id} first={self.firstname} last={self.lastname}>'
 
 class Team(db.Model):
     """A team."""
@@ -46,6 +44,24 @@ class Team(db.Model):
     def __repr__(self):
         return f'<Team id={self.id} name={self.name}>'
 
+class Team_Member(db.Model):
+    """A member of a team"""
+
+    __tablename__ = 'team_members'
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    team_id = db.Column(db.Integer, db.ForeignKey('teams.id'))
+    role = db.Column(db.String, nullable=False)
+    active_status = db.Column(db.Boolean, default=True)
+
+    user = db.relationship('User', backref='team_members')
+    team = db.relationship('Team', backref='team_members')
+
+    def __repr__(self):
+        return f'''<Team_Member id={self.id} team_id={self.team_id} 
+                role={self.role}>'''
+
 
 class Activity(db.Model):
     """An activity."""
@@ -58,10 +74,9 @@ class Activity(db.Model):
     date_utc = db.Column(db.DateTime, nullable=False)
     desc = db.Column(db.String)
     exercise_type = db.Column(db.String, nullable=False)
-    run_type = db.Column(db.String)
     distance = db.Column(db.Float, nullable=False)
     time_length = db.Column(db.Integer, nullable=False)
-    avg_speed = db.Column(db.Float)
+    average_speed = db.Column(db.Float)
     max_speed = db.Column(db.Float)
     has_heartrate = db.Column(db.Boolean)
     effort = db.Column(db.Integer)
