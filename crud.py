@@ -88,6 +88,10 @@ def create_comment(activity_id, author_id, date_utc, body):
 
     return comment
 
+def get_user_by_email(email):
+    """Return a user by email."""
+
+    return User.query.filter(User.email == email).first()
 
 if __name__ == '__main__':
     from server import app
