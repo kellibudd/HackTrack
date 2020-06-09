@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %}Run App Home{% endblock %}
+
+{% block body %}
+
+  <h1>Welcome {{user.firstname}}!</h1>
+
+  <img href="{{ user.prof_pic }}">
+  
+  <h2>Your Activities</h2>
+    <p>
+      {% for activity in activities %}
+        Name: {{ activity.desc }}
+        <ul>
+          <li>Activity: {{ activity.exercise_type }}</li>
+          <li>Description: {{ activity.desc }}</li>
+          <li>Time: {{ activity.time_length }}</li>
+          <li>Distance: {{ activity.distance }}</li>
+        </ul>
+      {% end for %}
+    </p>
+
+{% endblock %}
