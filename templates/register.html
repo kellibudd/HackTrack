@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block title %}Run App Home{% endblock %}
+
+{% block body %}
+  <h2>New User Sign-Up</h2>
+  <form action="/create-user" method="POST">
+    <div>
+        Email
+        <p>
+          <input type="text" name="email">
+        </p>
+        Password
+        <p> 
+          <input type="password" name="password">
+        </p>
+        Re-Enter Password
+        <p>
+          <input type="password" name="password-confirm">
+        </p>
+        Phone Number (ex. 987-654-3210)
+        <p>
+          <input type="phone" name="phone">
+        </p>
+        <p>
+          <input type="submit">
+        </p>
+    </div>
+  </form>
+
+  <h2>Connect your Strava account</h2>
+  {#  class="flash-msg" #}
+    <div>
+      <p>
+        <a class="btn btn-md" href="{{ authorize_url }}" role="button"><img src="/static/ConnectWithStrava.png" border="0" width="262" height="43" />
+        </a>
+      </p>
+    </div>
+
+  <script src="/static/js/ajax.js"></script>
+
+{% endblock %}
