@@ -5,90 +5,145 @@ from flask import (Flask, render_template, request, flash, session,
 from model import connect_to_db, User, Activity, Team, Comment
 import crud
 from jinja2 import StrictUndefined
-from stravalib import Client
-import requests
+import strava_api
 import os
-import urllib3
-import logging
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 # from crud import create_user
 
 app = Flask(__name__)
-app.secret_key = "dev"
+app.secret_key = os.environ['APP_SECRET_KEY']
 app.jinja_env.undefined = StrictUndefined
 
-STRAVA_CLIENT_ID = os.environ['STRAVA_CLIENT_ID']
-STRAVA_CLIENT_SECRET = os.environ['STRAVA_CLIENT_SECRET']
+# @app.route('/')
+# def homepage():
+#     # if 'username' in session:
+#     #     return redirect(url_for('/dashboard'))
+#     return render_template('homepage.html')
 
-@app.route("/")
-def register():
+# @app.route('/login', methods=['GET', 'POST'])
+# def login():
+#     if request.method == 'POST':
+#         session['username'] = request.form['username']
+#         return redirect(url_for('index'))
+#     return '''
+#         <form method="post">
+#             <p><input type=text name=username>
+#             <p><input type=submit value=Login>
+#         </form>
+#     '''
 
-    client = Client()
-    url = client.authorization_url(client_id=STRAVA_CLIENT_ID,
-                                    redirect_uri=url_for('.logged_in', _external=True),
-                                    approval_prompt='auto')
-    return render_template('login.html', authorize_url=url)
+# @app.route('/logout')
+# def logout():
+#     # remove the username from the session if it's there
+#     session.pop('username', None)
+#     return redirect(url_for('/'))
 
+@app.route('/')
+def homepage():
 
-@app.route("/strava-oauth")
-def logged_in():
-    """
-    Method called by Strava (redirect) that includes parameters.
-    - state
-    - code
-    - error
-    """
-    error = request.args.get('error')
-    state = request.args.get('state')
-    if error:
-        return render_template('login_error.html', error=error)
+    return render_template('homepage.html')
+
+@app.route('/login', methods=['POST'])
+def login_user():
+    """Login a user."""
+
+    email = request.form.get('email')
+    password = request.form.get('password')
+
+    user = crud.get_user_by_email(email)
+    print(user)
+
+    if user == None:
+        flash('Account does not exist. Please register as a new user.')
+        return redirect('/')
+
+    elif user.password != password:
+        flash('Incorrect password. Please try again.')
+        return redirect('/')
+
+    elif user.password == password:
+        session['user'] = email
+        print(session['user'])
+        return render_template('dashboard.html',user=user)
+
+@app.route('/register', methods=['POST'])
+def register_user():
+    """Register a new user."""
+
+    url = strava_api.request_user_authorization(url_for('.create_user', _external=True))
+
+    return render_template('register.html', authorize_url=url)
+
+@app.route("/create-user", methods=['POST'])
+def create_user():
+
+    email = request.form.get('email')
+    password = request.form.get('password')
+    password_confirm = request.form.get('password-confirm')
+    phone = request.form.get('phone')
+
+    code = request.args.get('code')
+    token = strava_api.get_token(code)
+    user_data = strava_api.get_user_data()
+
+    if password != password_confirm:
+        flash('Passwords do not match. Please try again.')
+        return redirect('/register')
+
     else:
-        code = request.args.get('code')
-        print(code)
-        client = Client()
-        token = client.exchange_code_for_token(client_id=STRAVA_CLIENT_ID,
-                                                client_secret=STRAVA_CLIENT_SECRET,
-                                                code=code)
-        # Probably here you'd want to store this somewhere -- e.g. in a database.
-        # token = access_token.json
-        user = client.get_athlete()
+        user = crud.create_user(user_data.firstname,
+                        user_data.lastname,
+                        phone,
+                        email,
+                        password,
+                        user_data.profile,
+                        user_data.id,
+                        token['access_token'],
+                        token['expires_at'],
+                        token['refresh_token'])
 
-        new_user = crud.create_user(user.firstname,
-                                    user.lastname,
-                                    user.profile,
-                                    user.id,
-                                    token['access_token'],
-                                    token['expires_at'],
-                                    token['refresh_token'])
+        session['user_id'] = user.id
+        session['user'] = user.email
 
-        activities = client.get_activities()
+        return redirect('/create-activities')
+        
 
-        for activity in activities:
+@app.route("/create-activities")
+def create_activities():
 
-            if activity.has_heartrate:
-                effort_source = 'heartrate'
-            else:
-                effort_source = 'perceived exertion'
-            if activity.suffer_score:
-                effort = activity.suffer_score
-            else:
-                effort = 0
+    activity_data = strava_api.get_activity_data()
 
-            print('-'*20)
-            print(crud.create_activity(new_user.id,
-                                activity.id,
-                                activity.start_date,
-                                activity.name,
-                                activity.type,
-                                activity.distance.num,
-                                activity.moving_time.seconds,
-                                activity.average_speed.num,
-                                activity.max_speed.num,
-                                activity.has_heartrate,
-                                effort.real,
-                                effort_source,
-                                activity.total_elevation_gain.num))
+    for activity in activity_data:
+
+        if activity.has_heartrate:
+            effort_source = 'heartrate'
+        else:
+            effort_source = 'perceived exertion'
+        if activity.suffer_score:
+            effort = activity.suffer_score
+        else:
+            effort = 0
+
+        print('-'*20)
+        crud.create_activity(session['user_id'],
+                            activity.id,
+                            activity.start_date,
+                            activity.name,
+                            activity.type,
+                            activity.distance.num,
+                            activity.moving_time.seconds,
+                            activity.average_speed.num,
+                            activity.max_speed.num,
+                            activity.has_heartrate,
+                            effort.real,
+                            effort_source,
+                            activity.total_elevation_gain.num)
+
+        activities = Activity.query.all()
+        activity = Activity.query.first()
+        user = activity.user.firstname
+
+        return render_template('dashboard.html', activities=activities, user=user)
 
 
 
@@ -115,10 +170,6 @@ def logged_in():
         # print(token)
         # print("Access Token: ", token['access_token'])
         # print("Refresh Token: ", token['refresh_token'])
-
-        return render_template('login_results.html', user=user, token=token)
-
-
 
 # # ... time passes ...
 # if time.time() > client.token_expires_at:
