@@ -7,6 +7,8 @@ import crud
 from jinja2 import StrictUndefined
 import strava_api
 import os
+import json
+import ast
 
 # from crud import create_user
 
@@ -41,7 +43,18 @@ app.jinja_env.undefined = StrictUndefined
 @app.route('/')
 def homepage():
 
-    return render_template('homepage.html')
+    url = strava_api.request_user_authorization(url_for('.register_user', _external=True))
+
+    return render_template('homepage.html', authorize_url=url)
+
+@app.route('/register')
+def register_user():
+    """Register a new user."""
+
+    code = request.args.get('code')
+    token = strava_api.get_token(code)
+
+    return render_template('register.html', token=token)
 
 @app.route('/login', methods=['POST'])
 def login_user():
@@ -64,15 +77,9 @@ def login_user():
     elif user.password == password:
         session['user'] = email
         print(session['user'])
-        return render_template('dashboard.html',user=user)
-
-@app.route('/register', methods=['POST'])
-def register_user():
-    """Register a new user."""
-
-    url = strava_api.request_user_authorization(url_for('.create_user', _external=True))
-
-    return render_template('register.html', authorize_url=url)
+        activities = crud.get_activities_by_user_id(user.id)
+        return render_template('dashboard.html',user=user, activities=activities)
+    
 
 @app.route("/create-user", methods=['POST'])
 def create_user():
@@ -81,31 +88,26 @@ def create_user():
     password = request.form.get('password')
     password_confirm = request.form.get('password-confirm')
     phone = request.form.get('phone')
+    token = request.form.get('token')
+    token = ast.literal_eval(token)
 
-    code = request.args.get('code')
-    token = strava_api.get_token(code)
     user_data = strava_api.get_user_data()
 
-    if password != password_confirm:
-        flash('Passwords do not match. Please try again.')
-        return redirect('/register')
+    user = crud.create_user(user_data.firstname,
+                    user_data.lastname,
+                    phone,
+                    email,
+                    password,
+                    user_data.profile,
+                    user_data.id,
+                    token['access_token'],
+                    token['expires_at'],
+                    token['refresh_token'])
+    print(user)
+    session['user_id'] = user.id
+    session['user'] = user.email
 
-    else:
-        user = crud.create_user(user_data.firstname,
-                        user_data.lastname,
-                        phone,
-                        email,
-                        password,
-                        user_data.profile,
-                        user_data.id,
-                        token['access_token'],
-                        token['expires_at'],
-                        token['refresh_token'])
-
-        session['user_id'] = user.id
-        session['user'] = user.email
-
-        return redirect('/create-activities')
+    return redirect('/create-activities')
         
 
 @app.route("/create-activities")
@@ -139,11 +141,10 @@ def create_activities():
                             effort_source,
                             activity.total_elevation_gain.num)
 
-        activities = Activity.query.all()
-        activity = Activity.query.first()
-        user = activity.user.firstname
+    activities = crud.get_activities_by_user_id(session['user_id'])
+    user = crud.get_user_by_email(session['user'])
 
-        return render_template('dashboard.html', activities=activities, user=user)
+    return render_template('dashboard.html', activities=activities, user=user)
 
 
 
