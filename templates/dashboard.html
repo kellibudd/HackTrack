@@ -3,10 +3,10 @@
 
 {% block body %}
 
-  <h1>Welcome {{user.firstname}}!</h1>
+  <h1>Welcome {{ user.firstname }}!</h1>
 
-  <img href="{{ user.prof_pic }}">
-  
+  <img id="prof-pic" source="{{ user.prof_pic }}">
+
   <h2>Your Activities</h2>
     <p>
       {% for activity in activities %}
@@ -17,7 +17,7 @@
           <li>Time: {{ activity.time_length }}</li>
           <li>Distance: {{ activity.distance }}</li>
         </ul>
-      {% end for %}
+      {% endfor %}
     </p>
 
 {% endblock %}
