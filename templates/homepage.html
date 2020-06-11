@@ -7,11 +7,11 @@
   <h2>Login</h2>
   <form action="/login" method="POST">
     <p>
-      Email <input type="text" name="email">
+      Email <input type="text" name="email" required>
     </p>
 
     <p>
-      Password <input type="password" name="password">
+      Password <input type="password" name="password" required>
     </p>
 
     <p>
@@ -19,12 +19,12 @@
     </p>
   </form>
 
-  <h2>Sign Up</h2>
-    <form action="/register" method="POST">
-      <button>Create Account</button>
-    </form>
-  {#   <div class="register">
-      <button action="/register" id="register">Create Account</button>
-    </div> #}
+  <h2>Connect your Strava account</h2>
+    <section id="connect-strava">
+      <p>
+        <a class="btn btn-md" href="{{ authorize_url }}" role="button"><img src="/static/ConnectWithStrava.png" border="0" width="262" height="43" />
+        </a>
+      </p>
+  </section>
 
 {% endblock %}
