@@ -93,6 +93,11 @@ def get_user_by_email(email):
 
     return User.query.filter(User.email == email).first()
 
+def get_activities_by_user_id(user_id):
+    """Return a user by email."""
+
+    return Activity.query.filter(Activity.user_id == user_id).all()
+
 if __name__ == '__main__':
     from server import app
     connect_to_db(app)
