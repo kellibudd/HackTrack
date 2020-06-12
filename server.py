@@ -91,23 +91,30 @@ def create_user():
     token = request.form.get('token')
     token = ast.literal_eval(token)
 
-    user_data = strava_api.get_user_data()
+    user = crud.get_user_by_email(email)
 
-    user = crud.create_user(user_data.firstname,
-                    user_data.lastname,
-                    phone,
-                    email,
-                    password,
-                    user_data.profile,
-                    user_data.id,
-                    token['access_token'],
-                    token['expires_at'],
-                    token['refresh_token'])
-    print(user)
-    session['user_id'] = user.id
-    session['user'] = user.email
+    if email == user.email:
+        flash('Account already exists with provided email. Please login.')
+        return redirect('/')
 
-    return redirect('/create-activities')
+    else:
+        user_data = strava_api.get_user_data()
+
+        user = crud.create_user(user_data.firstname,
+                        user_data.lastname,
+                        phone,
+                        email,
+                        password,
+                        user_data.profile,
+                        user_data.id,
+                        token['access_token'],
+                        token['expires_at'],
+                        token['refresh_token'])
+        print(user)
+        session['user_id'] = user.id
+        session['user'] = user.email
+
+        return redirect('/create-activities')
         
 
 @app.route("/create-activities")
@@ -145,8 +152,6 @@ def create_activities():
     user = crud.get_user_by_email(session['user'])
 
     return render_template('dashboard.html', activities=activities, user=user)
-
-
 
         # token_url = "https://www.strava.com/oauth/token"
         # activities_url = "https://www.strava.com/api/v3/athlete/activities"
