@@ -2,7 +2,7 @@
     {
         "phone": "651-726-4495",
         "email": "laurahdocherty@gmail.com",
-        "password": "lauradocherty",
+        "password": "password",
         "token_type": "Bearer",
         "expires_at": 1591404640,
         "expires_in": 21600,
@@ -16,7 +16,7 @@
     {
         "phone": "402-968-2163",
         "email": "kbudd5191@gmail.com",
-        "password": "kellibudd",
+        "password": "password",
         "token_type": "Bearer",
         "expires_at": 1591416797,
         "expires_in": 21600,
@@ -30,7 +30,7 @@
     {
         "phone": "218-234-6613",
         "email": "and1607@umn.edu",
-        "password": "abbyanderson",
+        "password": "password",
         "token_type": "Bearer",
         "expires_at": 1591499215,
         "expires_in": 21600,
@@ -40,20 +40,34 @@
         "firstname": "Abigail",
         "lastname": "Anderson",
         "profile": "https://dgalywyr863hv.cloudfront.net/pictures/athletes/23663631/14069445/3/large.jpg"
-    },  
+    },
+    {
+        "phone": "650-455-9866",
+        "email": "chantelyip422@gmail.com",
+        "password": "password",
+        "token_type": "Bearer",
+        "expires_at": 1592001925,
+        "expires_in": 21600,
+        "refresh_token": "be95702dfa63662e0dbdc25c4b84e130b26171c2",
+        "access_token": "a1d3194779038795f8e12d23039b6cdb2283cd82",
+        "id": 11802144,
+        "firstname": "Chantel",
+        "lastname": "Yip",
+        "profile": "https://dgalywyr863hv.cloudfront.net/pictures/athletes/11802144/7879441/1/large.jpg"
+    },
     {
         "firstname": "Sarah",
         "lastname": "Hopkins",
         "phone": "651-555-1111",
         "email": "shopkins@umn.edu",
-        "password": "sarahhop"
+        "password": "password"
     },
     {
         "firstname": "Danny",
         "lastname": "Docherty",
         "phone": "651-444-1111",
         "email": "ddocherty@creighton.edu",
-        "password": "dannydoch"
+        "password": "password"
     }
 ]
 
