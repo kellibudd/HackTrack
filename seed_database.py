@@ -52,7 +52,7 @@ def seed_activities():
         date_utc = activity['start_date']
         desc = activity['name']
         exercise_type = activity['type']
-        distance = activity['distance']
+        distance = round(activity['distance'] * 0.000621371, 2)
         time_length = activity['moving_time']
         average_speed = activity['average_speed']
         max_speed = activity['max_speed']
