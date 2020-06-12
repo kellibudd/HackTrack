@@ -16,11 +16,16 @@
     },
     {
         "user_id": 4,
+        "team_id": 2,
+        "role": "Athlete"
+    },
+    {
+        "user_id": 5,
         "team_id": 1,
         "role": "Coach"
     },
     {
-        "user_id": 5,
+        "user_id": 6,
         "team_id": 2,
         "role": "Coach"
     }
