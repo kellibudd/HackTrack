@@ -32,3 +32,9 @@ def get_user_data():
 def get_activity_data():
 
     return client.get_activities()
+
+def get_new_token(refresh_token):
+
+    return client.refresh_access_token(client_id=STRAVA_CLIENT_ID,
+                                        client_secret=STRAVA_CLIENT_SECRET,
+                                        refresh_token=refresh_token)
