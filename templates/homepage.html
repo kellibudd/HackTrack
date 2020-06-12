@@ -5,12 +5,13 @@
   <h1>Welcome!</h1>
 
   <h2>Login</h2>
+
   <form action="/login" method="POST">
-    <p>
+    <p class="text-primary">
       Email <input type="text" name="email" required>
     </p>
 
-    <p>
+    <p class="text-primary">
       Password <input type="password" name="password" required>
     </p>
 
@@ -22,7 +23,7 @@
   <h2>Connect your Strava account</h2>
     <section id="connect-strava">
       <p>
-        <a class="btn btn-md" href="{{ authorize_url }}" role="button"><img src="/static/ConnectWithStrava.png" border="0" width="262" height="43" />
+        <a class="btn btn-md" href="{{ authorize_url }}" role="button"><img src="/static/img/ConnectWithStrava.png" border="0" width="262" height="43" />
         </a>
       </p>
   </section>
