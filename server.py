@@ -54,7 +54,7 @@ def register_user():
     code = request.args.get('code')
     token = strava_api.get_token(code)
 
-    return render_template('register.html', token=token)
+    return render_template('register_user.html', token=token)
 
 @app.route('/login', methods=['POST'])
 def login_user():
@@ -93,7 +93,7 @@ def create_user():
 
     user = crud.get_user_by_email(email)
 
-    if email == user.email:
+    if user != None:
         flash('Account already exists with provided email. Please login.')
         return redirect('/')
 
@@ -139,7 +139,7 @@ def create_activities():
                             activity.start_date,
                             activity.name,
                             activity.type,
-                            activity.distance.num,
+                            round(activity.distance.num *  0.000621371, 2),
                             activity.moving_time.seconds,
                             activity.average_speed.num,
                             activity.max_speed.num,
