@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block title %}Run App Home{% endblock %}
+
+{% block body %}
+  <section id="team-registration">
+    <h2>New User Sign-Up</h2>
+    <br>
+    <h4>Join A Team:</h4>
+    <form id="team-reg-form" action="/create-team-mem" method="POST">
+        Select a registered team:
+        <p>
+          <select name="team">
+            {% for team in teams %}
+              <option value="{{ team.id }}">{{ team.name }}</option>
+            {% endfor %}
+          </select>
+        </p>
+        Select your role:
+        <p>
+          <select name="role">
+            <option value="athlete">Athlete</option>
+            <option value="coach">Coach</option>
+          </select>
+        </p>
+        <input type="submit">
+    </form>
+  </section>
+
+  <script src="/static/js/ajax.js"></script>
+
+{% endblock %}

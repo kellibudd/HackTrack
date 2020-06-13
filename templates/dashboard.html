@@ -3,19 +3,21 @@
 
 {% block body %}
 
-  <h1>Welcome {{ user.firstname }}!</h1>
+  <h2>Welcome {{ user.firstname }}!</h2>
 
   <img src="{{ user.prof_pic }}"/>
 
-  <h2>Your Activities</h2>
+  <h4>Team</h4>
+  <p>{{ team.name }}</p>
+
+  <h4>Activities</h4>
     <p>
       {% for activity in activities %}
-        Name: {{ activity.desc }}
+        {{ activity.desc }}
         <ul>
           <li>Activity: {{ activity.exercise_type }}</li>
-          <li>Description: {{ activity.desc }}</li>
           <li>Time: {{ activity.time_length }}</li>
-          <li>Distance: {{ activity.distance }}</li>
+          <li>Miles: {{ activity.distance }}</li>
         </ul>
       {% endfor %}
     </p>

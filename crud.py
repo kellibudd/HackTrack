@@ -25,7 +25,7 @@ def create_user(firstname, lastname, phone, email, password, prof_pic, strava_id
 
 def create_activity(user_id, strava_activity_id, date_utc, 
                     desc, exercise_type, distance, time_length,
-                    average_speed, max_speed, has_heartrate, effort, 
+                    average_speed, has_heartrate, effort, 
                     effort_source, elev_gain):
     """Create and return an activity."""
 
@@ -37,7 +37,6 @@ def create_activity(user_id, strava_activity_id, date_utc,
                 distance=distance,
                 time_length=time_length,
                 average_speed=average_speed,
-                max_speed=max_speed,
                 has_heartrate=has_heartrate,
                 effort=effort,
                 effort_source=effort_source,
@@ -97,6 +96,23 @@ def get_activities_by_user_id(user_id):
     """Return a user by email."""
 
     return Activity.query.filter(Activity.user_id == user_id).all()
+
+def get_teams():
+    """Return a list of teams."""
+
+    return Team.query.all()
+
+def get_team_by_id(id):
+    """Return a list of teams."""
+
+    return Team.query.get(id)
+
+def get_team_by_user_id(user_id):
+    """Return a list of teams."""
+
+    team_mem = Team_Member.query.filter(Team_Member.user_id == user_id).first()
+
+    return Team.query.filter(Team.id == team_mem.team_id).first()
 
 if __name__ == '__main__':
     from server import app

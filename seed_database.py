@@ -53,9 +53,24 @@ def seed_activities():
         desc = activity['name']
         exercise_type = activity['type']
         distance = round(activity['distance'] * 0.000621371, 2)
-        time_length = activity['moving_time']
-        average_speed = activity['average_speed']
-        max_speed = activity['max_speed']
+
+        time = activity['moving_time'] / 3600
+        hours = int(time)
+        minutes = int((time % 1) * 60)
+        seconds = round((((time % 1) * 60) % 1) * 60)
+        if hours < 1:
+            workout_time = f'{minutes}m {seconds}s'
+        else:
+            workout_time = f'{hours}h {minutes}m {seconds}s'
+
+        if distance < 0:
+            avg_time = (activity['moving_time'] / 60) / distance
+            avg_minutes = int(avg_time)
+            avg_seconds = round((avg_time % 1) * 60)
+            average_speed = f'{avg_minutes}:{avg_seconds}/mile'
+        else:
+            average_speed = 'N/A'
+
         has_heartrate = activity['has_heartrate']
 
         if activity['has_heartrate']:
@@ -71,8 +86,8 @@ def seed_activities():
         elev_gain = activity['total_elevation_gain']
 
         crud.create_activity(user_id, strava_activity_id, date_utc, 
-                    desc, exercise_type, distance, time_length,
-                    average_speed, max_speed, has_heartrate, effort, 
+                    desc, exercise_type, distance, workout_time,
+                    average_speed, has_heartrate, effort, 
                     effort_source, elev_gain)
 
 def seed_teams():
