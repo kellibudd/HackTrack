@@ -1,7 +1,7 @@
 """Models for team running app."""
 
 from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime
+from datetime import datetime, timedelta
 from sqlalchemy.dialects.postgresql import JSON
 
 db = SQLAlchemy()
@@ -86,7 +86,7 @@ class Activity(db.Model):
 
     def __repr__(self):
         return f'''<Activity id={self.id} user={self.user_id} 
-                date={self.date_utc} exercise_type={self.exercise_type}>'''
+                date_utc={self.date_utc} exercise_type={self.exercise_type}>'''
 
 
 class Comment(db.Model):
