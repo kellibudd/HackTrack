@@ -1,6 +1,7 @@
 """CRUD operations."""
 
 from model import connect_to_db, db, User, Activity, Team, Team_Member, Comment
+from datetime import datetime, timedelta
 
 def create_user(firstname, lastname, phone, email, password, prof_pic, strava_id, 
                 strava_access_token, strava_access_token_expir, strava_refresh_token):
@@ -113,6 +114,17 @@ def get_team_by_user_id(user_id):
     team_mem = Team_Member.query.filter(Team_Member.user_id == user_id).first()
 
     return Team.query.filter(Team.id == team_mem.team_id).first()
+
+def get_current_week_activities_by_team(team_id):
+
+    team = Team_Member.query.filter(Team_Member.team_id == team_id, Team_Member.role == 'Athlete').all()
+
+    team_activities = {}
+
+    for athlete in team:
+        team_activities[athlete.id] = Activity.query.filter(Activity.user_id == athlete.user_id).all()
+
+    return team_activities
 
 if __name__ == '__main__':
     from server import app
