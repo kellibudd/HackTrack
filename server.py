@@ -80,7 +80,7 @@ def login_user():
         session['user'] = email
         print(session['user'])
         activities = crud.get_activities_by_user_id(user.id)
-        return render_template('dashboard.html', team=team, user=user, activities=activities)
+        return render_template('team_dashboard.html', team=team, user=user, activities=activities)
     
 
 @app.route("/create-user", methods=['POST'])
@@ -189,7 +189,7 @@ def create_team_mem():
     activities = crud.get_activities_by_user_id(session['user_id'])
     user = crud.get_user_by_email(session['user'])
 
-    return render_template('dashboard.html', team=team,
+    return render_template('team_dashboard.html', team=team,
                                             activities=activities,
                                             user=user)
 
