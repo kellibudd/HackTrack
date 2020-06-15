@@ -23,17 +23,24 @@
     </tr>
   </thead>
   <tbody>
+
+    {% for athlete in athletes %}
     <tr>
-      <td><img src="{{ user.prof_pic }}" width="40px" class="rounded-circle" align="center"/></td>
-      <th scope="row">{{ user.firstname }} {{ user.lastname }}</th>
-      <td>2 mi</td>
-      <td>5 mi</td>
-      <td>10 mi</td>
-      <td>5 mi</td>
-      <td>3 mi</td>
-      <td>0 mi</td>
-      <td>7 mi</td>
+      <td><img src="{{ athlete.user.prof_pic }}" width="50px" class="rounded-circle" align="center"/></td>
+      <th scope="row">{{ athlete.user.firstname }} {{ athlete.user.lastname }}</th>
+      {# {% for activity in activities %}
+        {% if activity.user_id == athlete.id %}
+          {% if activity.date_utc == } #}
+          <td>2 mi</td>
+          <td>5 mi</td>
+          <td>10 mi</td>
+          <td>5 mi</td>
+          <td>3 mi</td>
+          <td>0 mi</td>
+          <td>7 mi</td>
+        {% endif %}
     </tr>
+    {% endfor %}
   </tbody>
 </table>
 
