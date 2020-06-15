@@ -78,9 +78,8 @@ def login_user():
 
     elif user.password == password:
         session['user'] = email
-        print(session['user'])
-        activities = crud.get_activities_by_user_id(user.id)
-        return render_template('team_dashboard.html', team=team, user=user, activities=activities)
+        session['user_id'] = user.id
+        return redirect('/team-dashboard')
     
 
 @app.route("/create-user", methods=['POST'])
@@ -113,8 +112,8 @@ def create_user():
                         token['expires_at'],
                         token['refresh_token'])
         print(user)
-        session['user_id'] = user.id
         session['user'] = user.email
+        session['user_id'] = user.id
 
         return redirect('/create-activities')
         
@@ -186,13 +185,20 @@ def create_team_mem():
 
     crud.create_team_member(session['user_id'], team.id, role)
 
-    activities = crud.get_activities_by_user_id(session['user_id'])
-    user = crud.get_user_by_email(session['user'])
+    return redirect('/team-dashboard')
+
+@app.route('/team-dashboard')
+def display_team_dashboard():
+
+    team = crud.get_team_by_user_id(session['user_id'])
+    athletes = crud.get_athletes_by_team(team.id)
+    activities = crud.current_week_activities_by_team(team.id)
 
     return render_template('team_dashboard.html', team=team,
-                                            activities=activities,
-                                            user=user)
+                                                activities=activities,
+                                                athletes=athletes)
 
+    # activities = crud.get_activities_by_user_id(session['user_id'])
 
         # token_url = "https://www.strava.com/oauth/token"
         # activities_url = "https://www.strava.com/api/v3/athlete/activities"
