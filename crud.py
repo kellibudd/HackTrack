@@ -2,6 +2,7 @@
 
 from model import connect_to_db, db, User, Activity, Team, Team_Member, Comment
 from datetime import datetime, timedelta
+from pytz import timezone
 
 def create_user(firstname, lastname, phone, email, password, prof_pic, strava_id, 
                 strava_access_token, strava_access_token_expir, strava_refresh_token):
@@ -104,27 +105,60 @@ def get_teams():
     return Team.query.all()
 
 def get_team_by_id(id):
-    """Return a list of teams."""
+    """Return a team."""
 
     return Team.query.get(id)
 
 def get_team_by_user_id(user_id):
-    """Return a list of teams."""
+    """Return team associated with a user."""
 
     team_mem = Team_Member.query.filter(Team_Member.user_id == user_id).first()
 
     return Team.query.filter(Team.id == team_mem.team_id).first()
 
-def get_current_week_activities_by_team(team_id):
+def get_athletes_by_team(team_id):
+    """Return team members on a team."""
+
+    return Team_Member.query.options(db.joinedload('user')).filter(Team_Member.team_id == team_id, Team_Member.role == 'Athlete').all()
+
+def get_activities_by_team(team_id):
+    """Return a list of activities completed by users on a team."""
 
     team = Team_Member.query.filter(Team_Member.team_id == team_id, Team_Member.role == 'Athlete').all()
 
-    team_activities = {}
+    team_activities = []
 
     for athlete in team:
-        team_activities[athlete.id] = Activity.query.filter(Activity.user_id == athlete.user_id).all()
+        team_activities = team_activities + Activity.query.options(db.joinedload('user')).filter(Activity.user_id == athlete.user_id).all()
+        # team_activities[athlete.id] = Activity.query.filter(Activity.user_id == athlete.user_id).all()
 
     return team_activities
+
+def current_week_activities_by_team(team_id):
+    """Return a list of activities completed by users on a team during the current week."""
+
+    today = datetime.utcnow().astimezone(timezone('US/Pacific'))
+
+    start = today - timedelta(days=today.weekday())
+
+    current_week = []
+
+    for i in range(7):
+
+        day = start + timedelta(days=i)
+        current_week.append(day.strftime('%Y-%m-%d'))
+
+    team_activities = get_activities_by_team(team_id)
+
+    current_week_activities = []
+
+    for activity in team_activities: 
+        date_pst = activity.date_utc.astimezone(timezone('US/Pacific')).strftime('%Y-%m-%d') 
+        if date_pst in current_week: 
+            current_week_activities.append(activity)
+
+    return current_week_activities
+
 
 if __name__ == '__main__':
     from server import app
