@@ -50,8 +50,6 @@ def login_user():
     user = crud.get_user_by_email(email)
     print(user)
 
-    team = crud.get_team_by_user_id(user.id)
-
     if user == None:
         flash('Account does not exist. Please register as a new user.')
         return redirect('/')
@@ -91,8 +89,8 @@ def create_user():
                                 phone,
                                 email,
                                 password,
-                                timezone,
                                 user_data.profile,
+                                timezone,
                                 user_data.id,
                                 token['access_token'],
                                 token['expires_at'],
@@ -160,7 +158,7 @@ def create_team_mem():
 
     role = request.form.get('role')
 
-    crud.create_team_member(session['user_id'], team.id, role)
+    team_mem = crud.create_team_member(session['user_id'], team.id, role)
 
     return redirect('/dashboard')
 
