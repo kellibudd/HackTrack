@@ -23,6 +23,17 @@
         <p>
           <input id="phone-field" type="phone" name="phone" placeholder="Format: 123-456-7890" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" required>
         </p>
+        Timezone
+        <p>
+          <select name="timezone">
+            <option value="US/Hawaii">Hawaiian</option>
+            <option value="US/Alaska">Alaskan</option>
+            <option value="US/Pacific">Pacific</option>
+            <option value="US/Mountain">Mountain</option>
+            <option value="US/Central">Central</option>
+            <option value="US/Eastern">Eastern</option>
+          </select>
+        </p>
         <input id="strava-token" type="hidden" name="token" value="{{ token }}">
         <p>
           <input type="submit">
@@ -30,6 +41,6 @@
     </form>
   </section>
 
-  <script src="/static/js/ajax.js"></script>
+  <script src="/static/js/register.js"></script>
 
 {% endblock %}

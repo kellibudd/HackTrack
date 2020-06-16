@@ -21,6 +21,7 @@ def seed_users():
         phone = user['phone']
         email = user['email']
         password = user['password']
+        timezone = user['timezone']
 
         if not 'id' in user:
             prof_pic = None
@@ -35,7 +36,7 @@ def seed_users():
             strava_access_token_expir = user['expires_at']
             strava_refresh_token = user['refresh_token']
 
-        crud.create_user(firstname, lastname, phone, email, password, prof_pic, 
+        crud.create_user(firstname, lastname, phone, email, password, prof_pic, timezone, 
                         strava_id, strava_access_token, strava_access_token_expir, 
                         strava_refresh_token)
 
@@ -50,18 +51,12 @@ def seed_activities():
         user_id = user.id
         strava_activity_id = activity['id']
         date_utc = activity['start_date']
+        date_local = activity['start_date_local']
         desc = activity['name']
         exercise_type = activity['type']
         distance = round(activity['distance'] * 0.000621371, 2)
 
-        time = activity['moving_time'] / 3600
-        hours = int(time)
-        minutes = int((time % 1) * 60)
-        seconds = round((((time % 1) * 60) % 1) * 60)
-        if hours < 1:
-            workout_time = f'{minutes}m {seconds}s'
-        else:
-            workout_time = f'{hours}h {minutes}m {seconds}s'
+        workout_time = activity['moving_time']
 
         if distance < 0:
             avg_time = (activity['moving_time'] / 60) / distance
@@ -85,7 +80,7 @@ def seed_activities():
 
         elev_gain = activity['total_elevation_gain']
 
-        crud.create_activity(user_id, strava_activity_id, date_utc, 
+        crud.create_activity(user_id, strava_activity_id, date_utc, date_local, 
                     desc, exercise_type, distance, workout_time,
                     average_speed, has_heartrate, effort, 
                     effort_source, elev_gain)

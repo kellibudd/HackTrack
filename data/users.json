@@ -3,6 +3,7 @@
         "phone": "651-726-4495",
         "email": "laurahdocherty@gmail.com",
         "password": "password",
+        "timezone": "US/Central",
         "token_type": "Bearer",
         "expires_at": 1591404640,
         "expires_in": 21600,
@@ -17,6 +18,7 @@
         "phone": "402-968-2163",
         "email": "kbudd5191@gmail.com",
         "password": "password",
+        "timezone": "US/Central",
         "token_type": "Bearer",
         "expires_at": 1591416797,
         "expires_in": 21600,
@@ -31,6 +33,7 @@
         "phone": "218-234-6613",
         "email": "and1607@umn.edu",
         "password": "password",
+        "timezone": "US/Central",
         "token_type": "Bearer",
         "expires_at": 1591499215,
         "expires_in": 21600,
@@ -45,6 +48,7 @@
         "phone": "650-455-9866",
         "email": "chantelyip422@gmail.com",
         "password": "password",
+        "timezone": "US/Pacific",
         "token_type": "Bearer",
         "expires_at": 1592001925,
         "expires_in": 21600,
@@ -60,28 +64,32 @@
         "lastname": "Wilson",
         "phone": "651-555-1111",
         "email": "gwils@umn.edu",
-        "password": "password"
+        "password": "password",
+        "timezone": "US/Central"
     },
     {
         "firstname": "Danny",
         "lastname": "Docherty",
         "phone": "651-444-1111",
         "email": "ddocherty@creighton.edu",
-        "password": "password"
+        "password": "password",
+        "timezone": "US/Central"
     },
     {
         "firstname": "Michelle",
         "lastname": "Obama",
         "phone": "555-555-5555",
         "email": "michelle@obama.com",
-        "password": "password"
+        "password": "password",
+        "timezone": "US/Eastern"
     },
     {
         "firstname": "Gabe",
         "lastname": "Grunewald",
         "phone": "777-625-1504",
         "email": "gabe@bravelikegabe.com",
-        "password": "password"
+        "password": "password",
+        "timezone": "US/Central"
     }
 ]
 

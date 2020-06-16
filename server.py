@@ -9,30 +9,14 @@ import strava_api
 import os
 import json
 import ast
+from datetime import datetime, timedelta
+from pytz import timezone
 
 # from crud import create_user
 
 app = Flask(__name__)
 app.secret_key = os.environ['APP_SECRET_KEY']
 app.jinja_env.undefined = StrictUndefined
-
-# @app.route('/')
-# def homepage():
-#     # if 'username' in session:
-#     #     return redirect(url_for('/dashboard'))
-#     return render_template('homepage.html')
-
-# @app.route('/login', methods=['GET', 'POST'])
-# def login():
-#     if request.method == 'POST':
-#         session['username'] = request.form['username']
-#         return redirect(url_for('index'))
-#     return '''
-#         <form method="post">
-#             <p><input type=text name=username>
-#             <p><input type=submit value=Login>
-#         </form>
-#     '''
 
 # @app.route('/logout')
 # def logout():
@@ -79,7 +63,7 @@ def login_user():
     elif user.password == password:
         session['user'] = email
         session['user_id'] = user.id
-        return redirect('/team-dashboard')
+        return redirect('/dashboard')
     
 
 @app.route("/create-user", methods=['POST'])
@@ -89,6 +73,7 @@ def create_user():
     password = request.form.get('password')
     password_confirm = request.form.get('password-confirm')
     phone = request.form.get('phone')
+    timezone = request.form.get('timezone')
     token = request.form.get('token')
     token = ast.literal_eval(token)
 
@@ -102,15 +87,16 @@ def create_user():
         user_data = strava_api.get_user_data()
 
         user = crud.create_user(user_data.firstname,
-                        user_data.lastname,
-                        phone,
-                        email,
-                        password,
-                        user_data.profile,
-                        user_data.id,
-                        token['access_token'],
-                        token['expires_at'],
-                        token['refresh_token'])
+                                user_data.lastname,
+                                phone,
+                                email,
+                                password,
+                                timezone,
+                                user_data.profile,
+                                user_data.id,
+                                token['access_token'],
+                                token['expires_at'],
+                                token['refresh_token'])
         print(user)
         session['user'] = user.email
         session['user_id'] = user.id
@@ -127,15 +113,6 @@ def create_activities():
 
         distance_in_miles = round(activity.distance.num *  0.000621371, 2)
 
-        time = activity.moving_time.seconds / 3600
-        hours = int(time)
-        minutes = int((time % 1) * 60)
-        seconds = round((((time % 1) * 60) % 1) * 60)
-        if hours < 1:
-            workout_time = f'{minutes}m {seconds}s'
-        else:
-            workout_time = f'{hours}h {minutes}m {seconds}s'
-
         avg_time = activity.moving_time.seconds / distance_in_miles
         avg_minutes = int(avg_time)
         avg_seconds = round((avg_time % 1) * 60)
@@ -150,14 +127,14 @@ def create_activities():
         else:
             effort = 0
 
-        print('-'*20)
         crud.create_activity(session['user_id'],
                             activity.id,
                             activity.start_date,
+                            activity.start_date_local,
                             activity.name,
                             activity.type,
                             distance_in_miles,
-                            workout_time,
+                            activity.moving_time.seconds,
                             average_speed,
                             activity.has_heartrate,
                             effort.real,
@@ -185,75 +162,25 @@ def create_team_mem():
 
     crud.create_team_member(session['user_id'], team.id, role)
 
-    return redirect('/team-dashboard')
+    return redirect('/dashboard')
 
-@app.route('/team-dashboard')
+@app.route('/dashboard')
 def display_team_dashboard():
 
     team = crud.get_team_by_user_id(session['user_id'])
     athletes = crud.get_athletes_by_team(team.id)
-    activities = crud.current_week_activities_by_team(team.id)
+    activities_dict = crud.get_current_week_activities(team.id)
 
-    return render_template('team_dashboard.html', team=team,
-                                                activities=activities,
-                                                athletes=athletes)
+    return render_template('team_dashboard.html', team=team, athletes=athletes, activities_dict=activities_dict)
 
-    # activities = crud.get_activities_by_user_id(session['user_id'])
+# @app.route('/load-team-activities')
+# def load_team_activities():
 
-        # token_url = "https://www.strava.com/oauth/token"
-        # activities_url = "https://www.strava.com/api/v3/athlete/activities"
+#     team = crud.get_team_by_user_id(session['user_id'])
+#     user = crud.get_user_by_email(session['user'])
+#     activities = crud.current_week_activities(team.id, user.timezone)
 
-        # payload = {
-        #     'client_id': 48415,
-        #     'client_secret': 'ed4c1b2fa87eb5d3120bbb2a8a9c0f39451ca920',
-        #     'refresh_token': user.strava_refresh_token,
-        #     'grant_type': "refresh_token",
-        #     'f': 'json'
-        # }
-
-        # print("Requesting Token...\n")
-        # res = requests.post(token_url, data=payload, verify=False)
-        # access_token = res.json()['access_token']
-        # print("Access Token = {}\n".format(access_token))
-
-        # header = {'Authorization': 'Bearer ' + access_token}
-        # param = {'per_page': 200, 'page': 1}
-        # my_dataset = requests.get(activities_url, headers=header, params=param).json()
-
-        # print(token)
-        # print("Access Token: ", token['access_token'])
-        # print("Refresh Token: ", token['refresh_token'])
-
-# # ... time passes ...
-# if time.time() > client.token_expires_at:
-#     refresh_response = client.refresh_access_token(client_id=STRAVA_CLIENT_ID, client_secret=STRAVA_CLIENT_SECRET,
-#         refresh_token=client.refresh_token)
-#     access_token = refresh_response['access_token']
-#     refresh_token = refresh_response['refresh_token']
-#     expires_at = refresh_response['expires_at']
-
-
-# token_url = "https://www.strava.com/oauth/token"
-# activites_url = "https://www.strava.com/api/v3/athlete/activities"
-
-# payload = {
-#     'client_id': 48415,
-#     'client_secret': 'ed4c1b2fa87eb5d3120bbb2a8a9c0f39451ca920',
-#     'refresh_token': user.strava_refresh_token,
-#     'grant_type': "refresh_token",
-#     'f': 'json'
-# }
-
-# print("Requesting Token...\n")
-# res = requests.post(token_url, data=payload, verify=False)
-# access_token = res.json()['access_token']
-# print("Access Token = {}\n".format(access_token))
-
-# header = {'Authorization': 'Bearer ' + access_token}
-# param = {'per_page': 200, 'page': 1}
-# my_dataset = requests.get(activites_url, headers=header, params=param).json()
-
-# print(my_dataset[0]["name"])
+#     return activities
 
 
 if __name__ == '__main__':
