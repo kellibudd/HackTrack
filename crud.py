@@ -121,7 +121,7 @@ def get_team_by_user_id(user_id):
 def get_athletes_by_team(team_id):
     """Return team members on a team."""
 
-    return Team_Member.query.options(db.joinedload('user')).filter(Team_Member.team_id == team_id, Team_Member.role == 'Athlete').all()
+    return Team_Member.query.filter(Team_Member.team_id == team_id, Team_Member.role == 'Athlete').all()
 
 # def get_activities_by_team(team_id):
 #     """Return a list of activities completed by users on a team."""
