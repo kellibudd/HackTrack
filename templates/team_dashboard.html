@@ -2,59 +2,92 @@
 {% block title %}Run App Home{% endblock %}
 
 {% block body %}
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<h3> Team Dashboard</h43>
-<p></p>
-<h4> {{ team.name }}</h4>
-<p></p>
+
+<nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark">
+  <a class="navbar-brand" href="#">HackTrack</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarNavDropdown">
+    <ul class="navbar-nav">
+      <li class="nav-item active">
+        <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+      </li>
+      <li class="nav-item active">
+        <a class="nav-link" href="#">Team Dashboard</a>
+      </li>
+      <li class="nav-item active">
+        <a class="nav-link" href="#">Messaging</a>
+      </li>
+      <li class="nav-item active">
+        <a class="nav-link" href="/logout">Logout</a>
+      </li>
+      {# <li class="nav-item dropdown" align="left">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <img src="https://dgalywyr863hv.cloudfront.net/pictures/athletes/21398175/14898555/2/large.jpg" width="50px" class="rounded-circle" align="left"/>
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+          <a class="dropdown-item" href="#">Settings</a>
+          <a class="dropdown-item" href="#">Log Out</a>
+        </div>
+      </li> #}
+    </ul>
+  </div>
+</nav>
+
+<br>
+<br>
+<br>
+<h4>{{ team.name }}</h4>
+<br>
 
 {# include actual dates  #}
 <table class="table table-hover">
-  <thead>
+  <thead >
     <tr>
-      <th></th>
-      <th id="athlete-name" scope="col" align="left">Athlete</th>
-      <th id="workout" scope="col" align="left">Workout</th>
-      <th id="monday" scope="col" align="center">Mon</th>
-      <th id="tuesday" scope="col" align="center">Tue</th>
-      <th id="wednesday" scope="col" align="center">Wed</th>
-      <th id="thursday" scope="col" align="center">Thu</th>
-      <th id="friday" scope="col" align="center">Fri</th>
-      <th id="saturday" scope="col" align="center">Sat</th>
-      <th id="sunday" scope="col" align="center">Sun</th>
-      <th id="total" scope="col" align="center">Total</th>
+      <th align="left"></th>
+      <th id="athlete-name" scope="col">Athlete</th>
+      <th id="workout" scope="col">Workout</th>
+      <th id="monday" scope="col">Mon</th>
+      <th id="tuesday" scope="col">Tue</th>
+      <th id="wednesday" scope="col">Wed</th>
+      <th id="thursday" scope="col">Thu</th>
+      <th id="friday" scope="col">Fri</th>
+      <th id="saturday" scope="col">Sat</th>
+      <th id="sunday" scope="col">Sun</th>
+      <th id="total" scope="col">Total</th>
     </tr>
   </thead>
   <tbody>
 
     {% for athlete in athletes %}
       <tr>
-        <td scope="row" rowspan="2"><img src="{{ athlete.user.prof_pic }}" width="50px" class="rounded-circle" align="left"/></td>
-        <th scope="row" rowspan="2" align="left">{{ athlete.user.firstname }} {{ athlete.user.lastname }}</th>
+        <td scope="row" rowspan="2"><img src="{{ athlete.prof_pic }}" width="50px" class="rounded-circle" align="left"/></td>
+        <th scope="row" rowspan="2" align="left">{{ athlete.firstname }} {{ athlete.lastname }}</th>
       {% for user in activities_dict %}
         {% if user == athlete.id %}
             <td id="workout-type" align="left">Run</td>
-            <td align="center">{{ activities_dict[user]['monday']['Run']['distance'] }}</td>
-            <td align="center">{{ activities_dict[user]['tuesday']['Run']['distance'] }}</td>
-            <td align="center">{{ activities_dict[user]['wednesday']['Run']['distance'] }}</td>
-            <td align="center">{{ activities_dict[user]['thursday']['Run']['distance'] }}</td>
-            <td align="center">{{ activities_dict[user]['friday']['Run']['distance'] }}</td>
-            <td align="center">{{ activities_dict[user]['saturday']['Run']['distance'] }}</td>
-            <td align="center">{{ activities_dict[user]['sunday']['Run']['distance'] }}</td>
-            <th align="center">{{ activities_dict[user]['total_mileage'] }} mi</th>
+            <td>{{ activities_dict[user]['monday']['Run']['distance'] }}</td>
+            <td>{{ activities_dict[user]['tuesday']['Run']['distance'] }}</td>
+            <td>{{ activities_dict[user]['wednesday']['Run']['distance'] }}</td>
+            <td>{{ activities_dict[user]['thursday']['Run']['distance'] }}</td>
+            <td>{{ activities_dict[user]['friday']['Run']['distance'] }}</td>
+            <td>{{ activities_dict[user]['saturday']['Run']['distance'] }}</td>
+            <td>{{ activities_dict[user]['sunday']['Run']['distance'] }}</td>
+            <td><b>{{ activities_dict[user]['total_mileage'] }} mi</b></td>
       </tr>
           {% if not "" == athlete.id %}
       <tr>
             <td id="workout-type" align="left">Cross Train</td>
-            <td align="center">{{ activities_dict[user]['monday']['Cross Train']['workout_time'] }}</td>
-            <td align="center">{{ activities_dict[user]['tuesday']['Cross Train']['workout_time'] }}</td>
-            <td align="center">{{ activities_dict[user]['wednesday']['Cross Train']['workout_time'] }}</td>
-            <td align="center">{{ activities_dict[user]['thursday']['Cross Train']['workout_time'] }}</td>
-            <td align="center">{{ activities_dict[user]['friday']['Cross Train']['workout_time'] }}</td>
-            <td align="center">{{ activities_dict[user]['saturday']['Cross Train']['workout_time'] }}</td>
-            <td align="center">{{ activities_dict[user]['sunday']['Cross Train']['workout_time'] }}</td>
-            <th align="center">{{ activities_dict[user]['total_xtrain_mins'] }}</th>
+            <td>{{ activities_dict[user]['monday']['Cross Train']['workout_time'] }}</td>
+            <td>{{ activities_dict[user]['tuesday']['Cross Train']['workout_time'] }}</td>
+            <td>{{ activities_dict[user]['wednesday']['Cross Train']['workout_time'] }}</td>
+            <td>{{ activities_dict[user]['thursday']['Cross Train']['workout_time'] }}</td>
+            <td>{{ activities_dict[user]['friday']['Cross Train']['workout_time'] }}</td>
+            <td>{{ activities_dict[user]['saturday']['Cross Train']['workout_time'] }}</td>
+            <td>{{ activities_dict[user]['sunday']['Cross Train']['workout_time'] }}</td>
+            <td><b>{{ activities_dict[user]['total_xtrain_mins'] }}</b></td>
       </tr>
           {% endif %}
         {% endif %}
