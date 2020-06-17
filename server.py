@@ -48,7 +48,6 @@ def login_user():
     password = request.form.get('password')
 
     user = crud.get_user_by_email(email)
-    print(user)
 
     if user == None:
         flash('Account does not exist. Please register as a new user.')
@@ -96,13 +95,12 @@ def create_user():
                                 token['access_token'],
                                 token['expires_at'],
                                 token['refresh_token'])
-        print(user)
         session['user'] = user.email
         session['user_id'] = user.id
         session['timezone'] = user.timezone
 
         return redirect('/create-activities')
-        
+
 
 @app.route("/create-activities")
 def create_activities():
@@ -164,6 +162,18 @@ def create_team_mem():
 
     return redirect('/dashboard')
 
+# @app.route("/update-activities")
+# def get_recent_activities():
+
+#     team = crud.get_team_by_user_id(session['user_id'])
+#     crud.update_access_tokens(team.id)
+
+#     athletes = crud.get_athlete_data_by_team(team.id)
+
+#     for athlete in athletes:
+        
+        
+
 @app.route('/dashboard')
 def display_team_dashboard():
 
@@ -172,6 +182,8 @@ def display_team_dashboard():
     activities_dict = crud.get_current_week_activities(team.id, session['timezone'])
 
     return render_template('team_dashboard.html', team=team, athletes=athletes, activities_dict=activities_dict)
+
+
 
 # @app.route('/load-team-activities')
 # def load_team_activities():
