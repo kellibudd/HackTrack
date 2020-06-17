@@ -62,6 +62,18 @@ def login_user():
         session['user_id'] = user.id
         session['timezone'] = user.timezone
         return redirect('/dashboard')
+
+@app.route('/logout')
+def logout_user():
+    
+    error = None
+
+    if "user" in session:
+        user = session['user']
+
+    session.pop("user", None)
+
+    return redirect('/')
     
 
 @app.route("/create-user", methods=['POST'])
@@ -161,38 +173,17 @@ def create_team_mem():
     team_mem = crud.create_team_member(session['user_id'], team.id, role)
 
     return redirect('/dashboard')
-
-# @app.route("/update-activities")
-# def get_recent_activities():
-
-#     team = crud.get_team_by_user_id(session['user_id'])
-#     crud.update_access_tokens(team.id)
-
-#     athletes = crud.get_athlete_data_by_team(team.id)
-
-#     for athlete in athletes:
-        
-        
+    
 
 @app.route('/dashboard')
 def display_team_dashboard():
 
     team = crud.get_team_by_user_id(session['user_id'])
-    athletes = crud.get_athletes_by_team(team.id)
+    athletes = crud.get_all_athlete_data_by_team(team.id)
     activities_dict = crud.get_current_week_activities(team.id, session['timezone'])
 
     return render_template('team_dashboard.html', team=team, athletes=athletes, activities_dict=activities_dict)
 
-
-
-# @app.route('/load-team-activities')
-# def load_team_activities():
-
-#     team = crud.get_team_by_user_id(session['user_id'])
-#     user = crud.get_user_by_email(session['user'])
-#     activities = crud.current_week_activities(team.id, user.timezone)
-
-#     return activities
 
 
 if __name__ == '__main__':
