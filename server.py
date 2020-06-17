@@ -61,6 +61,7 @@ def login_user():
     elif user.password == password:
         session['user'] = email
         session['user_id'] = user.id
+        session['timezone'] = user.timezone
         return redirect('/dashboard')
     
 
@@ -98,6 +99,7 @@ def create_user():
         print(user)
         session['user'] = user.email
         session['user_id'] = user.id
+        session['timezone'] = user.timezone
 
         return redirect('/create-activities')
         
@@ -167,7 +169,7 @@ def display_team_dashboard():
 
     team = crud.get_team_by_user_id(session['user_id'])
     athletes = crud.get_athletes_by_team(team.id)
-    activities_dict = crud.get_current_week_activities(team.id)
+    activities_dict = crud.get_current_week_activities(team.id, session['timezone'])
 
     return render_template('team_dashboard.html', team=team, athletes=athletes, activities_dict=activities_dict)
 
