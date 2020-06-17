@@ -7,14 +7,14 @@
         "team_color": "#691c33"
     },
     {
-        "name": "Creighton University Cross Country",
+        "name": "B@d Bitches of the North",
         "coach_id": 6,
-        "logo": "https://upload.wikimedia.org/wikipedia/en/thumb/6/6f/Creighton_Bluejays_logo.svg/1200px-Creighton_Bluejays_logo.svg.png",
-        "team_banner_img": "https://www.creighton.edu/fileadmin/user/UCOM/social-papers/desktop/18-440_CreightonDigital_Desktop_1.jpg",
+        "logo": "",
+        "team_banner_img": null,
         "team_color": "#005ca9"
     },
     {
-        "name": "Hackbright Elite",
+        "name": "HackTrack Elite",
         "coach_id": 7,
         "logo": "https://hackbrightacademy.com/content/uploads/2017/03/the-hackbright-woman.png",
         "team_banner_img": "https://hackbrightacademy.com/content/uploads/2020/04/HB_new_logo-2@2x_OLD_LG.png",
