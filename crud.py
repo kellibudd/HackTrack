@@ -3,6 +3,7 @@
 from model import connect_to_db, db, User, Activity, Team, Team_Member, Comment
 from datetime import datetime, timedelta
 from pytz import timezone
+import strava_api
 
 def create_user(firstname, lastname, phone, email, password, prof_pic, timezone, strava_id, 
                 strava_access_token, strava_access_token_expir, strava_refresh_token):
@@ -52,6 +53,38 @@ def create_activity(user_id, strava_activity_id, date_utc, date_local,
 
     return activity
 
+# def create_activity_with_strava_data(activity):
+
+#         distance_in_miles = round(activity['distance'] *  0.000621371, 2)
+
+#         avg_time = activity['moving_time'] / distance_in_miles
+#         avg_minutes = int(avg_time)
+#         avg_seconds = round((avg_time % 1) * 60)
+#         average_speed = f'{avg_minutes}:{avg_seconds}/mile'
+
+#         if activity.has_heartrate:
+#             effort_source = 'heartrate'
+#         else:
+#             effort_source = 'perceived exertion'
+#         if activity.suffer_score:
+#             effort = activity.suffer_score
+#         else:
+#             effort = 0
+
+#         crud.create_activity(session['user_id'],
+#                             activity.id,
+#                             activity.start_date,
+#                             activity.start_date_local,
+#                             activity.name,
+#                             activity.type,
+#                             distance_in_miles,
+#                             activity.moving_time.seconds,
+#                             average_speed,
+#                             activity.has_heartrate,
+#                             effort.real,
+#                             effort_source,
+#                             activity.total_elevation_gain.num)
+
 def create_team(name, coach_id, logo, team_banner_img, team_color):
     """Create and return a team."""
     
@@ -91,6 +124,11 @@ def create_comment(activity_id, author_id, date_utc, body):
 
     return comment
 
+def get_all_users():
+    """Return all users."""
+
+    return User.query.all()
+
 def get_user_by_email(email):
     """Return a user by email."""
 
@@ -118,10 +156,61 @@ def get_team_by_user_id(user_id):
 
     return Team.query.filter(Team.id == team_mem.team_id).first()
 
-def get_athletes_by_team(team_id):
-    """Return team members on a team."""
+def get_athlete_ids_by_team(team_id):
+    """Return all user ids of members on a team."""
 
-    return Team_Member.query.filter(Team_Member.team_id == team_id, Team_Member.role == 'Athlete').all()
+    athletes = Team_Member.query.filter(Team_Member.team_id == team_id, Team_Member.role == 'Athlete').all()
+
+    athlete_ids = []
+
+    for athlete in athletes:
+        athlete_ids.append(athlete.user_id)
+
+    return athlete_ids
+
+def get_all_athlete_data_by_team(team_id):
+    """Return user profile data of members on a team."""
+
+    athletes = get_athlete_ids_by_team(team_id)
+
+    return User.query.filter(User.id.in_(athletes)).all()
+
+def update_access_tokens(team_id):
+    """Update access tokens for all users on a given team"""
+
+    athletes = get_all_athlete_data_by_team(team_id)
+
+    for athlete in athletes:
+        token = strava_api.get_new_token(athlete.strava_refresh_token)
+        athlete.strava_access_token = token['access_token']
+        db.session.commit()
+
+def get_strava_activity_ids(team_id):
+
+    athlete_ids = get_athlete_ids_by_team(team_id)
+
+    activities = Activity.query.filter(Activity.user_id.in_(athlete_ids)).all()
+
+    strava_activity_ids = []
+
+    for activity in activities:
+        strava_activity_ids.append(activity.strava_activity_id)
+
+    return strava_activity_ids
+
+
+# def update_db_activities(team_id):
+
+#     athletes = get_all_athlete_data_by_team(team_id)
+
+#     for athlete in athletes:
+#         access_token = athlete.strava_access_token
+#         header = {'Authorization': 'Bearer ' + access_token}                                                                      
+#         activities_data = requests.get(activities_url, headers=header).json()
+
+#         for activity in activities_data:
+#             if activity.id not in get_strava_activity_ids(team_id):
+
 
 # def get_activities_by_team(team_id):
 #     """Return a list of activities completed by users on a team."""
@@ -179,22 +268,15 @@ def get_current_week_activities(team_id, user_timezone):
     monday = datetime(year=monday.year, month=monday.month,
                     day=monday.day, hour=0, minute=0, second=0)
     print("monday is", monday)
-    athletes = get_athletes_by_team(team_id)
-
-    athlete_ids = []
-
-    curr_week_activities = {}
-
-    for athlete in athletes:
-        athlete_ids.append(athlete.id)
+    athlete_ids = get_athlete_ids_by_team(team_id)
 
     activities = Activity.query.filter(Activity.date_local >= monday, Activity.date_local <= today, Activity.user_id.in_(athlete_ids)).all()
 
     weekdays = {0: 'monday', 1: 'tuesday', 2: 'wednesday', 3: 'thursday', 4: 'friday', 5: 'saturday', 6: 'sunday'}
 
 
-    for ath_id in athlete_ids:
-        curr_week_activities[ath_id] = {'monday': {'Run':{'distance': '-'}, 'Cross Train':{'workout_time': '-'}},
+    for athlete_id in athlete_ids:
+        curr_week_activities[athlete_id] = {'monday': {'Run':{'distance': '-'}, 'Cross Train':{'workout_time': '-'}},
                                         'tuesday': {'Run':{'distance': '-'}, 'Cross Train':{'workout_time': '-'}},
                                         'wednesday': {'Run':{'distance': '-'}, 'Cross Train':{'workout_time': '-'}},
                                         'thursday': {'Run':{'distance': '-'}, 'Cross Train':{'workout_time': '-'}},
@@ -231,11 +313,11 @@ def get_current_week_activities(team_id, user_timezone):
                                                                                                             "effort" : activity.effort,
                                                                                                             "effort_source" : activity.effort_source,
                                                                                                             "elev_gain" : activity.elev_gain}
-    for ath_id in athlete_ids:
-        print("athlete id: ", ath_id, curr_week_activities[ath_id]['total_xtrain_mins'])
-        print("athlete id: ", ath_id, type(curr_week_activities[ath_id]['total_xtrain_mins']))
-        curr_week_activities[ath_id]['total_xtrain_mins'] = convert_time_format(curr_week_activities[ath_id]['total_xtrain_mins'])
-        print("athlete id: ", ath_id, curr_week_activities[ath_id]['total_xtrain_mins'])
+    for athlete_id in athlete_ids:
+        if curr_week_activities[athlete_id]['total_xtrain_mins'] == 0:
+            curr_week_activities[athlete_id]['total_xtrain_mins'] = "-"
+        else:
+            curr_week_activities[athlete_id]['total_xtrain_mins'] = convert_time_format(curr_week_activities[athlete_id]['total_xtrain_mins'])
 
     return curr_week_activities
 
