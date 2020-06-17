@@ -47,43 +47,7 @@ def seed_activities():
 
     for activity in activity_data:
 
-        user = User.query.filter(User.strava_id==activity['athlete']['id']).first()
-        user_id = user.id
-        strava_activity_id = activity['id']
-        date_utc = activity['start_date']
-        date_local = activity['start_date_local']
-        desc = activity['name']
-        exercise_type = activity['type']
-        distance = round(activity['distance'] * 0.000621371, 2)
-
-        workout_time = activity['moving_time']
-
-        if distance < 0:
-            avg_time = (activity['moving_time'] / 60) / distance
-            avg_minutes = int(avg_time)
-            avg_seconds = round((avg_time % 1) * 60)
-            average_speed = f'{avg_minutes}:{avg_seconds}/mile'
-        else:
-            average_speed = 'N/A'
-
-        has_heartrate = activity['has_heartrate']
-
-        if activity['has_heartrate']:
-            effort_source = 'heartrate'
-        else:
-            effort_source = 'perceived exertion'
-
-        if not 'suffer_score' in activity:
-            effort = 0
-        else:
-            effort = activity['suffer_score']
-
-        elev_gain = activity['total_elevation_gain']
-
-        crud.create_activity(user_id, strava_activity_id, date_utc, date_local, 
-                    desc, exercise_type, distance, workout_time,
-                    average_speed, has_heartrate, effort, 
-                    effort_source, elev_gain)
+        crud.create_activity_from_strava_data(activity)
 
 def seed_teams():
 
