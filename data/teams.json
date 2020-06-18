@@ -4,27 +4,31 @@
         "coach_id": 5,
         "logo": "https://dbukjj6eu5tsf.cloudfront.net/gophersports.com/images/logo.svg",
         "team_banner_img": "https://gophersports.com/images/2018/9/27/facility_track_980.jpg",
-        "team_color": "#691c33"
+        "team_color": "#691c33",
+        "activities_last_updated": "datetime(2020, 6, 17, 23, 33, 23)"
     },
     {
-        "name": "B@d Bitches of the North",
+        "name": "River Road Racing",
         "coach_id": 6,
         "logo": "",
         "team_banner_img": null,
-        "team_color": "#005ca9"
+        "team_color": "#005ca9",
+        "activities_last_updated": "datetime(2020, 6, 17, 23, 33, 23)"
     },
     {
         "name": "HackTrack Elite",
         "coach_id": 7,
         "logo": "https://hackbrightacademy.com/content/uploads/2017/03/the-hackbright-woman.png",
         "team_banner_img": "https://hackbrightacademy.com/content/uploads/2020/04/HB_new_logo-2@2x_OLD_LG.png",
-        "team_color": "#e40912"
+        "team_color": "#e40912",
+        "activities_last_updated": "datetime(2020, 6, 17, 23, 33, 23)"
     },
     {
-        "name": "Brave Like Gabe",
+        "name": "Brave Like Gabe Running Club",
         "coach_id": 8,
         "logo": "https://static1.squarespace.com/static/5a6a24d7f43b55f1538ce5c7/t/5ada3395575d1f2eb513af93/1588341076966/?format=1500w",
         "team_banner_img": "https://images.squarespace-cdn.com/content/v1/5a6a24d7f43b55f1538ce5c7/1519944719030-KLIL61PQ0GO6JEU9E02G/ke17ZwdGBToddI8pDm48kNYQ22vfZHiG7FBqIfFDafpZw-zPPgdn4jUwVcJE1ZvWhcwhEtWJXoshNdA9f1qD7WT60LcluGrsDtzPCYop9hPErmuEQdffthorF0CoZeTwhTJlpCzvpUn8PmXV3hhEww/Home-Quote_Hope-01.png?format=300w",
-        "team_color": "#0092ff"
+        "team_color": "#0092ff",
+        "activities_last_updated": "datetime(2020, 6, 17, 23, 33, 23)"
     }
 ]
