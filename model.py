@@ -42,6 +42,7 @@ class Team(db.Model):
     logo = db.Column(db.String)
     team_banner_img = db.Column(db.String)
     team_color = db.Column(db.String)
+    activities_last_updated = db.Column(db.DateTime)
 
     def __repr__(self):
         return f'<Team id={self.id} name={self.name}>'
@@ -73,7 +74,7 @@ class Activity(db.Model):
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    strava_activity_id = db.Column(db.String, nullable=False)
+    strava_activity_id = db.Column(db.String, nullable=False, unique=True)
     date_utc = db.Column(db.DateTime, nullable=False)
     date_local = db.Column(db.DateTime, nullable=False)
     desc = db.Column(db.String)
