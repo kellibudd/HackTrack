@@ -120,7 +120,7 @@ def create_user():
 @app.route("/create-activities")
 def create_activities():
 
-    athlete = crud.get_user_by_email(email)
+    athlete = crud.get_user_by_email(session['user'])
 
     activities = crud.get_strava_activities(athlete)
 
