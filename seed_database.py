@@ -47,7 +47,7 @@ def seed_activities():
 
     for activity in activity_data:
 
-        crud.create_activity_from_strava_data(activity)
+        crud.create_activity(activity)
 
 def seed_teams():
 
