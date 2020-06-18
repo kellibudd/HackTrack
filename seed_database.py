@@ -92,9 +92,9 @@ def seed_comments():
         crud.create_comment(activity_id, author_id, date_utc, body)
 
 seed_users()
-# seed_activities()
+seed_activities()
 seed_teams()
 seed_team_members()
-# seed_comments()
+seed_comments()
 
 
