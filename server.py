@@ -30,6 +30,7 @@ def homepage():
     url = strava_api.request_user_authorization(url_for('.register_user', _external=True))
 
     return render_template('homepage.html', authorize_url=url)
+    
 
 @app.route('/register')
 def register_user():
@@ -39,6 +40,7 @@ def register_user():
     token = strava_api.get_token(code)
 
     return render_template('register_user.html', token=token)
+
 
 @app.route('/login', methods=['POST'])
 def login_user():
@@ -62,6 +64,7 @@ def login_user():
         session['user_id'] = user.id
         session['timezone'] = user.timezone
         return redirect('/dashboard')
+
 
 @app.route('/logout')
 def logout_user():
@@ -94,7 +97,7 @@ def create_user():
         return redirect('/')
 
     else:
-        user_data = strava_api.get_user_data()
+        user_data = strava_api.get_strava_user_data()
 
         user = crud.create_user(user_data.firstname,
                                 user_data.lastname,
@@ -117,41 +120,15 @@ def create_user():
 @app.route("/create-activities")
 def create_activities():
 
-    activity_data = strava_api.get_activity_data()
+    athlete = crud.get_user_by_email(email)
 
-    for activity in activity_data:
+    activities = crud.get_strava_activities(athlete)
 
-        distance_in_miles = round(activity.distance.num *  0.000621371, 2)
-
-        avg_time = activity.moving_time.seconds / distance_in_miles
-        avg_minutes = int(avg_time)
-        avg_seconds = round((avg_time % 1) * 60)
-        average_speed = f'{avg_minutes}:{avg_seconds}/mile'
-
-        if activity.has_heartrate:
-            effort_source = 'heartrate'
-        else:
-            effort_source = 'perceived exertion'
-        if activity.suffer_score:
-            effort = activity.suffer_score
-        else:
-            effort = 0
-
-        crud.create_activity(session['user_id'],
-                            activity.id,
-                            activity.start_date,
-                            activity.start_date_local,
-                            activity.name,
-                            activity.type,
-                            distance_in_miles,
-                            activity.moving_time.seconds,
-                            average_speed,
-                            activity.has_heartrate,
-                            effort.real,
-                            effort_source,
-                            activity.total_elevation_gain.num)
+    for activity in activities:
+        crud.create_activity(activity)
 
     return redirect('/join-team')
+
 
 @app.route('/join-team')
 def get_teams():
@@ -160,17 +137,15 @@ def get_teams():
 
     return render_template('register_team.html', teams=teams)
 
+
 @app.route('/create-team-mem', methods=['POST'])
 def create_team_mem():
 
-    team = request.form.get('team')
-    team = crud.get_team_by_id(int(team))
-
-    #convert team from string to object
+    team_id = int(request.form.get('team'))
 
     role = request.form.get('role')
 
-    team_mem = crud.create_team_member(session['user_id'], team.id, role)
+    team_mem = crud.create_team_member(session['user_id'], team_id, role)
 
     return redirect('/dashboard')
     
@@ -183,7 +158,6 @@ def display_team_dashboard():
     activities_dict = crud.get_current_week_activities(team.id, session['timezone'])
 
     return render_template('team_dashboard.html', team=team, athletes=athletes, activities_dict=activities_dict)
-
 
 
 if __name__ == '__main__':
