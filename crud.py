@@ -213,16 +213,24 @@ def get_strava_activities(athlete):
     return requests.get(activities_url, headers=header).json()
 
 
-def update_team_activities(team_id):
+def update_team_activities(team_id, user_timezone):
 
     athletes = get_new_access_tokens_for_team(team_id)
 
-    for athlete in athletes:
-        get_strava_activities(athlete)
+    activities_data = []
 
-        for activity in activities_data:
-            if not activity['id'] in get_strava_activities_in_db(team_id):
-                create_activity(activity)
+    for athlete in athletes:
+        activity = get_strava_activities(athlete)
+        activities_data.append(activity)
+
+    for activity in activities_data[0]:
+        if not str(activity['id']) in get_strava_activities_in_db(team_id):
+            create_activity(activity)
+
+    team = get_team_by_id(team_id)
+    team.activities_last_updated = datetime.utcnow().astimezone(timezone(user_timezone))
+    db.session.commit()
+
 
 
 # def get_activities_by_team(team_id):
