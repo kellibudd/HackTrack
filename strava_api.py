@@ -25,7 +25,7 @@ def get_token(code):
     return client.exchange_code_for_token(client_id=STRAVA_CLIENT_ID,
                                             client_secret=STRAVA_CLIENT_SECRET,
                                             code=code)
-def get_user_data():
+def get_strava_user_data():
 
     return client.get_athlete()
 
