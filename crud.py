@@ -28,103 +28,52 @@ def create_user(firstname, lastname, phone, email, password, prof_pic, timezone,
 
     return user
 
-def create_activity(user_id, strava_activity_id, date_utc, date_local,
-                    desc, exercise_type, distance, workout_time,
-                    average_speed, has_heartrate, effort, 
-                    effort_source, elev_gain):
+
+def create_activity(strava_activity):
     """Create and return an activity."""
 
-    activity = Activity(user_id=user_id,
-                strava_activity_id=strava_activity_id,
-                date_utc=date_utc,
-                date_local=date_local,
-                desc=desc,
-                exercise_type=exercise_type,
-                distance=distance,
-                workout_time=workout_time,
-                average_speed=average_speed,
-                has_heartrate=has_heartrate,
-                effort=effort,
-                effort_source=effort_source,
-                elev_gain=elev_gain
-                )
+    user = User.query.filter(User.strava_id==strava_activity['athlete']['id']).first()
 
-    db.session.add(activity)
-    db.session.commit()
+    distance = round(strava_activity['distance'] * 0.000621371, 2)
 
-    return activity
-
-def create_activity_from_strava_data(activity):
-
-    user = User.query.filter(User.strava_id==activity['athlete']['id']).first()
-    user_id = user.id
-    strava_activity_id = activity['id']
-    date_utc = activity['start_date']
-    date_local = activity['start_date_local']
-    desc = activity['name']
-    exercise_type = activity['type']
-    distance = round(activity['distance'] * 0.000621371, 2)
-
-    workout_time = activity['moving_time']
-
-    if distance < 0:
-        avg_time = (activity['moving_time'] / 60) / distance
+    if distance > 0:
+        avg_time = (strava_activity['moving_time'] / 60) / distance
         avg_minutes = int(avg_time)
         avg_seconds = round((avg_time % 1) * 60)
         average_speed = f'{avg_minutes}:{avg_seconds}/mile'
     else:
         average_speed = 'N/A'
 
-    has_heartrate = activity['has_heartrate']
+    if not 'suffer_score' in strava_activity:
+        effort = 0
+    else:
+        effort = strava_activity['suffer_score']
 
-    if activity['has_heartrate']:
+    if strava_activity['has_heartrate']:
         effort_source = 'heartrate'
     else:
         effort_source = 'perceived exertion'
 
-    if not 'suffer_score' in activity:
-        effort = 0
-    else:
-        effort = activity['suffer_score']
+    new_activity = Activity(user_id=user.id,
+                            strava_activity_id=strava_activity['id'],
+                            date_utc=strava_activity['start_date'],
+                            date_local=strava_activity['start_date_local'],
+                            desc=strava_activity['name'],
+                            exercise_type=strava_activity['type'],
+                            distance=distance,
+                            workout_time=strava_activity['moving_time'],
+                            average_speed=average_speed,
+                            has_heartrate=strava_activity['has_heartrate'],
+                            effort=effort,
+                            effort_source=effort_source,
+                            elev_gain=strava_activity['total_elevation_gain']
+                            )
 
-    elev_gain = activity['total_elevation_gain']
+    db.session.add(new_activity)
+    db.session.commit()
 
-    create_activity(user_id, strava_activity_id, date_utc, date_local, 
-                desc, exercise_type, distance, workout_time,
-                average_speed, has_heartrate, effort, 
-                effort_source, elev_gain)
+    return new_activity
 
-# def create_activity_with_strava_data(activity):
-
-#         distance_in_miles = round(activity['distance'] *  0.000621371, 2)
-
-#         avg_time = activity['moving_time'] / distance_in_miles
-#         avg_minutes = int(avg_time)
-#         avg_seconds = round((avg_time % 1) * 60)
-#         average_speed = f'{avg_minutes}:{avg_seconds}/mile'
-
-#         if activity.has_heartrate:
-#             effort_source = 'heartrate'
-#         else:
-#             effort_source = 'perceived exertion'
-#         if activity.suffer_score:
-#             effort = activity.suffer_score
-#         else:
-#             effort = 0
-
-#         crud.create_activity(session['user_id'],
-#                             activity.id,
-#                             activity.start_date,
-#                             activity.start_date_local,
-#                             activity.name,
-#                             activity.type,
-#                             distance_in_miles,
-#                             activity.moving_time.seconds,
-#                             average_speed,
-#                             activity.has_heartrate,
-#                             effort.real,
-#                             effort_source,
-#                             activity.total_elevation_gain.num)
 
 def create_team(name, coach_id, logo, team_banner_img, team_color):
     """Create and return a team."""
@@ -140,6 +89,7 @@ def create_team(name, coach_id, logo, team_banner_img, team_color):
 
     return team
 
+
 def create_team_member(user_id, team_id, role):
     """Create and return a team member."""
     
@@ -151,6 +101,7 @@ def create_team_member(user_id, team_id, role):
     db.session.commit()
 
     return team_member
+
 
 def create_comment(activity_id, author_id, date_utc, body):
     """Create and return a comment."""
@@ -165,6 +116,7 @@ def create_comment(activity_id, author_id, date_utc, body):
 
     return comment
 
+
 def get_all_users():
     """Return all users."""
 
@@ -175,20 +127,24 @@ def get_user_by_email(email):
 
     return User.query.filter(User.email == email).first()
 
+
 def get_activities_by_user_id(user_id):
     """Return a user by email."""
 
     return Activity.query.filter(Activity.user_id == user_id).all()
+
 
 def get_teams():
     """Return a list of teams."""
 
     return Team.query.all()
 
+
 def get_team_by_id(id):
     """Return a team."""
 
     return Team.query.get(id)
+
 
 def get_team_by_user_id(user_id):
     """Return team associated with a user."""
@@ -196,6 +152,7 @@ def get_team_by_user_id(user_id):
     team_mem = Team_Member.query.filter(Team_Member.user_id == user_id).first()
 
     return Team.query.filter(Team.id == team_mem.team_id).first()
+
 
 def get_athlete_ids_by_team(team_id):
     """Return all user ids of members on a team."""
@@ -209,6 +166,7 @@ def get_athlete_ids_by_team(team_id):
 
     return athlete_ids
 
+
 def get_all_athlete_data_by_team(team_id):
     """Return user profile data of members on a team."""
 
@@ -216,7 +174,8 @@ def get_all_athlete_data_by_team(team_id):
 
     return User.query.filter(User.id.in_(athletes)).all()
 
-def update_access_tokens(team_id):
+
+def get_new_access_tokens_for_team(team_id):
     """Update access tokens for all users on a given team"""
 
     athletes = get_all_athlete_data_by_team(team_id)
@@ -230,7 +189,8 @@ def update_access_tokens(team_id):
 
     return updated_athlete_data
 
-def get_strava_activity_ids(team_id):
+
+def get_strava_activities_in_db(team_id):
 
     athlete_ids = get_athlete_ids_by_team(team_id)
 
@@ -244,23 +204,25 @@ def get_strava_activity_ids(team_id):
     return strava_activity_ids
 
 
-def update_db_activities(team_id):
+def get_strava_activities(athlete):
 
-    athletes = update_access_tokens(team_id)
+    access_token = athlete.strava_access_token
+    header = {'Authorization': 'Bearer ' + access_token}
+    activities_url = 'https://www.strava.com/api/v3/athlete/activities' 
+
+    return requests.get(activities_url, headers=header).json()
+
+
+def update_team_activities(team_id):
+
+    athletes = get_new_access_tokens_for_team(team_id)
 
     for athlete in athletes:
-        access_token = athlete.strava_access_token
-        header = {'Authorization': 'Bearer ' + access_token}
-        activities_url = 'https://www.strava.com/api/v3/athlete/activities'                                                                      
-        activities_data = requests.get(activities_url, headers=header).json()
-        print(athlete.firstname)
-        print('*'*20)
-        print(activities_data)
-        print(type(activities_data))
+        get_strava_activities(athlete)
 
         for activity in activities_data:
-            if not activity['id'] in get_strava_activity_ids(team_id):
-                create_activity_from_strava_data(activity)
+            if not activity['id'] in get_strava_activities_in_db(team_id):
+                create_activity(activity)
 
 
 # def get_activities_by_team(team_id):
