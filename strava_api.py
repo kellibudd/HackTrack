@@ -18,7 +18,8 @@ def request_user_authorization(redirect_uri):
 
     return client.authorization_url(client_id=STRAVA_CLIENT_ID,
                                     redirect_uri=redirect_uri,
-                                    approval_prompt='auto')
+                                    approval_prompt='auto',
+                                    scope='activity:read_all')
 
 def get_token(code):
 
