@@ -30,7 +30,7 @@ def homepage():
     url = strava_api.request_user_authorization(url_for('.register_user', _external=True))
 
     return render_template('homepage.html', authorize_url=url)
-    
+
 
 @app.route('/register')
 def register_user():
@@ -63,7 +63,7 @@ def login_user():
         session['user'] = email
         session['user_id'] = user.id
         session['timezone'] = user.timezone
-        return redirect('/dashboard')
+        return redirect('/create-activities')
 
 
 @app.route('/logout')
@@ -114,20 +114,7 @@ def create_user():
         session['user_id'] = user.id
         session['timezone'] = user.timezone
 
-        return redirect('/create-activities')
-
-
-@app.route("/create-activities")
-def create_activities():
-
-    athlete = crud.get_user_by_email(session['user'])
-
-    activities = crud.get_strava_activities(athlete)
-
-    for activity in activities:
-        crud.create_activity(activity)
-
-    return redirect('/join-team')
+        return redirect('/join-team')
 
 
 @app.route('/join-team')
@@ -139,7 +126,7 @@ def get_teams():
 
 
 @app.route('/create-team-mem', methods=['POST'])
-def create_team_mem():
+def create_new_team_mem():
 
     team_id = int(request.form.get('team'))
 
@@ -147,15 +134,35 @@ def create_team_mem():
 
     team_mem = crud.create_team_member(session['user_id'], team_id, role)
 
-    return redirect('/dashboard')
-    
+    return redirect('/create-activities')
+
+
+@app.route("/create-activities")
+def create_activities():
+
+    if crud.get_activities_by_user_id(session['user_id']) == None:
+
+        athlete = crud.get_user_by_email(session['user'])
+
+        activities = crud.get_strava_activities(athlete)
+
+        for activity in activities:
+            crud.create_activity(activity)
+
+    team = crud.get_team_by_user_id(session['user_id'])
+
+    if datetime.utcnow() - team.activities_last_updated > timedelta(0, 10800):
+        print("Updating team activity...")
+        crud.update_team_activities(team.id)
+
+    return redirect('/dashboard')    
 
 @app.route('/dashboard')
 def display_team_dashboard():
 
     team = crud.get_team_by_user_id(session['user_id'])
     athletes = crud.get_all_athlete_data_by_team(team.id)
-    activities_dict = crud.get_current_week_activities(team.id, session['timezone'])
+    activities_dict = crud.get_current_week_activities(team.id)
 
     return render_template('team_dashboard.html', team=team, athletes=athletes, activities_dict=activities_dict)
 
