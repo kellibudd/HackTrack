@@ -61,8 +61,9 @@ def seed_teams():
         logo = team['logo']
         team_banner_img = team['team_banner_img']
         team_color = team['team_color']
+        activities_last_updated = team['activities_last_updated']
 
-        crud.create_team(name, coach_id, logo, team_banner_img, team_color)
+        crud.create_team(name, coach_id, logo, team_banner_img, team_color, activities_last_updated)
 
 def seed_team_members():
 
