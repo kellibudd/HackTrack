@@ -75,14 +75,15 @@ def create_activity(strava_activity):
     return new_activity
 
 
-def create_team(name, coach_id, logo, team_banner_img, team_color):
+def create_team(name, coach_id, logo, team_banner_img, team_color, activities_last_updated):
     """Create and return a team."""
     
     team = Team(name=name, 
                 coach_id=coach_id,
                 logo=logo,
                 team_banner_img=team_banner_img,
-                team_color=team_color)
+                team_color=team_color,
+                activities_last_updated=activities_last_updated)
 
     db.session.add(team)
     db.session.commit()
@@ -213,7 +214,7 @@ def get_strava_activities(athlete):
     return requests.get(activities_url, headers=header).json()
 
 
-def update_team_activities(team_id, user_timezone):
+def update_team_activities(team_id):
 
     athletes = get_new_access_tokens_for_team(team_id)
 
@@ -228,9 +229,8 @@ def update_team_activities(team_id, user_timezone):
             create_activity(activity)
 
     team = get_team_by_id(team_id)
-    team.activities_last_updated = datetime.utcnow().astimezone(timezone(user_timezone))
+    team.activities_last_updated = datetime.utcnow()
     db.session.commit()
-
 
 
 # def get_activities_by_team(team_id):
@@ -278,10 +278,10 @@ def convert_time_format(time):
     else:
         return f'{hours}:{minutes}:0{seconds}'
 
-def get_current_week_activities(team_id, user_timezone):
+def get_current_week_activities(team_id):
     """Return a list of activities completed by users on a team during the current week."""
 
-    today = datetime.utcnow().astimezone(timezone(user_timezone))
+    today = datetime.utcnow()
     today = datetime(year=today.year, month=today.month,
                     day=today.day, hour=23, minute= 59, second=59)
     print("today is", today)
@@ -291,7 +291,7 @@ def get_current_week_activities(team_id, user_timezone):
     print("monday is", monday)
     athlete_ids = get_athlete_ids_by_team(team_id)
 
-    activities = Activity.query.filter(Activity.date_local >= monday, Activity.date_local <= today, Activity.user_id.in_(athlete_ids)).all()
+    activities = Activity.query.filter(Activity.date_utc >= monday, Activity.date_utc <= today, Activity.user_id.in_(athlete_ids)).all()
 
     weekdays = {0: 'monday', 1: 'tuesday', 2: 'wednesday', 3: 'thursday', 4: 'friday', 5: 'saturday', 6: 'sunday'}
 
@@ -326,7 +326,7 @@ def get_current_week_activities(team_id, user_timezone):
 
             curr_week_activities[activity.user_id]['total_xtrain_mins'] += activity.workout_time
 
-            curr_week_activities[activity.user_id][weekdays[activity.date_utc.weekday()]]['Cross Train'] = {"date_utc" : activity.date_local.strftime('%Y-%m-%d'),
+            curr_week_activities[activity.user_id][weekdays[activity.date_local.weekday()]]['Cross Train'] = {"date_utc" : activity.date_local.strftime('%Y-%m-%d'),
                                                                                                             "exercise_type" : activity.exercise_type,
                                                                                                             "desc" : activity.desc,
                                                                                                             "distance" : f'{activity.distance} mi',
