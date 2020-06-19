@@ -137,7 +137,7 @@ def create_new_team_mem():
     return redirect('/create-activities')
 
 
-@app.route("/create-activities")
+@app.route('/create-activities', methods=['GET','POST'])
 def create_activities():
 
     if crud.get_activities_by_user_id(session['user_id']) == None:
