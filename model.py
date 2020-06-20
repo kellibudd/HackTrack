@@ -77,15 +77,18 @@ class Activity(db.Model):
     strava_activity_id = db.Column(db.String, nullable=False, unique=True)
     date_utc = db.Column(db.DateTime, nullable=False)
     date_local = db.Column(db.DateTime, nullable=False)
+    week_num= db.Column(db.Integer)
+    weekday= db.Column(db.Integer)
     desc = db.Column(db.String)
     exercise_type = db.Column(db.String, nullable=False)
-    distance = db.Column(db.Float, nullable=False)
+    distance = db.Column(db.Numeric(4,2), nullable=False)
     workout_time = db.Column(db.Integer, nullable=False)
     average_speed = db.Column(db.String)
     has_heartrate = db.Column(db.Boolean)
     effort = db.Column(db.Integer)
     effort_source = db.Column(db.String)
     elev_gain = db.Column(db.Integer)
+    splits = db.Column(db.String)
 
     def __repr__(self):
         return f'''<Activity id={self.id} user={self.user_id} 
