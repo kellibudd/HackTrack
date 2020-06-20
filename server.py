@@ -18,11 +18,6 @@ app = Flask(__name__)
 app.secret_key = os.environ['APP_SECRET_KEY']
 app.jinja_env.undefined = StrictUndefined
 
-# @app.route('/logout')
-# def logout():
-#     # remove the username from the session if it's there
-#     session.pop('username', None)
-#     return redirect(url_for('/'))
 
 @app.route('/')
 def homepage():
@@ -62,7 +57,6 @@ def login_user():
     elif user.password == password:
         session['user'] = email
         session['user_id'] = user.id
-        session['timezone'] = user.timezone
         return redirect('/create-activities')
 
 
