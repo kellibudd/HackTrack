@@ -34,6 +34,8 @@ def create_activity(strava_activity):
 
     user = User.query.filter(User.strava_id==strava_activity['athlete']['id']).first()
 
+    date_local = datetime.strptime(strava_activity['start_date_local'].split('T')[0], '%Y-%m-%d')
+
     distance = round(strava_activity['distance'] * 0.000621371, 2)
 
     if distance > 0:
@@ -57,7 +59,9 @@ def create_activity(strava_activity):
     new_activity = Activity(user_id=user.id,
                             strava_activity_id=strava_activity['id'],
                             date_utc=strava_activity['start_date'],
-                            date_local=strava_activity['start_date_local'],
+                            date_local=date_local,
+                            week_num=date_local.isocalendar()[1],
+                            weekday=date_local.isocalendar()[2],
                             desc=strava_activity['name'],
                             exercise_type=strava_activity['type'],
                             distance=distance,
@@ -66,8 +70,7 @@ def create_activity(strava_activity):
                             has_heartrate=strava_activity['has_heartrate'],
                             effort=effort,
                             effort_source=effort_source,
-                            elev_gain=strava_activity['total_elevation_gain']
-                            )
+                            elev_gain=strava_activity['total_elevation_gain'])
 
     db.session.add(new_activity)
     db.session.commit()
@@ -213,25 +216,31 @@ def get_strava_activities(athlete):
 
     return requests.get(activities_url, headers=header).json()
 
+def get_strava_activities_with_laps(athlete, activity):
+
+    access_token = athlete.strava_access_token
+    header = {'Authorization': 'Bearer ' + access_token}
+    activities_url = f'https://www.strava.com/api/v3/athlete/activities/{activity.strava_activity_id}' 
+
+    return requests.get(activities_url, headers=header).json()
+
 
 def update_team_activities(team_id):
 
     athletes = get_new_access_tokens_for_team(team_id)
 
-    activities_data = []
-
     for athlete in athletes:
-        activity = get_strava_activities(athlete)
-        activities_data.append(activity)
-
-    for activity in activities_data[0]:
-        if not str(activity['id']) in get_strava_activities_in_db(team_id):
-            create_activity(activity)
-
+        activities = get_strava_activities(athlete)
+        for activity in activities:
+            print("*"*60)
+            print(activity['name'], activity['start_date_local'])
+            if not str(activity['id']) in get_strava_activities_in_db(team_id):
+                create_activity(activity)
+                print("ADDED: ", activity['name'])
+    
     team = get_team_by_id(team_id)
     team.activities_last_updated = datetime.utcnow()
-    db.session.commit()
-
+    
 
 # def get_activities_by_team(team_id):
 #     """Return a list of activities completed by users on a team."""
@@ -293,20 +302,18 @@ def get_current_week_activities(team_id):
 
     activities = Activity.query.filter(Activity.date_utc >= monday, Activity.date_utc <= today, Activity.user_id.in_(athlete_ids)).all()
 
-    weekdays = {0: 'monday', 1: 'tuesday', 2: 'wednesday', 3: 'thursday', 4: 'friday', 5: 'saturday', 6: 'sunday'}
-
     curr_week_activities = {}
 
     for athlete_id in athlete_ids:
-        curr_week_activities[athlete_id] = {'monday': {'Run':{'distance': '·'}, 'Cross Train':{'workout_time': '·'}},
-                                        'tuesday': {'Run':{'distance': '·'}, 'Cross Train':{'workout_time': '·'}},
-                                        'wednesday': {'Run':{'distance': '·'}, 'Cross Train':{'workout_time': '·'}},
-                                        'thursday': {'Run':{'distance': '·'}, 'Cross Train':{'workout_time': '·'}},
-                                        'friday': {'Run':{'distance': '·'}, 'Cross Train':{'workout_time': '·'}},
-                                        'saturday': {'Run':{'distance': '·'}, 'Cross Train':{'workout_time': '·'}},
-                                        'sunday': {'Run':{'distance': '·'}, 'Cross Train':{'workout_time': '·'}},
-                                        'total_mileage': 0,
-                                        'total_xtrain_mins': 0}
+        curr_week_activities[athlete_id] = {1: {'Run':{'distance': [], 'strava_activity_id': []}, 'Cross Train':{'workout_time': [], 'strava_activity_id': []}},
+                                            2: {'Run':{'distance': [], 'strava_activity_id': []}, 'Cross Train':{'workout_time': [], 'strava_activity_id': []}},
+                                            3: {'Run':{'distance': [], 'strava_activity_id': []}, 'Cross Train':{'workout_time': [], 'strava_activity_id': []}},
+                                            4: {'Run':{'distance': [], 'strava_activity_id': []}, 'Cross Train':{'workout_time': [], 'strava_activity_id': []}},
+                                            5: {'Run':{'distance': [], 'strava_activity_id': []}, 'Cross Train':{'workout_time': [], 'strava_activity_id': []}},
+                                            6: {'Run':{'distance': [], 'strava_activity_id': []}, 'Cross Train':{'workout_time': [], 'strava_activity_id': []}},
+                                            7: {'Run':{'distance': [], 'strava_activity_id': []}, 'Cross Train':{'workout_time': [], 'strava_activity_id': []}},
+                                            'total_mileage': 0,
+                                            'total_xtrain_mins': 0}
 
     for activity in activities:
 
@@ -314,33 +321,22 @@ def get_current_week_activities(team_id):
 
             curr_week_activities[activity.user_id]['total_mileage'] += activity.distance
 
-            curr_week_activities[activity.user_id][weekdays[activity.date_local.weekday()]]['Run'] = {"date_local" : activity.date_local.strftime('%Y-%m-%d'),
-                                                                                                    "desc" : activity.desc,
-                                                                                                    "distance" : f'{activity.distance} mi',
-                                                                                                    "workout_time" : convert_time_format(activity.workout_time),
-                                                                                                    "average_speed" : activity.average_speed,
-                                                                                                    "effort" : activity.effort,
-                                                                                                    "effort_source" : activity.effort_source,
-                                                                                                    "elev_gain" : activity.elev_gain}
+            curr_week_activities[activity.user_id][activity.weekday]['Run']['distance'].append(activity.distance)
+            curr_week_activities[activity.user_id][activity.weekday]['Run']['strava_activity_id'].append(activity.strava_activity_id)
+        
         elif activity.exercise_type != 'Run':
 
             curr_week_activities[activity.user_id]['total_xtrain_mins'] += activity.workout_time
 
-            curr_week_activities[activity.user_id][weekdays[activity.date_local.weekday()]]['Cross Train'] = {"date_utc" : activity.date_local.strftime('%Y-%m-%d'),
-                                                                                                            "exercise_type" : activity.exercise_type,
-                                                                                                            "desc" : activity.desc,
-                                                                                                            "distance" : f'{activity.distance} mi',
-                                                                                                            "workout_time" : convert_time_format(activity.workout_time),
-                                                                                                            "average_speed" : activity.average_speed,
-                                                                                                            "effort" : activity.effort,
-                                                                                                            "effort_source" : activity.effort_source,
-                                                                                                            "elev_gain" : activity.elev_gain}
+            curr_week_activities[activity.user_id][activity.weekday]['Cross Train']['workout_time'].append(activity.workout_time)
+            curr_week_activities[activity.user_id][activity.weekday]['Cross Train']['strava_activity_id'].append(activity.strava_activity_id)
+                                                                                                    
     for athlete_id in athlete_ids:
         if curr_week_activities[athlete_id]['total_xtrain_mins'] == 0:
             curr_week_activities[athlete_id]['total_xtrain_mins'] = ""
         else:
             curr_week_activities[athlete_id]['total_xtrain_mins'] = convert_time_format(curr_week_activities[athlete_id]['total_xtrain_mins'])
-
+    print(curr_week_activities)
     return curr_week_activities
 
 
