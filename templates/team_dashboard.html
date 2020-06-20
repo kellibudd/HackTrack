@@ -78,25 +78,25 @@
       {% for user in activities_dict %}
         {% if user == athlete.id %}
             <td id="workout-type" align="left">Run</td>
-            <td>{{ activities_dict[user]['monday']['Run']['distance'] }}</td>
-            <td>{{ activities_dict[user]['tuesday']['Run']['distance'] }}</td>
-            <td>{{ activities_dict[user]['wednesday']['Run']['distance'] }}</td>
-            <td>{{ activities_dict[user]['thursday']['Run']['distance'] }}</td>
-            <td>{{ activities_dict[user]['friday']['Run']['distance'] }}</td>
-            <td>{{ activities_dict[user]['saturday']['Run']['distance'] }}</td>
-            <td>{{ activities_dict[user]['sunday']['Run']['distance'] }}</td>
+            <td>{{ activities_dict[user][1]['Run']['distance'] }} mi</td>
+            <td>{{ activities_dict[user][2]['Run']['distance'] }} mi</td>
+            <td>{{ activities_dict[user][3]['Run']['distance'] }} mi</td>
+            <td>{{ activities_dict[user][4]['Run']['distance'] }} mi</td>
+            <td>{{ activities_dict[user][5]['Run']['distance'] }} mi</td>
+            <td>{{ activities_dict[user][6]['Run']['distance'] }} mi</td>
+            <td>{{ activities_dict[user][7]['Run']['distance'] }} mi</td>
             <td><b>{{ activities_dict[user]['total_mileage'] }} mi</b></td>
       </tr>
           {% if not "" == athlete.id %}
       <tr>
             <td id="workout-type" align="left">Cross Train</td>
-            <td>{{ activities_dict[user]['monday']['Cross Train']['workout_time'] }}</td>
-            <td>{{ activities_dict[user]['tuesday']['Cross Train']['workout_time'] }}</td>
-            <td>{{ activities_dict[user]['wednesday']['Cross Train']['workout_time'] }}</td>
-            <td>{{ activities_dict[user]['thursday']['Cross Train']['workout_time'] }}</td>
-            <td>{{ activities_dict[user]['friday']['Cross Train']['workout_time'] }}</td>
-            <td>{{ activities_dict[user]['saturday']['Cross Train']['workout_time'] }}</td>
-            <td>{{ activities_dict[user]['sunday']['Cross Train']['workout_time'] }}</td>
+            <td>{{ activities_dict[user][1]['Cross Train']['workout_time'] }}</td>
+            <td>{{ activities_dict[user][2]['Cross Train']['workout_time'] }}</td>
+            <td>{{ activities_dict[user][3]['Cross Train']['workout_time'] }}</td>
+            <td>{{ activities_dict[user][4]['Cross Train']['workout_time'] }}</td>
+            <td>{{ activities_dict[user][5]['Cross Train']['workout_time'] }}</td>
+            <td>{{ activities_dict[user][6]['Cross Train']['workout_time'] }}</td>
+            <td>{{ activities_dict[user][7]['Cross Train']['workout_time'] }}</td>
             <td><b>{{ activities_dict[user]['total_xtrain_mins'] }}</b></td>
       </tr>
           {% endif %}
