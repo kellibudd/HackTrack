@@ -154,12 +154,28 @@ def create_activities():
 @app.route('/dashboard')
 def display_team_dashboard():
 
+    return render_template('team_dashboard.html')
+
+@app.route('/get-team-data')
+def get_team_data():
+
     team = crud.get_team_by_user_id(session['user_id'])
-    athletes = crud.get_all_athlete_data_by_team(team.id)
-    activities_dict = crud.get_current_week_activities(team.id)
+    athletes = crud.get_athletes_on_team(team.id)
 
-    return render_template('team_dashboard.html', team=team, athletes=athletes, activities_dict=activities_dict)
+    return jsonify(athletes)
 
+@app.route('/get-activity-data')
+def get_activity_data():
+
+    team = crud.get_team_by_user_id(session['user_id'])
+    activities = crud.get_week_activities_json(team.id, 25)
+
+    return jsonify(activities)
+
+# @app.route('/get-week-activities')
+# def get_week_activities():
+
+#     activities_dict = crud.get_week_activities_json(team.id, week)
 
 if __name__ == '__main__':
     connect_to_db(app)
