@@ -42,7 +42,10 @@ def create_activity(strava_activity):
         avg_time = (strava_activity['moving_time'] / 60) / distance
         avg_minutes = int(avg_time)
         avg_seconds = round((avg_time % 1) * 60)
-        average_speed = f'{avg_minutes}:{avg_seconds}/mile'
+        if avg_seconds < 10:
+            average_speed = f'{avg_minutes}:0{avg_seconds}/mile'
+        else:
+            average_speed = f'{avg_minutes}:{avg_seconds}/mile'
     else:
         average_speed = 'N/A'
 
@@ -194,7 +197,7 @@ def get_new_access_tokens_for_team(team_id):
     return updated_athlete_data
 
 
-def get_strava_activities_in_db(team_id):
+def show_strava_activities_in_db(team_id):
 
     athlete_ids = get_athlete_ids_by_team(team_id)
 
@@ -234,44 +237,14 @@ def update_team_activities(team_id):
         for activity in activities:
             print("*"*60)
             print(activity['name'], activity['start_date_local'])
-            if not str(activity['id']) in get_strava_activities_in_db(team_id):
+            if not str(activity['id']) in show_strava_activities_in_db(team_id):
                 create_activity(activity)
                 print("ADDED: ", activity['name'])
     
     team = get_team_by_id(team_id)
     team.activities_last_updated = datetime.utcnow()
-    
 
-# def get_activities_by_team(team_id):
-#     """Return a list of activities completed by users on a team."""
 
-#     athletes = get_athletes_by_team(team_id)
-
-#     athlete_ids = []
-
-#     for athlete in athletes:
-#         athlete_ids.append(athlete.id)
-
-#     activities = Activity.query.filter(Activity.user_id.in_(athlete_ids), Activity.exercise_type == 'Run').all()
-
-#     activities_json = []
-
-#     for activity in activities: 
-#         act_dict = {"user_id" : activity.user_id,
-#                 "strava_activity_id" : activity.strava_activity_id,
-#                 "date" : activity.date_utc.strftime('%Y-%m-%d'),
-#                 "day_of_week" : activity.date_utc.astimezone(timezone(user_timezone)).weekday(),
-#                 "desc" : activity.desc,
-#                 "exercise_type" : activity.exercise_type,
-#                 "distance" : activity.distance,
-#                 "workout_time" : activity.workout_time,
-#                 "average_speed" : activity.average_speed,
-#                 "effort" : activity.effort,
-#                 "effort_source" : activity.effort_source,
-#                 "elev_gain" : activity.elev_gain} 
-#         activities_json.append(act_dict)
-
-#     return activities_json
 def convert_time_format(time):
 
     time = time / 3600
@@ -287,57 +260,49 @@ def convert_time_format(time):
     else:
         return f'{hours}:{minutes}:0{seconds}'
 
-def get_current_week_activities(team_id):
-    """Return a list of activities completed by users on a team during the current week."""
-
-    today = datetime.utcnow()
-    today = datetime(year=today.year, month=today.month,
-                    day=today.day, hour=23, minute= 59, second=59)
-    print("today is", today)
-    monday = today - timedelta(days=today.weekday())
-    monday = datetime(year=monday.year, month=monday.month,
-                    day=monday.day, hour=0, minute=0, second=0)
-    print("monday is", monday)
+def get_athletes_on_team(team_id):
+    
     athlete_ids = get_athlete_ids_by_team(team_id)
 
-    activities = Activity.query.filter(Activity.date_utc >= monday, Activity.date_utc <= today, Activity.user_id.in_(athlete_ids)).all()
+    athletes = User.query.filter(User.id.in_(athlete_ids)).all()
 
-    curr_week_activities = {}
+    json = []
 
-    for athlete_id in athlete_ids:
-        curr_week_activities[athlete_id] = {1: {'Run':{'distance': [], 'strava_activity_id': []}, 'Cross Train':{'workout_time': [], 'strava_activity_id': []}},
-                                            2: {'Run':{'distance': [], 'strava_activity_id': []}, 'Cross Train':{'workout_time': [], 'strava_activity_id': []}},
-                                            3: {'Run':{'distance': [], 'strava_activity_id': []}, 'Cross Train':{'workout_time': [], 'strava_activity_id': []}},
-                                            4: {'Run':{'distance': [], 'strava_activity_id': []}, 'Cross Train':{'workout_time': [], 'strava_activity_id': []}},
-                                            5: {'Run':{'distance': [], 'strava_activity_id': []}, 'Cross Train':{'workout_time': [], 'strava_activity_id': []}},
-                                            6: {'Run':{'distance': [], 'strava_activity_id': []}, 'Cross Train':{'workout_time': [], 'strava_activity_id': []}},
-                                            7: {'Run':{'distance': [], 'strava_activity_id': []}, 'Cross Train':{'workout_time': [], 'strava_activity_id': []}},
-                                            'total_mileage': 0,
-                                            'total_xtrain_mins': 0}
+    for athlete in athletes:
+        athlete_dict = {"id" : athlete.id,
+                        "name": f'{athlete.firstname} {athlete.lastname}',
+                        "prof_pic" : athlete.prof_pic}
+        json.append(athlete_dict)
+    print(json)
+    return json
 
-    for activity in activities:
+def get_week_activities_json(team_id, week):
+    """Return a list of activities completed by users on a team during the current week."""
 
-        if activity.exercise_type == 'Run':
+    athlete_ids = get_athlete_ids_by_team(team_id)
 
-            curr_week_activities[activity.user_id]['total_mileage'] += activity.distance
+    activities = Activity.query.filter(Activity.week_num == week, Activity.user_id.in_(athlete_ids)).all()
 
-            curr_week_activities[activity.user_id][activity.weekday]['Run']['distance'].append(activity.distance)
-            curr_week_activities[activity.user_id][activity.weekday]['Run']['strava_activity_id'].append(activity.strava_activity_id)
-        
-        elif activity.exercise_type != 'Run':
+    json = []
 
-            curr_week_activities[activity.user_id]['total_xtrain_mins'] += activity.workout_time
+    for activity in activities: 
+        act_dict = {"id" : activity.id,
+                    "user_id" : activity.user_id,
+                    "strava_activity_id" : activity.strava_activity_id,
+                    "date" : activity.date_local,
+                    "week" : activity.week_num,
+                    "weekday" : activity.weekday,
+                    "desc" : activity.desc,
+                    "exercise_type" : activity.exercise_type,
+                    "distance" : activity.distance,
+                    "workout_time" : activity.workout_time,
+                    "average_speed" : activity.average_speed,
+                    "effort" : activity.effort,
+                    "effort_source" : activity.effort_source,
+                    "elev_gain" : activity.elev_gain}
+        json.append(act_dict)
 
-            curr_week_activities[activity.user_id][activity.weekday]['Cross Train']['workout_time'].append(activity.workout_time)
-            curr_week_activities[activity.user_id][activity.weekday]['Cross Train']['strava_activity_id'].append(activity.strava_activity_id)
-                                                                                                    
-    for athlete_id in athlete_ids:
-        if curr_week_activities[athlete_id]['total_xtrain_mins'] == 0:
-            curr_week_activities[athlete_id]['total_xtrain_mins'] = ""
-        else:
-            curr_week_activities[athlete_id]['total_xtrain_mins'] = convert_time_format(curr_week_activities[athlete_id]['total_xtrain_mins'])
-    print(curr_week_activities)
-    return curr_week_activities
+    return json
 
 
 if __name__ == '__main__':
