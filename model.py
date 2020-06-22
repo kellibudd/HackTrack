@@ -81,7 +81,7 @@ class Activity(db.Model):
     weekday= db.Column(db.Integer)
     desc = db.Column(db.String)
     exercise_type = db.Column(db.String, nullable=False)
-    distance = db.Column(db.Numeric(4,2), nullable=False)
+    distance = db.Column(db.Float, nullable=False)
     workout_time = db.Column(db.Integer, nullable=False)
     average_speed = db.Column(db.String)
     has_heartrate = db.Column(db.Boolean)
