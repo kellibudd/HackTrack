@@ -36,7 +36,7 @@ def create_activity(strava_activity):
 
     date_local = datetime.strptime(strava_activity['start_date_local'].split('T')[0], '%Y-%m-%d')
 
-    distance = round(strava_activity['distance'] * 0.000621371, 2)
+    distance = round(strava_activity['distance'] * 0.000621371, 1)
 
     if distance > 0:
         avg_time = (strava_activity['moving_time'] / 60) / distance
@@ -134,6 +134,12 @@ def get_user_by_email(email):
 
     return User.query.filter(User.email == email).first()
 
+def get_athlete_by_activity(activity_id):
+
+    activity = Activity.query.filter(Activity.strava_activity_id == str(activity_id)).first()
+    print(activity.user_id)
+    return User.query.get(activity.user_id)
+
 
 def get_activities_by_user_id(user_id):
     """Return a user by email."""
@@ -181,6 +187,13 @@ def get_all_athlete_data_by_team(team_id):
 
     return User.query.filter(User.id.in_(athletes)).all()
 
+def get_new_access_token_for_user(athlete):
+    """Update access token for a user"""
+
+    token = strava_api.get_new_token(athlete.strava_refresh_token)
+    athlete.strava_access_token = token['access_token']
+    athlete.strava_access_token_expir = token['expires_at']
+    db.session.commit()
 
 def get_new_access_tokens_for_team(team_id):
     """Update access tokens for all users on a given team"""
@@ -188,9 +201,7 @@ def get_new_access_tokens_for_team(team_id):
     athletes = get_all_athlete_data_by_team(team_id)
 
     for athlete in athletes:
-        token = strava_api.get_new_token(athlete.strava_refresh_token)
-        athlete.strava_access_token = token['access_token']
-        db.session.commit()
+        get_new_access_token_for_user(athlete)
 
     updated_athlete_data = get_all_athlete_data_by_team(team_id)
 
@@ -210,35 +221,16 @@ def show_strava_activities_in_db(team_id):
 
     return strava_activity_ids
 
-
-def get_strava_activities(athlete):
-
-    access_token = athlete.strava_access_token
-    header = {'Authorization': 'Bearer ' + access_token}
-    activities_url = 'https://www.strava.com/api/v3/athlete/activities' 
-
-    return requests.get(activities_url, headers=header).json()
-
-def get_strava_activities_with_laps(athlete, activity):
-
-    access_token = athlete.strava_access_token
-    header = {'Authorization': 'Bearer ' + access_token}
-    activities_url = f'https://www.strava.com/api/v3/athlete/activities/{activity.strava_activity_id}' 
-
-    return requests.get(activities_url, headers=header).json()
-
-
 def update_team_activities(team_id):
 
     athletes = get_new_access_tokens_for_team(team_id)
 
     for athlete in athletes:
-        activities = get_strava_activities(athlete)
+        activities = strava_api.get_strava_activities(athlete)
         for activity in activities:
-            print("*"*60)
-            print(activity['name'], activity['start_date_local'])
             if not str(activity['id']) in show_strava_activities_in_db(team_id):
                 create_activity(activity)
+                print("*"*60)
                 print("ADDED: ", activity['name'])
     
     team = get_team_by_id(team_id)
@@ -273,7 +265,7 @@ def get_athletes_on_team(team_id):
                         "name": f'{athlete.firstname} {athlete.lastname}',
                         "prof_pic" : athlete.prof_pic}
         json.append(athlete_dict)
-    print(json)
+
     return json
 
 def get_week_activities_json(team_id, week):
