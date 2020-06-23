@@ -40,20 +40,10 @@ function display_dashboard() {
           
           $(`#user-${athlete['id']}-col${activity['weekday']}`).replaceWith(
           `<td scope="row">
-              <button class="activity-data btn btn-light" id="${activity['strava_activity_id']}" type="button" data-toggle="collapse" data-target="#div-${activity['strava_activity_id']}" aria-expanded="false" aria-controls="div-${activity['strava_activity_id']}">${activity['distance']} mi</button>
-            </p>
-              <div class="collapse multi-collapse" id="div-${activity['strava_activity_id']}"">
-              <div class="card card-body"> 
-              <b>Pace<b>
-              Mile 1: 5:42/mi
-              Mile 2: 5:45/mi
-              Mile 3: 5:46/mi
-              </div>
-              </div>
-            </p>
+            <button type="button" class="activity-data btn btn-light" id="${activity['strava_activity_id']}" data-container="body" data-toggle="popover" data-trigger="focus" data-placement="top">
+            ${activity['distance']} mi</button>
           </td>`);
           
-           // class="activity-data" id="${activity['strava_activity_id']}" scope="row">${activity['distance']} mi
           weekMileage += activity['distance'];
           // `day${activity['weekday']}Total` = 0;
           // `day${activity['weekday']}Total` += activity['distance'];
@@ -62,21 +52,28 @@ function display_dashboard() {
             `<td scope="row" id="user-${athlete['id']}-col8">
               <button class="activity-data btn btn-dark"><b>${weekMileageRounded} mi<b></button>
             </td>`);
-        };
-        // infinite loop - need to fix
-      //   $(".activity-data").on('click', (evt) => {
-      //     let activityID = evt.target.id ;
-      //     $.get(`/api/get-activity-splits/${activityID}`, (response) => {
-      //       console.log(response);
-      //       let splits = response;
-      //       $(`#div-${activity['strava_activity_id']}`).html(splits['name'])
-      //   });
-      // });
+        };  
       };
-      };
+    };
+    // infinite loop - need to fix
+  $(".activity-data").on('click', (evt) => {
+    let activityID = evt.target.id ;
+    console.log("hi!!");
+    $.get(`/api/get-activity-splits/${activityID}`, (response) => {
+      console.log(response);
+      const splits = response;
+      
+    $(`#${splits['id']}`).popover(
+      { 
+        title : 'Details',
+        content : `Time: ${splits['moving_time']}\n Elevation: ${splits['total_elevation_gain']}\n Average Pace: ${splits['average_speed']}`
+      });
+    });
+    });
   });
   });
 };
+
 
 // let collapse_el = $(".card-body")
 display_dashboard()
