@@ -44,18 +44,14 @@
 <div id="top-div"></div>
 
 <form id="refresh-dash" action="/create-activities" method="POST" align="left">
-  <input type="submit" value="Update Activities">
+  <input class="btn btn-outline-primary" type="submit" value="Refresh">
 </form>
 <br>
 
 
-<table id="team-dash" class="table">
-{#   <thead>
-    <tr id="header-row"></tr>
+<table id="team-table" class="table">
+  <thead id="team-head" class="bg-primary text-light">
   </thead>
-  <tbody id="table-body">
-    <tr id="body-row"></tr>
-  </tbody> #}
 </table>
 
 <script src="/static/js/dashboard.js"></script>
