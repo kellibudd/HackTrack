@@ -1,5 +1,4 @@
 {% extends 'base.html' %}
-{% block title %}Run App Home{% endblock %}
 
 {% block body %}
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -36,21 +35,21 @@
   </div>
 </nav>
 
-<p></p>
-<p></p>
-<p></p>
+<br>
+<br>
+<br>
 
 {# <h4>{{ team.name }}</h4> #}
-<p></p>
-<p></p>
-<p></p>
+
+<div id="top-div"></div>
+
 <form id="refresh-dash" action="/create-activities" method="POST" align="left">
   <input type="submit" value="Update Activities">
 </form>
-<p></p>
+<br>
 
 
-<table id="team-dash" class="table table-hover">
+<table id="team-dash" class="table">
 {#   <thead>
     <tr id="header-row"></tr>
   </thead>
@@ -60,5 +59,6 @@
 </table>
 
 <script src="/static/js/dashboard.js"></script>
+
 
 {% endblock %}
