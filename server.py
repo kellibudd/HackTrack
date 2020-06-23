@@ -167,8 +167,11 @@ def get_team_data():
 @app.route('/get-activity-data')
 def get_activity_data():
 
+    date = datetime.now() - timedelta(0, 21600)
+    week = date.isocalendar()[1]
+
     team = crud.get_team_by_user_id(session['user_id'])
-    activities = crud.get_week_activities_json(team.id, 25)
+    activities = crud.get_week_activities_json(team.id, week)
 
     return jsonify(activities)
 
