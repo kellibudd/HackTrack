@@ -4,11 +4,14 @@ let tableColumns = [" ", "Athlete", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "S
 // let tableColumns = [" ", "Athlete", "Exercise", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun", "Total"];
 
 function generateTableHead(table) {
-  let row = thead.append(`<tr></tr>`);
   for (let column of tableColumns) {
-    let th = row.append(`<th id="${column}" scope="col">${column}</th>`);
+    let tableHeadRow = $("#head-row");
+    tableHeadRow.append(`<th id="${column}" scope="col">${column}</th>`);
   };
 };
+
+let table = $("#team-table");
+generateTableHead(table);
 
 function display_dashboard() {
   $.get('/get-team-data', (response) => {
@@ -18,10 +21,10 @@ function display_dashboard() {
     let activities = response;
 
     for (let athlete of athletes) {
-      let tbody = table.append(`<tbody></tbody>`);
+      let tbody = $("#table-body");
       let row = tbody.append(`<tr id="${athlete['id']}-row"></tr>`);
-      let athleteImg = row.append(`<td><img src="${athlete['prof_pic']}" width="50px" class="rounded-circle" align="left"/></td>`);
-      let athleteName = row.append(`<th rowspan="2">${athlete['name']}</th>`);
+      row.append(`<td><img src="${athlete['prof_pic']}" width="50px" class="rounded-circle" align="left"/></td>`);
+      row.append(`<th rowspan="2">${athlete['name']}</th>`);
       // let run = row.append(`<td id="run-exercise" scope="row">Run</td>`);
       // let crossTrain = row.append(`<tr id="xt-workout" scope="row">Cross Train</tr>`);
 
@@ -40,7 +43,11 @@ function display_dashboard() {
               <button class="activity-data btn btn-light" id="${activity['strava_activity_id']}" type="button" data-toggle="collapse" data-target="#div-${activity['strava_activity_id']}" aria-expanded="false" aria-controls="div-${activity['strava_activity_id']}">${activity['distance']} mi</button>
             </p>
               <div class="collapse multi-collapse" id="div-${activity['strava_activity_id']}"">
-              <div class="card card-body"> hiiiiiiiiiiiiiiiiiiiiiiiiiiiii
+              <div class="card card-body"> 
+              <b>Pace<b>
+              Mile 1: 5:42/mi
+              Mile 2: 5:45/mi
+              Mile 3: 5:46/mi
               </div>
               </div>
             </p>
@@ -57,14 +64,14 @@ function display_dashboard() {
             </td>`);
         };
         // infinite loop - need to fix
-        $(".activity-data").on('click', (evt) => {
-          let activityID = evt.target.id ;
-          $.get(`/api/get-activity-splits/${activityID}`, (response) => {
-            console.log(response);
-            let splits = response;
-            $(`#div-${activity['strava_activity_id']}`).html(splits['name'])
-        });
-      });
+      //   $(".activity-data").on('click', (evt) => {
+      //     let activityID = evt.target.id ;
+      //     $.get(`/api/get-activity-splits/${activityID}`, (response) => {
+      //       console.log(response);
+      //       let splits = response;
+      //       $(`#div-${activity['strava_activity_id']}`).html(splits['name'])
+      //   });
+      // });
       };
       };
   });
@@ -73,7 +80,7 @@ function display_dashboard() {
 
 // let collapse_el = $(".card-body")
 display_dashboard()
-let thead = $("#team-head");
-let table = $("#team-table");
-generateTableHead(table);
+
+
+
 
