@@ -146,7 +146,7 @@ def create_activities():
     team = crud.get_team_by_user_id(session['user_id'])
 
     if datetime.utcnow() - team.activities_last_updated > timedelta(0, 10800):
-        print("Updating team activity...")
+        print("Updating team activities...")
         crud.update_team_activities(team.id)
 
     return redirect('/dashboard')    
@@ -171,6 +171,18 @@ def get_activity_data():
     activities = crud.get_week_activities_json(team.id, 25)
 
     return jsonify(activities)
+
+@app.route('/api/get-activity-splits/<int:activity_id>')
+def get_activity_splits(activity_id):
+
+    athlete = crud.get_athlete_by_activity(activity_id)
+   
+    if datetime.fromtimestamp(int(athlete.strava_access_token_expir)) < datetime.utcnow():
+        crud.get_new_access_token_for_user(athlete)
+
+    split_data = strava_api.get_strava_activities_with_laps(athlete, activity_id)
+
+    return jsonify(split_data)
 
 # @app.route('/get-week-activities')
 # def get_week_activities():
