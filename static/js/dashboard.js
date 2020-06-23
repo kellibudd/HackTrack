@@ -40,7 +40,7 @@ function display_dashboard() {
           
           $(`#user-${athlete['id']}-col${activity['weekday']}`).replaceWith(
           `<td scope="row">
-            <button type="button" class="activity-data btn btn-light" id="${activity['strava_activity_id']}" data-container="body" data-toggle="popover" data-trigger="focus" data-placement="top">
+            <button type="button" class="activity-data btn btn-light" id="${activity['strava_activity_id']}" data-container="body" data-toggle="popover" data-trigger="hover" data-placement="top">
             ${activity['distance']} mi</button>
           </td>`);
           
@@ -62,11 +62,20 @@ function display_dashboard() {
     $.get(`/api/get-activity-splits/${activityID}`, (response) => {
       console.log(response);
       const splits = response;
-      
+      let activityDate = reformatDate(splits['start_date_local'])
+      let distance = reformatDistance(splits['distance'])
+      let workoutTime = reformatWorkoutLength(splits['moving_time'])
+      let avgSpeed = reformatAvgSpeed(splits['distance'], splits['moving_time'])
+      let elevationGain = reformatElevationGain(splits['total_elevation_gain'])
     $(`#${splits['id']}`).popover(
       { 
         title : 'Details',
-        content : `Time: ${splits['moving_time']}\n Elevation: ${splits['total_elevation_gain']}\n Average Pace: ${splits['average_speed']}`
+        content : `Date: ${activityDate} <br/>
+                  Distance: ${distance} <br/>
+                  Time: ${workoutTime} <br/> 
+                  Average Pace: ${avgSpeed} <br/>
+                  Elevation Gain: ${elevationGain}`,
+        html: true
       });
     });
     });
@@ -74,8 +83,90 @@ function display_dashboard() {
   });
 };
 
+function reformatDate(activityDate) {
+  let formatDate = new Date(activityDate);
+  console.log(formatDate)
+  let activityMonth = formatDate.getMonth()+1;
+  let activityDay = formatDate.getDate()+1;
+  let activityYear = formatDate.getFullYear();
+  let reformatDate = activityMonth + "-" + activityDay + "-" + activityYear;
+  console.log(reformatDate)
+  return reformatDate;
+};
 
-// let collapse_el = $(".card-body")
+function reformatWorkoutLength(workoutTime) {
+
+    let time = workoutTime / 3600;
+    let hours = Math.floor(time);
+    let minutes = Math.floor((time % 1) * 60);
+    let seconds = Math.round((((time % 1) * 60) % 1) * 60);
+    console.log(time)
+    console.log(hours)
+    console.log(minutes)
+    console.log(seconds)
+    if (hours < 1 && seconds > 10) {
+        return `${minutes}:${seconds}`;
+    }
+    else if (hours < 1 && seconds < 10) {
+        return `${minutes}:0${seconds}`;
+    }
+    else if (hours >= 1 && seconds > 10) {
+        return `${hours}:${minutes}:${seconds}`;
+    }
+    else {
+        return `${hours}:${minutes}:0${seconds}`;
+    };
+};
+
+function reformatDistance(distance) {
+
+  distance = distance * 0.000621371
+  console.log(distance)
+  let miles = Math.floor(distance)
+  console.log(miles)
+  let decimal = Math.floor(distance % 1 * 100)
+  console.log(decimal)
+  return `${miles}.${decimal}mi`
+};
+
+function reformatAvgSpeed(distance, workoutTime) {
+
+  distance = distance * 0.000621371
+
+  if (distance > 0) {
+
+    let avgTime = (workoutTime / 60) / distance;
+    let avgMinutes = Math.floor(avgTime);
+    let avgSeconds = Math.round((avgTime % 1) * 60);
+
+
+    if (avgSeconds < 10) {
+      return `${avgMinutes}:0${avgSeconds}/mile`;
+    }
+    else {
+      return `${avgMinutes}:${avgSeconds}/mile`;
+    };
+  }
+  else {
+    return 'N/A';
+  };
+};
+
+function reformatElevationGain(gain) {
+
+  gain = Math.round(gain * 3.28084);
+
+  return `${gain}ft`
+};
+
+// function getSplits(split_dict) {
+//   for (let split in splits)  {
+//     split
+//   }
+// }  
+
+
+
 display_dashboard()
 
 
