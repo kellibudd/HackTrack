@@ -40,8 +40,9 @@ function display_dashboard() {
           
           $(`#user-${athlete['id']}-col${activity['weekday']}`).replaceWith(
           `<td scope="row">
-            <button type="button" class="activity-data btn btn-light" id="${activity['strava_activity_id']}" data-container="body" data-toggle="popover" data-trigger="hover" data-placement="top">
-            ${activity['distance']} mi</button>
+            <button type="button" class="activity-data btn btn-light" id="${activity['strava_activity_id']}" data-container="body" data-toggle="popover" data-trigger="hover click" data-placement="top">
+            ${activity['distance']} mi<span class="badge badge-warning ml-2"></span></button>
+
           </td>`);
           
           weekMileage += activity['distance'];
@@ -74,7 +75,11 @@ function display_dashboard() {
                   Distance: ${distance} <br/>
                   Time: ${workoutTime} <br/> 
                   Average Pace: ${avgSpeed} <br/>
-                  Elevation Gain: ${elevationGain}`,
+                  Elevation Gain: ${elevationGain}<br/><br/>
+                  Comment:
+                  <textarea class="form-control" id="message-text"></textarea><br/>
+                  <button type="submit" class="comment btn btn-warning" data-toggle="modal" data-target="#exampleModal">Submit</button>`,
+                                  // <a href="#exampleModal" id="${splits['id']}" class="comment btn-sm btn-primary" data-target="#exampleModal">Comment</a>`,
         html: true
       });
     });
@@ -82,6 +87,25 @@ function display_dashboard() {
   });
   });
 };
+
+// $(".comment").on('click', (evt) => {
+//   console.log("HELLO!!!!")
+//   //   let activityID = evt.target.id ;
+//   //   console.log(activityID);
+//   // $(".activity-data").popover('hide');
+  // $('#exampleModal').modal({
+  //   focus: true
+  // });
+// });
+// $('#exampleModal').on('show.bs.modal', function (event) {
+//   var button = $(event.relatedTarget) // Button that triggered the modal
+//   var recipient = button.data('whatever') // Extract info from data-* attributes
+//   // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+//   // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+//   var modal = $(this)
+//   modal.find('.modal-title').text('New message to ' + recipient)
+//   modal.find('.modal-body input').val(recipient)
+// });
 
 function reformatDate(activityDate) {
   let formatDate = new Date(activityDate);
