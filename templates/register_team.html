@@ -9,6 +9,7 @@
         Select a registered team:
         <p>
           <select name="team">
+            <option value="" disabled selected>Select a team</option>
             {% for team in teams %}
               <option value="{{ team.id }}">{{ team.name }}</option>
             {% endfor %}
@@ -17,6 +18,7 @@
         Select your role:
         <p>
           <select name="role">
+            <option value="" disabled selected>Select a user type</option>
             <option value="Athlete">Athlete</option>
             <option value="Coach">Coach</option>
           </select>
