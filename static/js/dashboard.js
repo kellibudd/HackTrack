@@ -17,104 +17,123 @@ function display_dashboard() {
   $.get('/get-team-data', (response) => {
     let athletes = response;
 
-  $.get('/get-activity-data', (response) => {
-    let activities = response;
+    $.get('/get-activity-data', (response) => {
+      let activities = response;
 
-    for (let athlete of athletes) {
-      let tbody = $("#table-body");
-      let row = tbody.append(`<tr id="${athlete['id']}-row"></tr>`);
-      row.append(`<td><img src="${athlete['prof_pic']}" width="50px" class="rounded-circle" align="left"/></td>`);
-      row.append(`<th rowspan="2">${athlete['name']}</th>`);
-      // let run = row.append(`<td id="run-exercise" scope="row">Run</td>`);
-      // let crossTrain = row.append(`<tr id="xt-workout" scope="row">Cross Train</tr>`);
+      for (let athlete of athletes) {
+        let tbody = $("#table-body");
+        let row = tbody.append(`<tr id="${athlete['id']}-row"></tr>`);
+        row.append(`<td><img src="${athlete['prof_pic']}" width="50px" class="rounded-circle" align="left"/></td>`);
+        row.append(`<th rowspan="2">${athlete['name']}</th>`);
+        // let run = row.append(`<td id="run-exercise" scope="row">Run</td>`);
+        // let crossTrain = row.append(`<tr id="xt-workout" scope="row">Cross Train</tr>`);
 
-      for (let i of Array(9).keys()) {
-        row.append(`<td id="user-${athlete['id']}-col${i+1}" scope="row"></td>`)
-      };
+        for (let i of Array(9).keys()) {
+          row.append(`<td id="user-${athlete['id']}-col${i+1}" scope="row"></td>`)
+        };
 
-      let weekMileage = 0
+        let weekMileage = 0
 
-      for (let activity of activities) {
-        
-        if (activity['user_id'] === athlete['id'] && activity['exercise_type'] === "Run") {
+        for (let activity of activities) {
           
-          $(`#user-${athlete['id']}-col${activity['weekday']}`).replaceWith(
-          `<td scope="row">
-            <button type="button" class="activity-data btn btn-light" id="${activity['strava_activity_id']}" data-container="body" data-toggle="popover" data-trigger="hover click" data-placement="top">
-            ${activity['distance']} mi<span class="badge badge-warning ml-2"></span></button>
+          if (activity['user_id'] === athlete['id'] && activity['exercise_type'] === "Run") {
+            
+            let activityDate = reformatDate(activity['date']);
+            let distance = reformatDistance(activity['distance']);
+            let workoutTime = reformatWorkoutLength(activity['workout_time']);
+            let avgSpeed = reformatAvgSpeed(activity['distance'], activity['workout_time']);
+            let elevationGain = reformatElevationGain(activity['elev_gain']);
 
-          </td>`);
-          
-          weekMileage += activity['distance'];
-          // `day${activity['weekday']}Total` = 0;
-          // `day${activity['weekday']}Total` += activity['distance'];
-          let weekMileageRounded = parseFloat((weekMileage.toFixed(2)));
-          $(`#user-${athlete['id']}-col8`).replaceWith(
-            `<td scope="row" id="user-${athlete['id']}-col8">
-              <button class="activity-data btn btn-dark"><b>${weekMileageRounded} mi<b></button>
+            $(`#user-${athlete['id']}-col${activity['weekday']}`).replaceWith(
+            `<td scope="row">
+              <div class="btn-group" role="group" aria-label="Basic example">
+                <button type="button" class="activity-data btn btn-light" id="${activity['strava_activity_id']}" 
+                  data-container="body" data-toggle="popover" data-trigger="hover click" data-placement="top"
+                  >${distance}</button>
+                <button type="button" class="comment btn btn-light" id="${activity['strava_activity_id']}" data-toggle="modal" data-target="#exampleModalLong"><span class="badge badge-warning">2</span></button>
+              </div>
             </td>`);
-        };  
+            
+            weekMileage += activity['distance'];
+            let weekMileageRounded = reformatDistance(weekMileage);
+            $(`#user-${athlete['id']}-col8`).replaceWith(
+              `<td scope="row" id="user-${athlete['id']}-col8">
+                <button class="activity-data btn btn-dark"><b>${weekMileageRounded}<b></button>
+              </td>`);
+
+            $(`#${activity['strava_activity_id']}`).popover({ 
+              title : 'Details',
+              content : `<div class=activity-details>
+                          Date: ${activityDate} <br/>
+                          Distance: ${distance} <br/>
+                          Time: ${workoutTime} <br/> 
+                          Average Pace: ${avgSpeed} <br/>
+                          Elevation Gain: ${elevationGain}<br/>
+                          <details>
+                            <summary>See Splits</summary>
+                            <p class="splits">here are the splits</p>
+                          </details><br/>
+                        </div>
+                        <form id="comment-form" action="/add-comment" method="POST">
+                          Comment:
+                          <textarea rows="1" class="form-control" id="comment-text" name="comment"></textarea><br/>
+                          <input id="activity-id" type="hidden" name="activity-id" value="${activity['strava_activity_id']}">
+                          <input type="submit" class="submit-comment btn btn-warning">
+                        </form>`,
+              html: true
+            });  
+          };  
+        };
       };
-    };
-    // infinite loop - need to fix
-  $(".activity-data").on('click', (evt) => {
-    let activityID = evt.target.id ;
-    console.log("hi!!");
-    $.get(`/api/get-activity-splits/${activityID}`, (response) => {
-      console.log(response);
-      const splits = response;
-      let activityDate = reformatDate(splits['start_date_local'])
-      let distance = reformatDistance(splits['distance'])
-      let workoutTime = reformatWorkoutLength(splits['moving_time'])
-      let avgSpeed = reformatAvgSpeed(splits['distance'], splits['moving_time'])
-      let elevationGain = reformatElevationGain(splits['total_elevation_gain'])
-    $(`#${splits['id']}`).popover(
-      { 
-        title : 'Details',
-        content : `Date: ${activityDate} <br/>
-                  Distance: ${distance} <br/>
-                  Time: ${workoutTime} <br/> 
-                  Average Pace: ${avgSpeed} <br/>
-                  Elevation Gain: ${elevationGain}<br/><br/>
-                  Comment:
-                  <textarea class="form-control" id="message-text"></textarea><br/>
-                  <button type="submit" class="comment btn btn-warning" data-toggle="modal" data-target="#exampleModal">Submit</button>`,
-                                  // <a href="#exampleModal" id="${splits['id']}" class="comment btn-sm btn-primary" data-target="#exampleModal">Comment</a>`,
-        html: true
+      $(".comment").on('click', (evt) => {
+        let activityID = evt.target.id;
+        $.get(`/api/get-comments/${activityID}`, (response) => {
+          console.log(response);
+          const comments = response;
+          $('#myModal').modal({
+            backdrop: true
+          });
+          for (let comment of comments) {
+            let comment_date = reformatDate(comment['date_utc'])
+            $('.comment-modal-body').append(
+              `<div class="col py-sm-2"><div class="p-2 bg-light">
+                <img src="${comment['author_prof_pic']}" width="55px" class="rounded-circle" align="right"/>
+                <h6>${comment['author_name']}</h6>
+                ${comment_date}<br/><br/>
+                ${comment['body']}<br/>
+                </div></div>`
+            );
+          };
+        });
+      });
+      $(".close-comment").on('click', (evt) => {
+        evt.preventDefault();
+          $('#myModal').modal({
+            backdrop: true
+          });
+            $('.comment-modal-body').empty();
       });
     });
-    });
-  });
   });
 };
 
-// $(".comment").on('click', (evt) => {
-//   console.log("HELLO!!!!")
-//   //   let activityID = evt.target.id ;
-//   //   console.log(activityID);
-//   // $(".activity-data").popover('hide');
-  // $('#exampleModal').modal({
-  //   focus: true
-  // });
-// });
-// $('#exampleModal').on('show.bs.modal', function (event) {
-//   var button = $(event.relatedTarget) // Button that triggered the modal
-//   var recipient = button.data('whatever') // Extract info from data-* attributes
-//   // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
-//   // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
-//   var modal = $(this)
-//   modal.find('.modal-title').text('New message to ' + recipient)
-//   modal.find('.modal-body input').val(recipient)
-// });
+display_dashboard()
+
+// function display_activity_messages() {
+
+  
+// };
+
+// display_activity_messages()
 
 function reformatDate(activityDate) {
+
   let formatDate = new Date(activityDate);
-  console.log(formatDate)
   let activityMonth = formatDate.getMonth()+1;
   let activityDay = formatDate.getDate()+1;
   let activityYear = formatDate.getFullYear();
   let reformatDate = activityMonth + "-" + activityDay + "-" + activityYear;
-  console.log(reformatDate)
+
   return reformatDate;
 };
 
@@ -124,10 +143,7 @@ function reformatWorkoutLength(workoutTime) {
     let hours = Math.floor(time);
     let minutes = Math.floor((time % 1) * 60);
     let seconds = Math.round((((time % 1) * 60) % 1) * 60);
-    console.log(time)
-    console.log(hours)
-    console.log(minutes)
-    console.log(seconds)
+
     if (hours < 1 && seconds > 10) {
         return `${minutes}:${seconds}`;
     }
@@ -145,11 +161,9 @@ function reformatWorkoutLength(workoutTime) {
 function reformatDistance(distance) {
 
   distance = distance * 0.000621371
-  console.log(distance)
   let miles = Math.floor(distance)
-  console.log(miles)
   let decimal = Math.floor(distance % 1 * 100)
-  console.log(decimal)
+
   return `${miles}.${decimal}mi`
 };
 
@@ -162,7 +176,6 @@ function reformatAvgSpeed(distance, workoutTime) {
     let avgTime = (workoutTime / 60) / distance;
     let avgMinutes = Math.floor(avgTime);
     let avgSeconds = Math.round((avgTime % 1) * 60);
-
 
     if (avgSeconds < 10) {
       return `${avgMinutes}:0${avgSeconds}/mile`;
@@ -182,16 +195,6 @@ function reformatElevationGain(gain) {
 
   return `${gain}ft`
 };
-
-// function getSplits(split_dict) {
-//   for (let split in splits)  {
-//     split
-//   }
-// }  
-
-
-
-display_dashboard()
 
 
 
