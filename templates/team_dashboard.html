@@ -50,9 +50,29 @@
 
 
 <table id="team-table" class="table">
-  <thead id="team-head" class="bg-primary text-light">
+  <thead id="table-head" class="bg-dark text-light">
+    <tr id="head-row"></tr>
   </thead>
+  <tbody id="table-body">
+  </tbody>
 </table>
+
+
+<div class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Comments</h5>
+        <button type="button" class="close close-comment" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="comment-modal-body">
+        <p class="comment-text"></p>
+      </div>
+    </div>
+  </div>
+</div>
 
 <script src="/static/js/dashboard.js"></script>
 
