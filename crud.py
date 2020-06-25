@@ -34,45 +34,18 @@ def create_activity(strava_activity):
 
     user = User.query.filter(User.strava_id==strava_activity['athlete']['id']).first()
 
-    date_local = datetime.strptime(strava_activity['start_date_local'].split('T')[0], '%Y-%m-%d')
-
-    distance = round(strava_activity['distance'] * 0.000621371, 1)
-
-    if distance > 0:
-        avg_time = (strava_activity['moving_time'] / 60) / distance
-        avg_minutes = int(avg_time)
-        avg_seconds = round((avg_time % 1) * 60)
-        if avg_seconds < 10:
-            average_speed = f'{avg_minutes}:0{avg_seconds}/mile'
-        else:
-            average_speed = f'{avg_minutes}:{avg_seconds}/mile'
-    else:
-        average_speed = 'N/A'
-
-    if not 'suffer_score' in strava_activity:
-        effort = 0
-    else:
-        effort = strava_activity['suffer_score']
-
-    if strava_activity['has_heartrate']:
-        effort_source = 'heartrate'
-    else:
-        effort_source = 'perceived exertion'
+    date = datetime.strptime(strava_activity['start_date_local'].split('T')[0], '%Y-%m-%d')
 
     new_activity = Activity(user_id=user.id,
                             strava_activity_id=strava_activity['id'],
                             date_utc=strava_activity['start_date'],
-                            date_local=date_local,
-                            week_num=date_local.isocalendar()[1],
-                            weekday=date_local.isocalendar()[2],
+                            date_local=strava_activity['start_date_local'],
+                            week_num=date.isocalendar()[1],
+                            weekday=date.isocalendar()[2],
                             desc=strava_activity['name'],
                             exercise_type=strava_activity['type'],
-                            distance=distance,
+                            distance=strava_activity['distance'],
                             workout_time=strava_activity['moving_time'],
-                            average_speed=average_speed,
-                            has_heartrate=strava_activity['has_heartrate'],
-                            effort=effort,
-                            effort_source=effort_source,
                             elev_gain=strava_activity['total_elevation_gain'])
 
     db.session.add(new_activity)
@@ -110,11 +83,12 @@ def create_team_member(user_id, team_id, role):
     return team_member
 
 
-def create_comment(activity_id, author_id, date_utc, body):
+def create_comment(activity_id, author_id, recipient_id, date_utc, body):
     """Create and return a comment."""
 
     comment = Comment(activity_id=activity_id, 
                         author_id=author_id,
+                        recipient_id=recipient_id,
                         date_utc=date_utc,
                         body=body)
 
@@ -123,11 +97,48 @@ def create_comment(activity_id, author_id, date_utc, body):
 
     return comment
 
+def get_comments_by_strava_activity_id(strava_id):
+
+    activity = get_activity_by_strava_id(strava_id)
+
+    comments = Comment.query.filter(Comment.activity_id==activity.id).order_by(Comment.date_utc.desc()).all()
+
+    json = []
+
+    for comment in comments:
+
+        author = get_user_by_id(comment.author_id)
+        recipient = get_user_by_id(comment.recipient_id)
+
+        comment_dict = {'id': comment.id,
+                        'activity_id': activity.id,
+                        'author_name': f'{author.firstname} {author.lastname}',
+                        'author_prof_pic': author.prof_pic,
+                        'recipient_name': f'{recipient.firstname} {recipient.lastname}',
+                        'recipient_prof_pic': recipient.prof_pic,
+                        'date_utc': comment.date_utc,
+                        'body': comment.body}
+        json.append(comment_dict)
+
+    return json
+
+def get_comments_to_user(user_id):
+
+    return Comment.query.filter(Comment.recipient_id==user_id).all()
+
+def get_comments_from_user(user_id):
+
+    return Comment.query.filter(Comment.author_id==user_id).all()
 
 def get_all_users():
     """Return all users."""
 
     return User.query.all()
+
+def get_user_by_id(user_id):
+    """Return a user by email."""
+
+    return User.query.get(user_id)
 
 def get_user_by_email(email):
     """Return a user by email."""
@@ -145,6 +156,10 @@ def get_activities_by_user_id(user_id):
     """Return a user by email."""
 
     return Activity.query.filter(Activity.user_id == user_id).all()
+
+def get_activity_by_strava_id(activity_id):
+
+    return Activity.query.filter(Activity.strava_activity_id == str(activity_id)).first()
 
 
 def get_teams():
@@ -214,10 +229,10 @@ def show_strava_activities_in_db(team_id):
 
     activities = Activity.query.filter(Activity.user_id.in_(athlete_ids)).all()
 
-    strava_activity_ids = []
+    strava_activity_ids = set()
 
     for activity in activities:
-        strava_activity_ids.append(activity.strava_activity_id)
+        strava_activity_ids.add(activity.strava_activity_id)
 
     return strava_activity_ids
 
@@ -227,6 +242,7 @@ def update_team_activities(team_id):
 
     for athlete in athletes:
         activities = strava_api.get_strava_activities(athlete)
+        
         for activity in activities:
             if not str(activity['id']) in show_strava_activities_in_db(team_id):
                 create_activity(activity)
@@ -266,7 +282,7 @@ def get_athletes_on_team(team_id):
                         "prof_pic" : athlete.prof_pic}
         json.append(athlete_dict)
 
-    return json
+    return sorted(json, key = lambda i: i['name']) 
 
 def get_week_activities_json(team_id, week):
     """Return a list of activities completed by users on a team during the current week."""
@@ -288,9 +304,6 @@ def get_week_activities_json(team_id, week):
                     "exercise_type" : activity.exercise_type,
                     "distance" : activity.distance,
                     "workout_time" : activity.workout_time,
-                    "average_speed" : activity.average_speed,
-                    "effort" : activity.effort,
-                    "effort_source" : activity.effort_source,
                     "elev_gain" : activity.elev_gain}
         json.append(act_dict)
 
