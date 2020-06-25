@@ -87,10 +87,11 @@ def seed_comments():
 
         activity_id = comment['activity_id']
         author_id = comment['author_id']
+        recipient_id = comment['recipient_id']
         date_utc = comment['date_utc']
         body = comment['body']
 
-        crud.create_comment(activity_id, author_id, date_utc, body)
+        crud.create_comment(activity_id, author_id, recipient_id, date_utc, body)
 
 seed_users()
 seed_activities()
