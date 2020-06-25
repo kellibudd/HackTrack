@@ -175,22 +175,23 @@ def get_activity_data():
 
     return jsonify(activities)
 
-@app.route('/api/get-activity-splits/<int:activity_id>')
-def get_activity_splits(activity_id):
+@app.route('/add-comment', methods=['POST'])
+def add_comment():
 
-    athlete = crud.get_athlete_by_activity(activity_id)
-   
-    if datetime.fromtimestamp(int(athlete.strava_access_token_expir)) < datetime.utcnow():
-        crud.get_new_access_token_for_user(athlete)
+    strava_activity_id = request.form.get('activity-id')
+    comment = request.form.get('comment')
+    activity = crud.get_activity_by_strava_id(strava_activity_id)
 
-    split_data = strava_api.get_strava_activities_with_laps(athlete, activity_id)
+    added_comment = crud.create_comment(activity.id, session['user_id'], activity.user_id, datetime.utcnow(), comment)
+    
+    return redirect('/dashboard')
 
-    return jsonify(split_data)
+@app.route('/api/get-comments/<int:activity_id>')
+def get_comments(activity_id):
 
-# @app.route('/get-week-activities')
-# def get_week_activities():
-
-#     activities_dict = crud.get_week_activities_json(team.id, week)
+    comments = crud.get_comments_by_strava_activity_id(activity_id)
+    print(comments)
+    return jsonify(comments)
 
 if __name__ == '__main__':
     connect_to_db(app)
