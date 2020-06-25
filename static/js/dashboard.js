@@ -161,10 +161,14 @@ function reformatWorkoutLength(workoutTime) {
 function reformatDistance(distance) {
 
   distance = distance * 0.000621371
+  console.log("dist :", distance)
   let miles = Math.floor(distance)
-  let decimal = Math.floor(distance % 1 * 100)
-
-  return `${miles}.${decimal}mi`
+  console.log("miles :", miles)
+  let decimal = Math.round(distance % 1 * 100)
+  if (decimal < 10) {
+    return `${miles}.0${decimal}mi`;
+  };
+  return `${miles}.${decimal}mi`;
 };
 
 function reformatAvgSpeed(distance, workoutTime) {
