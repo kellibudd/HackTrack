@@ -83,10 +83,6 @@ class Activity(db.Model):
     exercise_type = db.Column(db.String, nullable=False)
     distance = db.Column(db.Float, nullable=False)
     workout_time = db.Column(db.Integer, nullable=False)
-    average_speed = db.Column(db.String)
-    has_heartrate = db.Column(db.Boolean)
-    effort = db.Column(db.Integer)
-    effort_source = db.Column(db.String)
     elev_gain = db.Column(db.Integer)
     splits = db.Column(db.String)
 
@@ -103,10 +99,11 @@ class Comment(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     activity_id = db.Column(db.Integer, db.ForeignKey('activities.id'), nullable=False)
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    recipient_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     date_utc = db.Column(db.DateTime)
     body = db.Column(db.Text, nullable=False)
 
-    author = db.relationship('User', backref='comments')
+    # user = db.relationship('User', backref='comments')
     activity = db.relationship('Activity', backref='comments')
 
 
