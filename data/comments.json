@@ -1,14 +1,9 @@
 [
     {   
         "activity_id": 1,
-        "author_id": 4,
-        "date_utc": "2020-06-05",
+        "author_id": 7,
+        "recipient_id": 2,
+        "date_utc": "2020-06-05T17:26:39Z",
         "body": "Let's have you take tomorrow off and rest up."
-    },
-    {   
-        "activity_id": 2,
-        "author_id": 4,
-        "date_utc": "2020-06-04",
-        "body": "Great run!"
     }
 ]
