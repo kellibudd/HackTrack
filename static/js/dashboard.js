@@ -1,12 +1,12 @@
 "use strict";
 
-let tableColumns = [" ", "Athlete", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun", "Total"];
+let tableColumns = ["Athlete", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun", "Total"];
 // let tableColumns = [" ", "Athlete", "Exercise", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun", "Total"];
 
 function generateTableHead(table) {
   for (let column of tableColumns) {
     let tableHeadRow = $("#head-row");
-    tableHeadRow.append(`<th id="${column}" scope="col">${column}</th>`);
+    tableHeadRow.append(`<th class="align-middle" id="${column}" scope="col">${column}</th>`);
   };
 };
 
@@ -17,14 +17,19 @@ function display_dashboard() {
   $.get('/get-team-data', (response) => {
     let athletes = response;
 
-    $.get('/get-activity-data', (response) => {
+    let curr_date = new Date()
+    let dateConverted = curr_date.toISOString()
+    console.log(dateConverted)
+    $.get(`/api/get-activity-data/${dateConverted}`, (response) => {
       let activities = response;
 
       for (let athlete of athletes) {
         let tbody = $("#table-body");
         let row = tbody.append(`<tr id="${athlete['id']}-row"></tr>`);
-        row.append(`<td><img src="${athlete['prof_pic']}" width="50px" class="rounded-circle" align="left"/></td>`);
-        row.append(`<th rowspan="2">${athlete['name']}</th>`);
+        row.append(`<td><img src="${athlete['prof_pic']}" width="60px" class="rounded-circle" align="left"/></td>`);
+        row.append(`<td class="align-middle" scope="row">
+                      <button class="activity-data btn btn-dark" disabled>${athlete['name']}</button>
+                    </td>`);
         // let run = row.append(`<td id="run-exercise" scope="row">Run</td>`);
         // let crossTrain = row.append(`<tr id="xt-workout" scope="row">Cross Train</tr>`);
 
@@ -45,43 +50,53 @@ function display_dashboard() {
             let elevationGain = reformatElevationGain(activity['elev_gain']);
 
             $(`#user-${athlete['id']}-col${activity['weekday']}`).replaceWith(
-            `<td scope="row">
+            `<td class="align-middle" scope="row">
               <div class="btn-group" role="group" aria-label="Basic example">
                 <button type="button" class="activity-data btn btn-light" id="${activity['strava_activity_id']}" 
-                  data-container="body" data-toggle="popover" data-trigger="hover click" data-placement="top"
+                  data-container="body" [dynamicPosition="false" data-toggle="popover" data-trigger="hover click" data-placement="bottom"
                   >${distance}</button>
-                <button type="button" class="comment btn btn-light" id="${activity['strava_activity_id']}" data-toggle="modal" data-target="#exampleModalLong"><span class="badge badge-warning">2</span></button>
+                <button type="button" class="comment btn btn-light" id="${activity['strava_activity_id']}" data-toggle="modal" data-target="#comment-modal"><img class="comment" src="/static/img/chat-left-text-fill.svg" width="15px"></button>
               </div>
             </td>`);
             
             weekMileage += activity['distance'];
             let weekMileageRounded = reformatDistance(weekMileage);
             $(`#user-${athlete['id']}-col8`).replaceWith(
-              `<td scope="row" id="user-${athlete['id']}-col8">
-                <button class="activity-data btn btn-dark"><b>${weekMileageRounded}<b></button>
+              `<td class="align-middle" scope="row" id="user-${athlete['id']}-col8">
+                <button class="activity-data btn btn-warning" disabled>${weekMileageRounded}</button>
               </td>`);
+
+            $(".popover-div").append(`<p>Date: ${activityDate}</p><br/>
+                                      Distance: ${distance} <br/>
+                                      Time: ${workoutTime} <br/> 
+                                      Average Pace: ${avgSpeed} <br/>
+                                      Elevation Gain: ${elevationGain}<br/>
+                                      <details>
+                                        <summary class="splits-summary">See Splits</summary>
+                                      </details><br/>
+                                      <form id="comment-form" action="/add-comment" method="POST">
+                                        Comment:
+                                        <textarea rows="1" class="form-control" id="comment-text" name="comment"></textarea><br/>
+                                        <input id="activity-id" type="hidden" name="activity-id" value="${activity['strava_activity_id']}">
+                                        <input type="submit" class="submit-comment btn btn-warning">
+                                      </form>`)
+
+            if (activity.hasOwnProperty("splits")) {
+
+              let activitySplits = activity['splits'];
+
+              for (let key of Object.keys(activitySplits)) {
+                $(".splits-summary").append(`<p>${activitySplits[key].average_speed}</p>`)
+                console.log(activitySplits[key].average_speed)
+              };
+            };
 
             $(`#${activity['strava_activity_id']}`).popover({ 
               title : 'Details',
-              content : `<div class=activity-details>
-                          Date: ${activityDate} <br/>
-                          Distance: ${distance} <br/>
-                          Time: ${workoutTime} <br/> 
-                          Average Pace: ${avgSpeed} <br/>
-                          Elevation Gain: ${elevationGain}<br/>
-                          <details>
-                            <summary>See Splits</summary>
-                            <p class="splits">here are the splits</p>
-                          </details><br/>
-                        </div>
-                        <form id="comment-form" action="/add-comment" method="POST">
-                          Comment:
-                          <textarea rows="1" class="form-control" id="comment-text" name="comment"></textarea><br/>
-                          <input id="activity-id" type="hidden" name="activity-id" value="${activity['strava_activity_id']}">
-                          <input type="submit" class="submit-comment btn btn-warning">
-                        </form>`,
-              html: true
-            });  
+              container: 'body',
+              html: true,
+              content : $(".popover-div")
+            });
           };  
         };
       };
@@ -90,16 +105,15 @@ function display_dashboard() {
         $.get(`/api/get-comments/${activityID}`, (response) => {
           console.log(response);
           const comments = response;
-          $('#myModal').modal({
+          $('#comment-modal').modal({
             backdrop: true
           });
           for (let comment of comments) {
             let comment_date = reformatDate(comment['date_utc'])
             $('.comment-modal-body').append(
-              `<div class="col py-sm-2"><div class="p-2 bg-light">
+              `<div class="col py-sm-2"><div class="rounded p-2 bg-light">
                 <img src="${comment['author_prof_pic']}" width="55px" class="rounded-circle" align="right"/>
-                <h6>${comment['author_name']}</h6>
-                ${comment_date}<br/><br/>
+                <h6>${comment['author_name']} on ${comment_date}</h6><br/>
                 ${comment['body']}<br/>
                 </div></div>`
             );
@@ -108,7 +122,7 @@ function display_dashboard() {
       });
       $(".close-comment").on('click', (evt) => {
         evt.preventDefault();
-          $('#myModal').modal({
+          $('#comment-modal').modal({
             backdrop: true
           });
             $('.comment-modal-body').empty();
@@ -119,18 +133,16 @@ function display_dashboard() {
 
 display_dashboard()
 
-// function display_activity_messages() {
+// function getDashboardDate() {
 
-  
-// };
-
-// display_activity_messages()
+//   let date = 
+// }
 
 function reformatDate(activityDate) {
 
   let formatDate = new Date(activityDate);
   let activityMonth = formatDate.getMonth()+1;
-  let activityDay = formatDate.getDate()+1;
+  let activityDay = formatDate.getDate();
   let activityYear = formatDate.getFullYear();
   let reformatDate = activityMonth + "-" + activityDay + "-" + activityYear;
 
@@ -161,9 +173,7 @@ function reformatWorkoutLength(workoutTime) {
 function reformatDistance(distance) {
 
   distance = distance * 0.000621371
-  console.log("dist :", distance)
   let miles = Math.floor(distance)
-  console.log("miles :", miles)
   let decimal = Math.round(distance % 1 * 100)
   if (decimal < 10) {
     return `${miles}.0${decimal}mi`;
