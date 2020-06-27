@@ -66,37 +66,38 @@ function display_dashboard() {
                 <button class="activity-data btn btn-warning" disabled>${weekMileageRounded}</button>
               </td>`);
 
-            $(".popover-div").append(`<p>Date: ${activityDate}</p><br/>
-                                      Distance: ${distance} <br/>
-                                      Time: ${workoutTime} <br/> 
-                                      Average Pace: ${avgSpeed} <br/>
-                                      Elevation Gain: ${elevationGain}<br/>
-                                      <details>
-                                        <summary class="splits-summary">See Splits</summary>
-                                      </details><br/>
-                                      <form id="comment-form" action="/add-comment" method="POST">
-                                        Comment:
-                                        <textarea rows="1" class="form-control" id="comment-text" name="comment"></textarea><br/>
-                                        <input id="activity-id" type="hidden" name="activity-id" value="${activity['strava_activity_id']}">
-                                        <input type="submit" class="submit-comment btn btn-warning">
-                                      </form>`)
-
+            let popoverData = $(`#${activity['strava_activity_id']}`).popover({ 
+                              title : 'Details',
+                              container: 'body',
+                              html: true,
+                              content : `<div class=activity-details>
+                                          Date: ${activityDate} <br/>
+                                          Distance: ${distance} <br/>
+                                          Time: ${workoutTime} <br/> 
+                                          Average Pace: ${avgSpeed} <br/>
+                                          Elevation Gain: ${elevationGain}<br/>
+                                          <details>
+                                            <summary>See Splits</summary>
+                                              <p class="splits"></p>
+                                          </details><br/>
+                                        <form id="comment-form" action="/add-comment" method="POST">
+                                          Comment:
+                                          <textarea rows="1" class="form-control" id="comment-text" name="comment"></textarea><br/>
+                                          <input id="activity-id" type="hidden" name="activity-id" value="${activity['strava_activity_id']}">
+                                          <input type="submit" class="submit-comment btn btn-warning">
+                                        </form>`
+            });
             if (activity.hasOwnProperty("splits")) {
 
-              let activitySplits = activity['splits'];
+                let activitySplits = activity['splits'];
 
-              for (let key of Object.keys(activitySplits)) {
-                $(".splits-summary").append(`<p>${activitySplits[key].average_speed}</p>`)
-                console.log(activitySplits[key].average_speed)
+                for (let key of Object.keys(activitySplits)) {
+                  let splits = $(".splits")
+                  splits.html(`<p>${activitySplits[key].average_speed}</p>`);
+                  console.log(activitySplits[key].average_speed);
+                };
               };
-            };
 
-            $(`#${activity['strava_activity_id']}`).popover({ 
-              title : 'Details',
-              container: 'body',
-              html: true,
-              content : $(".popover-div")
-            });
           };  
         };
       };
