@@ -1,6 +1,6 @@
 "use strict";
 
-let tableColumns = ["Athlete", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun", "Total"];
+let tableColumns = ["Athlete", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday", "Total Miles"];
 // let tableColumns = [" ", "Athlete", "Exercise", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun", "Total"];
 
 function generateTableHead(table) {
@@ -11,7 +11,8 @@ function generateTableHead(table) {
 };
 
 Date.prototype.getWeek = function() {
-      var onejan = new Date(this.getFullYear(),0,1);
+      let onejan = new Date(this.getFullYear(),0,1);
+      console.log(this - onejan)
       return Math.ceil((((this - onejan) / 86400000) + onejan.getDay())/7);
 };
 
@@ -22,7 +23,12 @@ function display_dashboard() {
   $.get('/get-team-data', (response) => {
     let athletes = response;
 
-    
+    let date = new Date()
+    console.log(date)
+    let thisWeek = date.getWeek()
+    console.log(thisWeek)
+    let lastWeek = new Date(date.getFullYear(), date.getMonth(), date.getDate() - 1)
+    let week = lastWeek.getWeek()
     
     $.get(`/api/get-activity-data/${week}`, (response) => {
       let activities = response;
@@ -31,7 +37,7 @@ function display_dashboard() {
         let tbody = $("#table-body");
         let row = tbody.append(`<tr id="${athlete['id']}-row"></tr>`);
         row.append(`<td><img src="${athlete['prof_pic']}" width="60px" class="rounded-circle" align="left"/></td>`);
-        row.append(`<td class="align-middle" scope="row">
+        row.append(`<td scope="row">
                       <button class="activity-data btn btn-dark" disabled>${athlete['name']}</button>
                     </td>`);
         // let run = row.append(`<td id="run-exercise" scope="row">Run</td>`);
@@ -54,7 +60,7 @@ function display_dashboard() {
             let elevationGain = reformatElevationGain(activity['elev_gain']);
 
             $(`#user-${athlete['id']}-col${activity['weekday']}`).replaceWith(
-            `<td class="align-middle" scope="row">
+            `<td scope="row">
               <div class="btn-group" role="group" aria-label="Basic example">
                 <button type="button" class="activity-data btn btn-light" id="${activity['strava_activity_id']}" 
                   data-container="body" [dynamicPosition="false" data-toggle="popover" data-trigger="hover click" data-placement="bottom"
@@ -66,7 +72,7 @@ function display_dashboard() {
             weekMileage += activity['distance'];
             let weekMileageRounded = reformatDistance(weekMileage);
             $(`#user-${athlete['id']}-col8`).replaceWith(
-              `<td class="align-middle" scope="row" id="user-${athlete['id']}-col8">
+              `<td scope="row" id="user-${athlete['id']}-col8">
                 <button class="activity-data btn btn-warning" disabled>${weekMileageRounded}</button>
               </td>`);
 
@@ -79,15 +85,14 @@ function display_dashboard() {
               for (let key of Object.keys(activitySplits)) {
                 // let splits = $('.splits');
                 // console.log(splits)
-                let split = `Split ${parseInt(key)+1}:` + " " + reformatAvgSpeed(activitySplits[key].distance, activitySplits[key].moving_time)
+                let split = `${parseInt(key)+1}` + " | " + reformatAvgSpeed(activitySplits[key].distance, activitySplits[key].moving_time)
+                // let splitDistance = reformatDistance(activitySplits[key].distance)
                 // $(`#${activity['strava_activity_id']}`).data('bs.popover').element.dataset.content = ;
                 splits.push(`<p class="split">${split}</p>`)
                 // $(`<p class="splits">${splitPace}</p>`).insertAfter(".splits");
-                console.log(splits);
               };
 
-              let splitsStr = splits.join('')
-              console.log(splitsStr)   
+              let splitsStr = splits.join('') 
 
               $(`#${activity['strava_activity_id']}`).popover({ 
                             title : 'Details',
@@ -117,7 +122,6 @@ function display_dashboard() {
       $(".comment").on('click', (evt) => {
         let activityID = evt.target.id;
         $.get(`/api/get-comments/${activityID}`, (response) => {
-          console.log(response);
           const comments = response;
           $('#comment-modal').modal({
             backdrop: true
@@ -147,20 +151,20 @@ function display_dashboard() {
 
 display_dashboard()
 
-<a href="/dashboard/"
+// <a href="/dashboard/"
 
-function getPreviousWeek() {
+// function getPreviousWeek() {
 
-  let counter = 0
+//   let counter = 0
  
-  console.log('hi im inside the get previous week')
+//   console.log('hi im inside the get previous week')
 
-  let today = new Date();
-  let previousWeek = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 7)
-  $("#table-body").empty()
-  $("#next-button").removeAttr("hidden")
-  display_dashboard(previousWeek);
-};
+//   let today = new Date();
+//   let previousWeek = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 7)
+//   $("#table-body").empty()
+//   $("#next-button").removeAttr("hidden")
+//   display_dashboard(previousWeek);
+// };
 
 // function getDashboardDate() {
 
@@ -204,10 +208,21 @@ function reformatDistance(distance) {
   distance = distance * 0.000621371
   let miles = Math.floor(distance)
   let decimal = Math.round(distance % 1 * 100)
-  if (decimal < 10) {
-    return `${miles}.0${decimal}mi`;
-  };
-  return `${miles}.${decimal}mi`;
+
+  if (decimal >= 100 && miles === 0) {
+    let miles = decimal/100;
+    return `${miles}.00 mi`
+  }
+  else if (miles >= 1 && decimal < 10) {
+    return `${miles}.0${decimal} mi`;
+  }
+  else if (miles < 1 && decimal < 10) {
+    return `0.0${decimal} mi`;
+  }
+  else if (miles < 1 && decimal >= 10) {
+    return `0.${decimal} mi`;
+  }
+  return `${miles}.${decimal} mi`;
 };
 
 function reformatAvgSpeed(distance, workoutTime) {
@@ -221,10 +236,10 @@ function reformatAvgSpeed(distance, workoutTime) {
     let avgSeconds = Math.round((avgTime % 1) * 60);
 
     if (avgSeconds < 10) {
-      return `${avgMinutes}:0${avgSeconds}/mile`;
+      return `${avgMinutes}:0${avgSeconds}/mi`;
     }
     else {
-      return `${avgMinutes}:${avgSeconds}/mile`;
+      return `${avgMinutes}:${avgSeconds}/mi`;
     };
   }
   else {
