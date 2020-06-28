@@ -1,0 +1,42 @@
+.split {
+    margin-bottom: 0;
+}
+
+.table-header {
+    min-width: 124px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.table td, .table th .table thead th {
+    vertical-align: middle;
+}
+
+table {
+width: 100%;}
+
+button.activity-data {
+    min-width: 90px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.btn {
+    padding: .2rem .7rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    border-radius: 1rem;
+}
+
+
+.btn:disabled {
+    opacity: 1;
+}
+
+table {
+    border-color: black;
+    border-top-color: black;
+    border-right-color: black;
+    border-bottom-color: black;
+    border-left-color: black;
+}
