@@ -6,8 +6,13 @@ let tableColumns = ["Athlete", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun", 
 function generateTableHead(table) {
   for (let column of tableColumns) {
     let tableHeadRow = $("#head-row");
-    tableHeadRow.append(`<th class="align-middle" id="${column}" scope="col">${column}</th>`);
+    tableHeadRow.append(`<th class="table-header" id="${column}" scope="col">${column}</th>`);
   };
+};
+
+Date.prototype.getWeek = function() {
+      var onejan = new Date(this.getFullYear(),0,1);
+      return Math.ceil((((this - onejan) / 86400000) + onejan.getDay())/7);
 };
 
 let table = $("#team-table");
@@ -17,10 +22,9 @@ function display_dashboard() {
   $.get('/get-team-data', (response) => {
     let athletes = response;
 
-    let curr_date = new Date()
-    let dateConverted = curr_date.toISOString()
-    console.log(dateConverted)
-    $.get(`/api/get-activity-data/${dateConverted}`, (response) => {
+    
+    
+    $.get(`/api/get-activity-data/${week}`, (response) => {
       let activities = response;
 
       for (let athlete of athletes) {
@@ -66,38 +70,47 @@ function display_dashboard() {
                 <button class="activity-data btn btn-warning" disabled>${weekMileageRounded}</button>
               </td>`);
 
-            let popoverData = $(`#${activity['strava_activity_id']}`).popover({ 
-                              title : 'Details',
-                              container: 'body',
-                              html: true,
-                              content : `<div class=activity-details>
-                                          Date: ${activityDate} <br/>
-                                          Distance: ${distance} <br/>
-                                          Time: ${workoutTime} <br/> 
-                                          Average Pace: ${avgSpeed} <br/>
-                                          Elevation Gain: ${elevationGain}<br/>
-                                          <details>
-                                            <summary>See Splits</summary>
-                                              <p class="splits"></p>
-                                          </details><br/>
-                                        <form id="comment-form" action="/add-comment" method="POST">
-                                          Comment:
-                                          <textarea rows="1" class="form-control" id="comment-text" name="comment"></textarea><br/>
-                                          <input id="activity-id" type="hidden" name="activity-id" value="${activity['strava_activity_id']}">
-                                          <input type="submit" class="submit-comment btn btn-warning">
-                                        </form>`
-            });
             if (activity.hasOwnProperty("splits")) {
 
-                let activitySplits = activity['splits'];
+              let activitySplits = activity['splits'];
 
-                for (let key of Object.keys(activitySplits)) {
-                  let splits = $(".splits")
-                  splits.html(`<p>${activitySplits[key].average_speed}</p>`);
-                  console.log(activitySplits[key].average_speed);
-                };
+              let splits = []
+
+              for (let key of Object.keys(activitySplits)) {
+                // let splits = $('.splits');
+                // console.log(splits)
+                let split = `Split ${parseInt(key)+1}:` + " " + reformatAvgSpeed(activitySplits[key].distance, activitySplits[key].moving_time)
+                // $(`#${activity['strava_activity_id']}`).data('bs.popover').element.dataset.content = ;
+                splits.push(`<p class="split">${split}</p>`)
+                // $(`<p class="splits">${splitPace}</p>`).insertAfter(".splits");
+                console.log(splits);
               };
 
+              let splitsStr = splits.join('')
+              console.log(splitsStr)   
+
+              $(`#${activity['strava_activity_id']}`).popover({ 
+                            title : 'Details',
+                            container: 'body',
+                            html: true,
+                            content : `<div class=activity-details>
+                                        Date: ${activityDate} <br/>
+                                        Distance: ${distance} <br/>
+                                        Time: ${workoutTime} <br/> 
+                                        Average Pace: ${avgSpeed} <br/>
+                                        Elevation Gain: ${elevationGain}<br/>
+                                        <details>
+                                          <summary>See Splits</summary>
+                                          ${splitsStr}
+                                        </details><br/>
+                                      <form id="comment-form" action="/add-comment" method="POST">
+                                        Comment:
+                                        <textarea rows="1" class="form-control" id="comment-text" name="comment"></textarea><br/>
+                                        <input id="activity-id" type="hidden" name="activity-id" value="${activity['strava_activity_id']}">
+                                        <input type="submit" class="submit-comment btn btn-warning">
+                                      </form>`
+            }); 
+            };
           };  
         };
       };
@@ -133,6 +146,21 @@ function display_dashboard() {
 };
 
 display_dashboard()
+
+<a href="/dashboard/"
+
+function getPreviousWeek() {
+
+  let counter = 0
+ 
+  console.log('hi im inside the get previous week')
+
+  let today = new Date();
+  let previousWeek = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 7)
+  $("#table-body").empty()
+  $("#next-button").removeAttr("hidden")
+  display_dashboard(previousWeek);
+};
 
 // function getDashboardDate() {
 
