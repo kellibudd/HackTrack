@@ -10,27 +10,29 @@ function generateTableHead(table) {
   };
 };
 
-Date.prototype.getWeek = function() {
-      let onejan = new Date(this.getFullYear(),0,1);
-      console.log(this - onejan)
-      return Math.ceil((((this - onejan) / 86400000) + onejan.getDay())/7);
-};
-
 let table = $("#team-table");
 generateTableHead(table);
 
 function display_dashboard() {
+
+  let convertedDate = null
+
+  if (window.location.pathname === "/dashboard") {
+      let date = new Date();
+      console.log(date)
+      convertedDate = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().split("T")[0];
+      console.log(convertedDate);
+  }
+  else {
+    convertedDate = window.location.pathname.split("/")[2];
+  };
+
+  updatePagination(convertedDate)
+
   $.get('/get-team-data', (response) => {
     let athletes = response;
-
-    let date = new Date()
-    console.log(date)
-    let thisWeek = date.getWeek()
-    console.log(thisWeek)
-    let lastWeek = new Date(date.getFullYear(), date.getMonth(), date.getDate() - 1)
-    let week = lastWeek.getWeek()
     
-    $.get(`/api/get-activity-data/${week}`, (response) => {
+    $.get(`/api/get-activity-data/${convertedDate}`, (response) => {
       let activities = response;
 
       for (let athlete of athletes) {
@@ -43,14 +45,14 @@ function display_dashboard() {
         // let run = row.append(`<td id="run-exercise" scope="row">Run</td>`);
         // let crossTrain = row.append(`<tr id="xt-workout" scope="row">Cross Train</tr>`);
 
-        for (let i of Array(9).keys()) {
+        for (let i of Array(8).keys()) {
           row.append(`<td id="user-${athlete['id']}-col${i+1}" scope="row"></td>`)
         };
 
         let weekMileage = 0
 
         for (let activity of activities) {
-          
+          console.log(activity)
           if (activity['user_id'] === athlete['id'] && activity['exercise_type'] === "Run") {
             
             let activityDate = reformatDate(activity['date']);
@@ -79,7 +81,7 @@ function display_dashboard() {
             if (activity.hasOwnProperty("splits")) {
 
               let activitySplits = activity['splits'];
-
+              console.log(activitySplits)
               let splits = []
 
               for (let key of Object.keys(activitySplits)) {
@@ -92,10 +94,11 @@ function display_dashboard() {
                 // $(`<p class="splits">${splitPace}</p>`).insertAfter(".splits");
               };
 
-              let splitsStr = splits.join('') 
+              let splitsStr = splits.join('')
+
 
               $(`#${activity['strava_activity_id']}`).popover({ 
-                            title : 'Details',
+                            title : 'Activity Details',
                             container: 'body',
                             html: true,
                             content : `<div class=activity-details>
@@ -114,7 +117,28 @@ function display_dashboard() {
                                         <input id="activity-id" type="hidden" name="activity-id" value="${activity['strava_activity_id']}">
                                         <input type="submit" class="submit-comment btn btn-warning">
                                       </form>`
-            }); 
+              }); 
+            }
+
+            else {
+              $(`#${activity['strava_activity_id']}`).popover({ 
+                            title : 'Activity Details',
+                            container: 'body',
+                            html: true,
+                            content : `<div class=activity-details>
+                                        Date: ${activityDate} <br/>
+                                        Distance: ${distance} <br/>
+                                        Time: ${workoutTime} <br/> 
+                                        Average Pace: ${avgSpeed} <br/>
+                                        Elevation Gain: ${elevationGain}<br/>
+                                      <form id="comment-form" action="/add-comment" method="POST">
+                                        Comment:
+                                        <textarea rows="1" class="form-control" id="comment-text" name="comment"></textarea><br/>
+                                        <input id="activity-id" type="hidden" name="activity-id" value="${activity['strava_activity_id']}">
+                                        <input type="submit" class="submit-comment btn btn-warning">
+                                      </form>`
+
+              });
             };
           };  
         };
@@ -151,16 +175,64 @@ function display_dashboard() {
 
 display_dashboard()
 
+function updatePagination(date) {
+
+  date = new Date(date.toString())
+
+  let previousWeek = new Date(date.getFullYear(), date.getMonth(), date.getDate() - 6);
+  previousWeek = previousWeek.toISOString().split("T")[0]
+  console.log('previous: ', previousWeek)
+
+  let nextWeek = new Date(date.getFullYear(), date.getMonth(), date.getDate() + 8);
+  nextWeek = nextWeek.toISOString().split("T")[0]
+  console.log('next: ', nextWeek)
+  
+  let currentDate = new Date()
+  console.log('date is ', date)
+  if (date.toISOString().split("T")[0] !== new Date(currentDate.getTime() - (currentDate.getTimezoneOffset() * 60000)).toISOString().split("T")[0]) {
+    $('#previous-button').replaceWith(`<a href="/dashboard/${previousWeek}" type="button" class="previous btn btn-primary" id="previous-button"><span aria-hidden="true">&larr;</span> Older</a>`)
+    $('#next-button').replaceWith(`<a href="/dashboard/${nextWeek}" type="button" class="next btn btn-primary" id="next-button"><span aria-hidden="true">&rarr;</span> Newer</a>`)
+  }
+
+  else {
+    $('#previous-button').replaceWith(`<a href="/dashboard/${previousWeek}" type="button" class="previous btn btn-primary" id="previous-button"><span aria-hidden="true">&larr;</span> Older</a>`)
+  };
+};
+
+  // if (window.location.pathname === "/dashboard") {
+  //   let today = new Date();
+  //   let previousWeek = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 7);
+  //   previousWeek = previousWeek.toISOString().split("T")[0];
+  //   // let letNewPath = window.location.pathname.replace(`/dashboard/${previousWeek}`);
+  //   // console.log(letNewPath)
+  // };
+
+  // else {
+  //   let currentWeek = window.location.pathname.split("/")[2];
+  //   let year = 
+  //   let month = 
+  //   let day = 
+  //   previousWeek = 
+  // }
+
+//   let activityID = evt.target.id;
+//   $.get(`/api/get-comments/${activityID}`, (response) => {
+//     const comments = response;
+// display_dashboard()
+
 // <a href="/dashboard/"
 
-// function getPreviousWeek() {
+// function getWeek() {
+
+
 
 //   let counter = 0
  
 //   console.log('hi im inside the get previous week')
 
-//   let today = new Date();
-//   let previousWeek = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 7)
+  // let today = new Date();
+  // let previousWeek = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 7)
+  // previousWeek = previousWeek.toISOString().split("T")[0]
 //   $("#table-body").empty()
 //   $("#next-button").removeAttr("hidden")
 //   display_dashboard(previousWeek);
