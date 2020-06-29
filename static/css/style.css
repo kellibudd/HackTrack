@@ -22,8 +22,9 @@ button.activity-data {
 }
 
 .btn {
+    font-family: 'Roboto', sans-serif;
     padding: .2rem .7rem;
-    font-size: 1rem;
+    font-size: 1.1rem;
     line-height: 1.5;
     border-radius: 1rem;
 }
@@ -51,5 +52,21 @@ table {
 }
 
 .popover {
-    font-size: 1rem;
+    font-family: 'Roboto', sans-serif;
+    font-size: .9rem;
+}
+
+.submit-comment{
+    font-family: 'Roboto', sans-serif;
+    font-size: .9rem;
+}
+
+.popover-header {
+    font-family: 'Roboto', sans-serif;
+    font-size: .9rem;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    font-size: 1.1rem;
 }
