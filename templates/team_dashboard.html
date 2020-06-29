@@ -38,31 +38,39 @@
 <br>
 <br>
 <br>
+<br>
 
 {# <h4>{{ team.name }}</h4> #}
 
-<div id="top-div"></div>
+<nav aria-label="...">
+  <ul class="pager">
+    <a href="#" type="button" class="previous btn btn-primary" id="previous-button"><span aria-hidden="true">&larr;</span> Older</a>
+    <a href="#" type="button" class="next btn btn-primary" id="next-button" hidden="hidden"><span aria-hidden="true">&rarr;</span> Newer</a>
+  </ul>
+</nav>
 
-<form id="refresh-dash" action="/create-activities" method="POST" align="left">
-  <input class="btn btn-outline-primary" type="submit" value="Refresh">
-</form>
-<br>
+<div class="container-fluid">
+  <table id="team-table" class="table table-borderless">
+    <thead id="table-head">
+      <tr id="head-row">
+        <th scope="col">
+          {# <form id="refresh" action="/create-activities" method="POST" align="left">
+            <button type="submit" class="comment btn btn-outline-warning"><img class="comment" src="/static/img/arrow-repeat-white.svg" width="20px"></button>
+          </form> #}
+        </th>
+      </tr>
 
+    </thead>
+    <tbody id="table-body">
+    </tbody>
+  </table>
+</div>
 
-<table id="team-table" class="table">
-  <thead id="table-head" class="bg-dark text-light">
-    <tr id="head-row"></tr>
-  </thead>
-  <tbody id="table-body">
-  </tbody>
-</table>
-
-
-<div class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+<div class="modal fade" id="comment-modal" tabindex="-1" role="dialog" aria-labelledby="comment-modal-title" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLongTitle">Comments</h5>
+        <h5 class="modal-title" id="comment-modal">Comments</h5>
         <button type="button" class="close close-comment" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
