@@ -40,3 +40,16 @@ table {
     border-bottom-color: black;
     border-left-color: black;
 }
+
+.container-fluid {
+    width: 100%;
+    padding-right: 25px;
+    padding-left: 25px;
+    margin-right: 0px;
+    margin-left: 0px;
+    padding-top: 25px;
+}
+
+.popover {
+    font-size: 1rem;
+}
