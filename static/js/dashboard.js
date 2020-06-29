@@ -1,13 +1,22 @@
 "use strict";
 
-let tableColumns = ["Athlete", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday", "Total Miles"];
+let tableColumns = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 // let tableColumns = [" ", "Athlete", "Exercise", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun", "Total"];
 
 function generateTableHead(table) {
+
+  let tableHeadRow = $("#head-row");
+
+  tableHeadRow.append(`<th class="table-header" id="Athlete" scope="col">Athlete</th>`)
+
   for (let column of tableColumns) {
-    let tableHeadRow = $("#head-row");
-    tableHeadRow.append(`<th class="table-header" id="${column}" scope="col">${column}</th>`);
+    tableHeadRow.append(`<th class="table-header" id="${column}" scope="col">
+                        <span class="weekday-span">${column}</span><br>
+                        <span class="${column}-date-span"></span>
+                        </th>`);
   };
+
+  tableHeadRow.append(`<th class="table-header" id="Total Miles" scope="col">Total Miles</th>`)
 };
 
 let table = $("#team-table");
@@ -26,6 +35,8 @@ function display_dashboard() {
   else {
     convertedDate = window.location.pathname.split("/")[2];
   };
+
+  getWeekDates(convertedDate)
 
   updatePagination(convertedDate)
 
@@ -52,7 +63,6 @@ function display_dashboard() {
         let weekMileage = 0
 
         for (let activity of activities) {
-          console.log(activity)
           if (activity['user_id'] === athlete['id'] && activity['exercise_type'] === "Run") {
             
             let activityDate = reformatDate(activity['date']);
@@ -81,7 +91,6 @@ function display_dashboard() {
             if (activity.hasOwnProperty("splits")) {
 
               let activitySplits = activity['splits'];
-              console.log(activitySplits)
               let splits = []
 
               for (let key of Object.keys(activitySplits)) {
@@ -175,6 +184,21 @@ function display_dashboard() {
 
 display_dashboard()
 
+function getWeekDates(date) {
+
+  date = new Date(date.toString())
+
+  let i = 1
+
+  while (i < 8) {
+    let firstWeekday = new Date(date.getFullYear(), date.getMonth(), date.getDate() - date.getDay()+i).toString().split(" ")
+    console.log(firstWeekday[2])
+    $(`.${firstWeekday[0]}-date-span`).replaceWith(`<span class="${firstWeekday[0]}-date-span">${firstWeekday[1]} ${firstWeekday[2]}</span><br>`)
+    i+=1
+  };
+
+};
+
 function updatePagination(date) {
 
   date = new Date(date.toString())
@@ -199,49 +223,6 @@ function updatePagination(date) {
   };
 };
 
-  // if (window.location.pathname === "/dashboard") {
-  //   let today = new Date();
-  //   let previousWeek = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 7);
-  //   previousWeek = previousWeek.toISOString().split("T")[0];
-  //   // let letNewPath = window.location.pathname.replace(`/dashboard/${previousWeek}`);
-  //   // console.log(letNewPath)
-  // };
-
-  // else {
-  //   let currentWeek = window.location.pathname.split("/")[2];
-  //   let year = 
-  //   let month = 
-  //   let day = 
-  //   previousWeek = 
-  // }
-
-//   let activityID = evt.target.id;
-//   $.get(`/api/get-comments/${activityID}`, (response) => {
-//     const comments = response;
-// display_dashboard()
-
-// <a href="/dashboard/"
-
-// function getWeek() {
-
-
-
-//   let counter = 0
- 
-//   console.log('hi im inside the get previous week')
-
-  // let today = new Date();
-  // let previousWeek = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 7)
-  // previousWeek = previousWeek.toISOString().split("T")[0]
-//   $("#table-body").empty()
-//   $("#next-button").removeAttr("hidden")
-//   display_dashboard(previousWeek);
-// };
-
-// function getDashboardDate() {
-
-//   let date = 
-// }
 
 function reformatDate(activityDate) {
 
