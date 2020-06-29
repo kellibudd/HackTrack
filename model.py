@@ -3,9 +3,9 @@
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime, timedelta
 from sqlalchemy.dialects.postgresql import JSON
+from sqlalchemy_json import MutableJson, NestedMutableJson
 
 db = SQLAlchemy()
-
 
 class User(db.Model):
     """A user."""
@@ -84,7 +84,7 @@ class Activity(db.Model):
     distance = db.Column(db.Float, nullable=False)
     workout_time = db.Column(db.Integer, nullable=False)
     elev_gain = db.Column(db.Integer)
-    splits = db.Column(db.String)
+    splits = db.Column(NestedMutableJson)
 
     def __repr__(self):
         return f'''<Activity id={self.id} user={self.user_id} 
