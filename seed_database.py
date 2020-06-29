@@ -2,6 +2,7 @@
 
 import os, server, crud, json
 from model import connect_to_db, db, User, Activity, Team, Team_Member, Comment
+from datetime import datetime
 
 os.system('dropdb run_app')
 os.system('createdb run_app')
@@ -46,8 +47,24 @@ def seed_activities():
         activity_data = json.loads(f.read())
 
     for activity in activity_data:
+        athlete = User.query.filter(User.strava_id==activity['athlete']['id']).first()
 
-        crud.create_activity(activity)
+        date = datetime.strptime(activity['start_date_local'].split('T')[0], '%Y-%m-%d')
+        
+        new_activity = Activity(user_id=athlete.id,
+                        strava_activity_id=activity['id'],
+                        date_utc=activity['start_date'],
+                        date_local=activity['start_date_local'],
+                        week_num=date.isocalendar()[1],
+                        weekday=date.isocalendar()[2],
+                        desc=activity['name'],
+                        exercise_type=activity['type'],
+                        distance=activity['distance'],
+                        workout_time=activity['moving_time'],
+                        elev_gain=activity['total_elevation_gain'])
+
+        db.session.add(new_activity)
+        db.session.commit()
 
 def seed_teams():
 
