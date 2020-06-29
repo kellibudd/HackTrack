@@ -32,11 +32,43 @@ def create_user(firstname, lastname, phone, email, password, prof_pic, timezone,
 def create_activity(strava_activity):
     """Create and return an activity."""
 
-    user = User.query.filter(User.strava_id==strava_activity['athlete']['id']).first()
+    athlete = User.query.filter(User.strava_id==strava_activity['athlete']['id']).first()
 
     date = datetime.strptime(strava_activity['start_date_local'].split('T')[0], '%Y-%m-%d')
 
-    new_activity = Activity(user_id=user.id,
+    # if datetime.fromtimestamp(int(athlete.strava_access_token_expir)) < datetime.utcnow():
+    #     strava_access_token = get_new_access_token_for_user(athlete)
+
+    # else:
+
+    if strava_activity['type'] == 'Run':
+
+        strava_access_token = athlete.strava_access_token
+        
+        strava_splits = strava_api.get_strava_activities_with_laps(strava_access_token, strava_activity['id'])
+
+        if 'splits_standard' in strava_splits:
+           
+            new_activity = Activity(user_id=athlete.id,
+                                strava_activity_id=strava_activity['id'],
+                                date_utc=strava_activity['start_date'],
+                                date_local=strava_activity['start_date_local'],
+                                week_num=date.isocalendar()[1],
+                                weekday=date.isocalendar()[2],
+                                desc=strava_activity['name'],
+                                exercise_type=strava_activity['type'],
+                                distance=strava_activity['distance'],
+                                workout_time=strava_activity['moving_time'],
+                                elev_gain=strava_activity['total_elevation_gain'],
+                                splits=strava_splits['splits_standard'])
+
+            db.session.add(new_activity)
+            db.session.commit()
+
+            return new_activity
+
+    else:
+        new_activity = Activity(user_id=athlete.id,
                             strava_activity_id=strava_activity['id'],
                             date_utc=strava_activity['start_date'],
                             date_local=strava_activity['start_date_local'],
@@ -48,10 +80,10 @@ def create_activity(strava_activity):
                             workout_time=strava_activity['moving_time'],
                             elev_gain=strava_activity['total_elevation_gain'])
 
-    db.session.add(new_activity)
-    db.session.commit()
+        db.session.add(new_activity)
+        db.session.commit()
 
-    return new_activity
+        return new_activity
 
 
 def create_team(name, coach_id, logo, team_banner_img, team_color, activities_last_updated):
@@ -145,7 +177,7 @@ def get_user_by_email(email):
 
     return User.query.filter(User.email == email).first()
 
-def get_athlete_by_activity(activity_id):
+def get_athlete_by_strava_activity(activity_id):
 
     activity = Activity.query.filter(Activity.strava_activity_id == str(activity_id)).first()
     print(activity.user_id)
@@ -210,6 +242,8 @@ def get_new_access_token_for_user(athlete):
     athlete.strava_access_token_expir = token['expires_at']
     db.session.commit()
 
+    return token['access_token']
+
 def get_new_access_tokens_for_team(team_id):
     """Update access tokens for all users on a given team"""
 
@@ -235,6 +269,22 @@ def show_strava_activities_in_db(team_id):
         strava_activity_ids.add(activity.strava_activity_id)
 
     return strava_activity_ids
+
+def get_athletes_on_team(team_id):
+    
+    athlete_ids = get_athlete_ids_by_team(team_id)
+
+    athletes = User.query.filter(User.id.in_(athlete_ids)).all()
+
+    json = []
+
+    for athlete in athletes:
+        athlete_dict = {"id" : athlete.id,
+                        "name": f'{athlete.firstname} {athlete.lastname}',
+                        "prof_pic" : athlete.prof_pic}
+        json.append(athlete_dict)
+
+    return sorted(json, key = lambda i: i['name']) 
 
 def update_team_activities(team_id):
 
@@ -268,28 +318,12 @@ def convert_time_format(time):
     else:
         return f'{hours}:{minutes}:0{seconds}'
 
-def get_athletes_on_team(team_id):
-    
-    athlete_ids = get_athlete_ids_by_team(team_id)
-
-    athletes = User.query.filter(User.id.in_(athlete_ids)).all()
-
-    json = []
-
-    for athlete in athletes:
-        athlete_dict = {"id" : athlete.id,
-                        "name": f'{athlete.firstname} {athlete.lastname}',
-                        "prof_pic" : athlete.prof_pic}
-        json.append(athlete_dict)
-
-    return sorted(json, key = lambda i: i['name']) 
-
 def get_week_activities_json(team_id, week):
     """Return a list of activities completed by users on a team during the current week."""
 
     athlete_ids = get_athlete_ids_by_team(team_id)
 
-    activities = Activity.query.filter(Activity.week_num == week, Activity.user_id.in_(athlete_ids)).all()
+    activities = Activity.query.filter(Activity.week_num == week, Activity.exercise_type == "Run", Activity.user_id.in_(athlete_ids)).all()
 
     json = []
 
@@ -304,7 +338,8 @@ def get_week_activities_json(team_id, week):
                     "exercise_type" : activity.exercise_type,
                     "distance" : activity.distance,
                     "workout_time" : activity.workout_time,
-                    "elev_gain" : activity.elev_gain}
+                    "elev_gain" : activity.elev_gain,
+                    "splits": activity.splits}
         json.append(act_dict)
 
     return json
