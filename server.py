@@ -142,10 +142,12 @@ def create_activities():
 
         for activity in activities:
             crud.create_activity(activity)
+            print(activity['description'])
+            print(activity['start_date_local'])
 
     team = crud.get_team_by_user_id(session['user_id'])
 
-    if datetime.utcnow() - team.activities_last_updated > timedelta(0, 10800):
+    if datetime.utcnow() - team.activities_last_updated > timedelta(0, 1):
         print("Updating team activities...")
         crud.update_team_activities(team.id)
 
@@ -153,6 +155,11 @@ def create_activities():
 
 @app.route('/dashboard')
 def display_team_dashboard():
+
+    return render_template('team_dashboard.html')
+
+@app.route('/dashboard/<date>')
+def get_dashboard_week(date):
 
     return render_template('team_dashboard.html')
 
@@ -164,12 +171,16 @@ def get_team_data():
 
     return jsonify(athletes)
 
-@app.route('/get-activity-data')
-def get_activity_data():
+@app.route('/api/get-activity-data/<date>')
+def get_activity_data(date):
 
-    date = datetime.now() - timedelta(0, 21600)
+    print(date)
+    print(type(date))
+    date = datetime.strptime(date, '%Y-%m-%d')
+    print(date)
+    print(type(date))
     week = date.isocalendar()[1]
-
+    print(week)
     team = crud.get_team_by_user_id(session['user_id'])
     activities = crud.get_week_activities_json(team.id, week)
 
