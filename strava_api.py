@@ -48,9 +48,9 @@ def get_strava_activities(athlete):
 
     return requests.get(activities_url, headers=header).json()
 
-def get_strava_activities_with_laps(athlete, strava_activity_id):
+def get_strava_activities_with_laps(strava_access_token, strava_activity_id):
 
-    access_token = athlete.strava_access_token
+    access_token = strava_access_token
     header = {'Authorization': 'Bearer ' + access_token}
     id_as_int = strava_activity_id
     activities_url = f'https://www.strava.com/api/v3/activities/{id_as_int}' 
