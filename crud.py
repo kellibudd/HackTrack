@@ -302,6 +302,25 @@ def update_team_activities(team_id):
     team = get_team_by_id(team_id)
     team.activities_last_updated = datetime.utcnow()
 
+    get_new_access_token_for_user(athlete)
+
+def update_user_activities(athlete):
+
+    get_new_access_token_for_user(athlete)
+    
+    activities = strava_api.get_strava_activities(athlete)
+    counter = 0
+    for activity in activities:
+        create_activity(activity)
+        counter += 1
+        print("*"*60)
+        print("ADDED: ", activity['name'])
+        
+    print("*"*60)
+    print("TOTAL ADDED: ", counter)
+    team = get_team_by_user_id(athlete.id)
+    team.activities_last_updated = datetime.utcnow()
+
 
 def convert_time_format(time):
 
