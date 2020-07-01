@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 from pytz import timezone
 import strava_api
 
-def create_user(firstname, lastname, phone, email, password, prof_pic, timezone, strava_id, 
+def create_user(firstname, lastname, phone, email, password, prof_pic, strava_id, 
                 strava_access_token, strava_access_token_expir, strava_refresh_token):
     """Create and return a user."""
 
@@ -16,12 +16,10 @@ def create_user(firstname, lastname, phone, email, password, prof_pic, timezone,
                 email=email,
                 password=password,
                 prof_pic=prof_pic,
-                timezone=timezone,
                 strava_id=strava_id,
                 strava_access_token=strava_access_token,
                 strava_access_token_expir=strava_access_token_expir,
-                strava_refresh_token=strava_refresh_token
-                )
+                strava_refresh_token=strava_refresh_token)
 
     db.session.add(user)
     db.session.commit()
@@ -36,65 +34,44 @@ def create_activity(strava_activity):
 
     date = datetime.strptime(strava_activity['start_date_local'].split('T')[0], '%Y-%m-%d')
 
-    # if datetime.fromtimestamp(int(athlete.strava_access_token_expir)) < datetime.utcnow():
-    #     strava_access_token = get_new_access_token_for_user(athlete)
+    strava_access_token = athlete.strava_access_token
+    
+    strava_splits = strava_api.get_strava_activities_with_laps(strava_access_token, strava_activity['id'])
 
-    # else:
+    splits = None
 
-    if strava_activity['type'] == 'Run':
+    if 'splits_standard' in strava_splits:
 
-        strava_access_token = athlete.strava_access_token
-        
-        strava_splits = strava_api.get_strava_activities_with_laps(strava_access_token, strava_activity['id'])
+        splits = strava_splits['splits_standard']
+       
+    new_activity = Activity(user_id=athlete.id,
+                        strava_activity_id=strava_activity['id'],
+                        date_utc=strava_activity['start_date'],
+                        date_local=strava_activity['start_date_local'],
+                        week_num=date.isocalendar()[1],
+                        weekday=date.isocalendar()[2],
+                        desc=strava_activity['name'],
+                        exercise_type=strava_activity['type'],
+                        distance=strava_activity['distance'],
+                        workout_time=strava_activity['moving_time'],
+                        elev_gain=strava_activity['total_elevation_gain'],
+                        splits=splits)
 
-        if 'splits_standard' in strava_splits:
-           
-            new_activity = Activity(user_id=athlete.id,
-                                strava_activity_id=strava_activity['id'],
-                                date_utc=strava_activity['start_date'],
-                                date_local=strava_activity['start_date_local'],
-                                week_num=date.isocalendar()[1],
-                                weekday=date.isocalendar()[2],
-                                desc=strava_activity['name'],
-                                exercise_type=strava_activity['type'],
-                                distance=strava_activity['distance'],
-                                workout_time=strava_activity['moving_time'],
-                                elev_gain=strava_activity['total_elevation_gain'],
-                                splits=strava_splits['splits_standard'])
+    db.session.add(new_activity)
+    db.session.commit()
 
-            db.session.add(new_activity)
-            db.session.commit()
+    return new_activity
 
-            return new_activity
-
-    else:
-        new_activity = Activity(user_id=athlete.id,
-                            strava_activity_id=strava_activity['id'],
-                            date_utc=strava_activity['start_date'],
-                            date_local=strava_activity['start_date_local'],
-                            week_num=date.isocalendar()[1],
-                            weekday=date.isocalendar()[2],
-                            desc=strava_activity['name'],
-                            exercise_type=strava_activity['type'],
-                            distance=strava_activity['distance'],
-                            workout_time=strava_activity['moving_time'],
-                            elev_gain=strava_activity['total_elevation_gain'])
-
-        db.session.add(new_activity)
-        db.session.commit()
-
-        return new_activity
-
-
-def create_team(name, coach_id, logo, team_banner_img, team_color, activities_last_updated):
+def create_team(name, coach_id, activities_last_updated):
     """Create and return a team."""
     
     team = Team(name=name, 
                 coach_id=coach_id,
-                logo=logo,
-                team_banner_img=team_banner_img,
-                team_color=team_color,
                 activities_last_updated=activities_last_updated)
+                # logo=logo,
+                # team_banner_img=team_banner_img,
+                # team_color=team_color,
+                
 
     db.session.add(team)
     db.session.commit()
@@ -197,7 +174,7 @@ def get_activity_by_strava_id(activity_id):
 def get_teams():
     """Return a list of teams."""
 
-    return Team.query.all()
+    return Team.query.order_by(Team.name.asc()).all()
 
 
 def get_team_by_id(id):
@@ -280,6 +257,8 @@ def get_athletes_on_team(team_id):
 
     for athlete in athletes:
         athlete_dict = {"id" : athlete.id,
+                        "f_name": f'{athlete.firstname}',
+                        "l_name": f'{athlete.lastname}',
                         "name": f'{athlete.firstname} {athlete.lastname}',
                         "prof_pic" : athlete.prof_pic}
         json.append(athlete_dict)
@@ -294,15 +273,20 @@ def update_team_activities(team_id):
         activities = strava_api.get_strava_activities(athlete)
         
         for activity in activities:
-            if not str(activity['id']) in show_strava_activities_in_db(team_id):
-                create_activity(activity)
+
+            if activity['type'] == 'Run'
+            
+            if not str(activity['id']) in show_strava_activities_in_db(team_id) and activity['type'] == 'Run'::
+
+                activity_added = create_activity(activity)
                 print("*"*60)
-                print("ADDED: ", activity['name'])
+                print("Updating activities...")
+                print("*"*60)
+                print("ADDED: ", activity_added.date_local)
+                print("ADDED: ", activity_added.desc)
     
     team = get_team_by_id(team_id)
     team.activities_last_updated = datetime.utcnow()
-
-    get_new_access_token_for_user(athlete)
 
 def update_user_activities(athlete):
 
@@ -311,10 +295,9 @@ def update_user_activities(athlete):
     activities = strava_api.get_strava_activities(athlete)
     counter = 0
     for activity in activities:
-        create_activity(activity)
-        counter += 1
-        print("*"*60)
-        print("ADDED: ", activity['name'])
+        if activity['type'] == 'Run':
+            create_activity(activity)
+            counter += 1
         
     print("*"*60)
     print("TOTAL ADDED: ", counter)
