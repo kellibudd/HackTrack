@@ -2,71 +2,92 @@
     margin-bottom: 0;
 }
 
-.table-header {
+.table thead th {
+    vertical-align: middle;
+    text-align: center;
+    font-weight: bold;
+    font-size: 1em;
+}
+
+
+.table td, .table th {
     min-width: 124px;
     text-align: center;
     vertical-align: middle;
+    padding-right: 5px;
+    padding-left: 5px;
 }
 
-.table td, .table th .table thead th {
-    vertical-align: middle;
-}
-
-table {
-width: 100%;}
-
-button.activity-data {
-    min-width: 90px;
+.table th.athlete-img, .table td.athlete-img {
+    min-width: 60px;
     text-align: center;
     vertical-align: middle;
+    padding-right: 5px;
+    padding-left: 5px;
 }
 
 .btn {
+    border-radius: 50px;
+    line-height: 1;
+}
+
+table {
+    width: auto;
+}
+
+.pager {
+    padding-inline-start: 0;
+}
+
+.table-data .submit-comment {
+    text-align: center;
+    vertical-align: middle;
+    max-width: 120px;
     font-family: 'Roboto', sans-serif;
-    padding: .2rem .7rem;
-    font-size: 1.1rem;
+    padding: .2rem .9rem;
+    font-size: .95rem;
     line-height: 1.5;
     border-radius: 1rem;
 }
 
-
 .btn:disabled {
     opacity: 1;
-}
-
-table {
-    border-color: black;
-    border-top-color: black;
-    border-right-color: black;
-    border-bottom-color: black;
-    border-left-color: black;
+    line-height: 1;
 }
 
 .container-fluid {
-    width: 100%;
-    padding-right: 25px;
-    padding-left: 25px;
+    width: auto;
+    padding-right: 0px;
+    padding-left: 0px;
     margin-right: 0px;
     margin-left: 0px;
-    padding-top: 25px;
+    padding-top: 75px;
 }
 
 .popover {
     font-family: 'Roboto', sans-serif;
-    font-size: .9rem;
+    font-size: .95rem;
 }
 
 .submit-comment{
     font-family: 'Roboto', sans-serif;
-    font-size: .9rem;
+    font-size: .95rem;
 }
 
 .popover-header {
     font-family: 'Roboto', sans-serif;
-    font-size: .9rem;
+    font-size: .95rem;
+}
+
+.nav-link {
+    font-family: 'Roboto', sans-serif;
 }
 
 body {
     font-family: 'Roboto', sans-serif;
-    font-size: 1.1rem;
+    font-size: .95rem;
 }
+
+
+
+
