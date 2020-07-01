@@ -7,6 +7,7 @@ import os
 import urllib3
 from stravalib import Client
 import logging
+import crud
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 STRAVA_CLIENT_ID = os.environ['STRAVA_CLIENT_ID']
@@ -42,11 +43,14 @@ def get_new_token(refresh_token):
 
 def get_strava_activities(athlete):
 
+    team = crud.get_team_by_user_id(athlete.id)
+
     access_token = athlete.strava_access_token
     header = {'Authorization': 'Bearer ' + access_token}
-    activities_url = 'https://www.strava.com/api/v3/athlete/activities' 
+    activities_url = 'https://www.strava.com/api/v3/athlete/activities'
+    payload = {'after': int(team.activities_last_updated.timestamp()), 'per_page': 200}
 
-    return requests.get(activities_url, headers=header).json()
+    return requests.get(activities_url, headers=header, params=payload).json()
 
 def get_strava_activities_with_laps(strava_access_token, strava_activity_id):
 
