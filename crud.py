@@ -276,7 +276,7 @@ def update_team_activities(team_id):
 
             if activity['type'] == 'Run'
             
-            if not str(activity['id']) in show_strava_activities_in_db(team_id) and activity['type'] == 'Run'::
+            if not str(activity['id']) in show_strava_activities_in_db(team_id) and activity['type'] == 'Run':
 
                 activity_added = create_activity(activity)
                 print("*"*60)
