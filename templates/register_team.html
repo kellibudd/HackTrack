@@ -1,12 +1,13 @@
 {% extends 'base.html' %}
 
 {% block body %}
-  <section id="team-registration">
+
+  <section id="existing-team-registration">
     <h2>New User Sign-Up</h2>
     <br>
-    <h4>Join A Team:</h4>
-    <form id="team-reg-form" action="/create-team-mem" method="POST">
-        Select a registered team:
+    <h4>Join A Registered Team:</h4>
+    <form id="exist-team-reg-form" action="/create-team-mem" method="POST">
+        Team:
         <p>
           <select name="team">
             <option value="" disabled selected>Select a team</option>
@@ -15,11 +16,28 @@
             {% endfor %}
           </select>
         </p>
-        Select your role:
+        Role:
         <p>
           <select name="role">
             <option value="" disabled selected>Select a user type</option>
             <option value="Athlete">Athlete</option>
+            <option value="Coach">Coach</option>
+          </select>
+        </p>
+        <input type="submit">
+    </form>
+  </section><br>
+
+  <section id="new-team-registration">
+    <h4>Add New Team:</h4>
+    <form id="new-team-reg-form" action="/create-team" method="POST">
+        Team Name:
+        <p>
+          <input type="text" name="team_name">
+        </p>
+        Role - Coach Only:
+        <p>
+          <select name="role">
             <option value="Coach">Coach</option>
           </select>
         </p>
