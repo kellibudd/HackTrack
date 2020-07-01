@@ -26,13 +26,12 @@ function display_dashboard() {
 
   let convertedDate = null
 
-  if (window.location.pathname === "/dashboard") {
+  if (window.location.pathname === "/dashboard") {   
       let date = new Date();
-      console.log(date)
       convertedDate = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().split("T")[0];
-      console.log(convertedDate);
   }
-  else {
+
+  else { 
     convertedDate = window.location.pathname.split("/")[2];
   };
 
@@ -77,7 +76,7 @@ function display_dashboard() {
                 <button type="button" class="table-data btn btn-light" id="popover-${activity['strava_activity_id']}" 
                   data-container="body" [dynamicPosition="false" data-toggle="popover" data-trigger="hover click" data-placement="bottom"
                   >${distance}</button>
-                <button type="button" class="comment btn btn-light" id="comment-${activity['strava_activity_id']}" data-toggle="modal" data-target="#comment-modal"><img class="comment" src="/static/img/chat-left-text-fill.svg" width="15px"></button>
+                <button type="button" class="comment btn btn-light" value="${activity['strava_activity_id']}" data-toggle="modal" data-target="#comment-modal"></button>
               </div>
             </td>`);
             
@@ -91,19 +90,15 @@ function display_dashboard() {
             let splitSummary = "";
 
             if (activity['splits'] !== null) {
-
               let activitySplits = activity['splits'];
               let splits = []
 
               for (let key of Object.keys(activitySplits)) {
-
                 let split = `${parseInt(key)+1}` + " | " + reformatAvgSpeed(activitySplits[key].distance, activitySplits[key].moving_time)
                 splits.push(`<p class="split">${split}</p>`)
-
               };
 
               splits = splits.join('')
-              console.log(splits)
 
               splitSummary = `<details>
                                 <summary>See Splits</summary>
@@ -121,7 +116,7 @@ function display_dashboard() {
                                       <div>Time: ${workoutTime}</div>
                                       <div>Average Pace: ${avgSpeed}</div>
                                       <div>Elevation Gain: ${elevationGain}</div>
-                                      <div>${splitSummary}</div>
+                                      <div>${splitSummary}</div><br/>
                                       <div></div>
                                     <form id="comment-form" action="/add-comment" method="POST">
                                       Comment:
@@ -133,25 +128,28 @@ function display_dashboard() {
           };  
         };
       };
+
       $(".comment").on('click', (evt) => {
-        let activityID = evt.target.id;
+        let activityID = evt.target.value;
         $.get(`/api/get-comments/${activityID}`, (response) => {
           const comments = response;
+          console.log(comments.length)
           $('#comment-modal').modal({
             backdrop: true
           });
           for (let comment of comments) {
             let comment_date = reformatDate(comment['date_utc'])
             $('.comment-modal-body').append(
-              `<div class="col py-sm-2"><div class="rounded p-2 bg-light">
+              `<div class="col py-sm-2"><div class="rounded p-2 bg-light" class="comment-stream" id="comment-${comment['id']}">
                 <img src="${comment['author_prof_pic']}" width="40px" class="rounded-circle" align="right"/>
-                <h6>${comment['author_name']} on ${comment_date}</h6><br/>
-                ${comment['body']}<br/>
+                <div>${comment['author_name']} on ${comment_date}</div>
+                <div>${comment['body']}</div>
                 </div></div>`
             );
           };
         });
       });
+
       $(".close-comment").on('click', (evt) => {
         evt.preventDefault();
           $('#comment-modal').modal({
@@ -173,11 +171,9 @@ function displayWeekDates(date) {
 
   while (i < 8) {
     let firstWeekday = new Date(date.getFullYear(), date.getMonth(), date.getDate() - date.getDay()+i).toString().split(" ")
-    console.log(firstWeekday[2])
     $(`.${firstWeekday[0]}-date-span`).replaceWith(`<span class="${firstWeekday[0]}-date-span">${firstWeekday[1]} ${firstWeekday[2]}</span><br>`)
     i+=1
   };
-
 };
 
 function updatePagerLinks(date) {
@@ -193,6 +189,7 @@ function updatePagerLinks(date) {
   $('#previous-button').attr('href', `/dashboard/${previousWeek}`)
 
   let currentDate = new Date()
+
   if (date.toISOString().split("T")[0] !== new Date(currentDate.getTime() - (currentDate.getTimezoneOffset() * 60000)).toISOString().split("T")[0]) {
     $('#next-button').attr('href', `/dashboard/${nextWeek}`)
     $('#next-button').removeAttr('hidden')
