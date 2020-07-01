@@ -47,11 +47,11 @@ def login_user():
     user = crud.get_user_by_email(email)
 
     if user == None:
-        flash('Account does not exist. Please register as a new user.')
+        flash(u'Account does not exist.','email-error')
         return redirect('/')
 
     elif user.password != password:
-        flash('Incorrect password. Please try again.')
+        flash(u'Incorrect password. Please try again.','password-error')
         return redirect('/')
 
     elif user.password == password:
@@ -86,8 +86,14 @@ def create_user():
     user = crud.get_user_by_email(email)
 
     if user != None:
-        flash('Account already exists with provided email. Please login.')
-        return redirect('/')
+        flash(u'Account already exists with provided email. Please login.','email-error')
+
+        return redirect(request.referrer)
+
+    elif password != password_confirm:
+        flash(u'Passwords do not match. Please try again.','password-error')
+    
+        return redirect(request.referrer)
 
     else:
         user_data = strava_api.get_strava_user_data()
