@@ -1,17 +1,19 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <link rel="shortcut icon" href="./static/img/favicon.ico"/> 
+  <link rel="shortcut icon" href="/static/img/favicon.ico"/> 
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.bundle.min.js"></script>
+
+   <script src="/static/js/messages.js"></script>
+
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
   <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="stylesheet" href="/static/css/background.css">
 
-  {% if request.path == '/' or 'register' in request.path or 'join' in request.path%}
-  <link rel="stylesheet" href="/static/css/homepage.css">
-  {% endif %}
+  
 
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Monoton&display=swap" rel="stylesheet">
@@ -25,7 +27,6 @@
 </head>
 <body>
 
-
   <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark">
     <nav class="navbar">
     <span class="navbar-brand mb-0 h1">HackTrack</span>
@@ -35,7 +36,7 @@
     </button>
     
     <div class="collapse navbar-collapse" id="navbarNavDropdown">
-
+      <div class="navbar-nav">
       <ul class="navbar-nav">
 
         {% if 'user' in session %}
@@ -47,12 +48,12 @@
           <a class="nav-link dropdown-toggle" role="button" id="messages-dropdown dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             Messages
           </a>
-          <div class="dropdown-menu" id="inbox-menu" aria-labelledby="dropdownMenuLink">
+          <div class="dropdown-menu" id="sent-menu" aria-labelledby="dropdownMenuLink">
           <div class="card">
           <div class="card-header">
-            Incoming
+            Outgoing
           </div>
-          <div class="inbox"></div>
+          <div class="sent"></div>
           </div>
         </li>
         <li class="nav-item active">
@@ -119,7 +120,14 @@
 
       </ul>
     </div>
+  </div>
   </nav>
+
+  {% if request.path == '/'%}
+    <div class="track-img"></div>
+  {% endif %}
+
+
 
  
 
@@ -129,7 +137,7 @@
       </p>
     {% endfor %}
 
-  <script src="/static/js/messages.js"></script>
+ 
 
     {% block body %}
 
