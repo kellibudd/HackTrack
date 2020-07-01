@@ -5,11 +5,15 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.bundle.js"></script>
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.bundle.min.js"></script>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
   <link rel="stylesheet" href="/static/css/style.css">
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap" rel="stylesheet">
 
+  {% if request.path == '/' %}
+  <link rel="stylesheet" href="/static/css/homepage.css">
+  {% endif %}
+
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap" rel="stylesheet">
 
   <title>
     {% block title %}HackTrack{% endblock %}
@@ -20,19 +24,70 @@
 </head>
 <body>
 
+
   <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark">
     <a class="navbar-brand" href="#">HackTrack</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
+    
     <div class="collapse navbar-collapse" id="navbarNavDropdown">
+
       <ul class="navbar-nav">
+
+        {% if 'user' in session %}
         <li class="nav-item active">
-          <a class="nav-link" href="/">Login</a>
+          <a class="nav-link team-dashboard" href="#">Team Dashboard</a>
         </li>
+        <li class="nav-item active">
+          <a class="nav-link messages" href="#">Messages</a>
+        </li>
+        <li class="nav-item active">
+          <a class="nav-link profile-settings" href="#">Settings</a>
+        </li>
+        <li class="nav-item active">
+          <a class="nav-link logout" type="button" id="logout-button" href="/logout">Logout</a>
+        </li>
+
+        {% endif %}
+
+        {% if authorize_url is defined %}
+        <li class="nav-item active">
+          <div class="dropdown">
+          <a class="nav-link dropdown-toggle" role="button" id="login-dropdown dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Login
+          </a>
+
+          <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+          <form class="px-4 py-3" form action="/login" method="POST">
+            <div class="form-group">
+              <div><h5>HackTrack</h5></div>
+              <br>
+              <label for="email">Email address</label>
+              <input type="email" class="form-control" id="email" name="email" required>
+            </div>
+            <div class="form-group">
+              <label for="password">Password</label>
+              <input type="password" class="form-control" id="password" name="password" required>
+            </div>
+            <div class="form-group">
+            </div>
+            <button type="submit" class="btn btn-primary">Sign in</button>
+          </form>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="#">New around here? Sign up</a>
+          <a class="btn btn-sm" href="{{ authorize_url }}" role="button"><img src="/static/img/ConnectWithStrava.png"/>
+          </a>
+          <!--<a class="dropdown-item" href="#">Forgot password?</a>-->
+        </div>
+        </div>
+        </li>
+         {% endif %}
       </ul>
     </div>
   </nav>
+
+ 
 
     {% for msg in get_flashed_messages() %}
       <p class="flash-msg">
