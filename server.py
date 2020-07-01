@@ -164,7 +164,8 @@ def create_activities():
 
     team = crud.get_team_by_user_id(session['user_id'])
 
-    crud.update_team_activities(team.id)
+    if datetime.utcnow() - team.activities_last_updated > timedelta(0, 10800):
+        crud.update_team_activities(team.id)
 
     return redirect('/dashboard')    
 
@@ -212,11 +213,23 @@ def add_comment():
     
     return redirect(request.referrer)
 
+@app.route('/messages')
+def get_messages():
+
+    return render_template('messages.html')
+
 @app.route('/api/get-comments/<int:activity_id>')
 def get_comments(activity_id):
 
     comments = crud.get_comments_by_strava_activity_id(activity_id)
     print(comments)
+    return jsonify(comments)
+
+@app.route('/get-incoming-comments')
+def get_incoming_comments():
+
+    comments = crud.get_comments_to_user(session['user_id'])
+
     return jsonify(comments)
 
 if __name__ == '__main__':
