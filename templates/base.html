@@ -43,10 +43,17 @@
           <a class="nav-link team-dashboard" href="/dashboard">Team Dashboard</a>
         </li>
         <li class="nav-item active">
-          <a class="nav-link messages" href="#">Messages</a>
-        </li>
-        <li class="nav-item active">
-          <a class="nav-link profile-settings" href="#">Settings</a>
+          <div class="dropdown">
+          <a class="nav-link dropdown-toggle" role="button" id="messages-dropdown dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Messages
+          </a>
+          <div class="dropdown-menu" id="inbox-menu" aria-labelledby="dropdownMenuLink">
+          <div class="card">
+          <div class="card-header">
+            Incoming
+          </div>
+          <div class="inbox"></div>
+          </div>
         </li>
         <li class="nav-item active">
           <a class="nav-link logout" type="button" id="logout-button" href="/logout">Logout</a>
@@ -102,7 +109,7 @@
         </li>
          {% endif %}
 
-        {% if '/register' in request.path %}
+        {% if '/register' in request.path or '/join-team' in request.path %}
 
         <li class="nav-item active">
           <a class="nav-link login" type="button" id="login-button" href="/">Homepage</a>
@@ -121,6 +128,8 @@
         {{ msg }}
       </p>
     {% endfor %}
+
+  <script src="/static/js/messages.js"></script>
 
     {% block body %}
 
