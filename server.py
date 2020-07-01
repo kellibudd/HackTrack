@@ -24,7 +24,7 @@ def homepage():
 
     url = strava_api.request_user_authorization(url_for('.register_user', _external=True))
 
-    return render_template('homepage.html', authorize_url=url)
+    return render_template('base.html', authorize_url=url)
 
 
 @app.route('/register')
@@ -80,7 +80,6 @@ def create_user():
     password = request.form.get('password')
     password_confirm = request.form.get('password-confirm')
     phone = request.form.get('phone')
-    timezone = request.form.get('timezone')
     token = request.form.get('token')
     token = ast.literal_eval(token)
 
@@ -99,14 +98,12 @@ def create_user():
                                 email,
                                 password,
                                 user_data.profile,
-                                timezone,
                                 user_data.id,
                                 token['access_token'],
                                 token['expires_at'],
                                 token['refresh_token'])
         session['user'] = user.email
         session['user_id'] = user.id
-        session['timezone'] = user.timezone
 
         return redirect('/join-team')
 
@@ -130,6 +127,21 @@ def create_new_team_mem():
 
     return redirect('/create-activities')
 
+@app.route('/create-team', methods=['POST'])
+def create_new_team():
+
+    team_name = request.form.get('team_name')
+
+    role = request.form.get('role')
+
+    last_updated = datetime.utcnow()
+
+    team = crud.create_team(team_name, session['user_id'], last_updated)
+
+    team_mem = crud.create_team_member(session['user_id'], team.id, role)
+
+    return redirect('/dashboard')
+
 
 @app.route('/create-activities', methods=['GET','POST'])
 def create_activities():
@@ -142,13 +154,10 @@ def create_activities():
 
         for activity in activities:
             crud.create_activity(activity)
-            print(activity['description'])
-            print(activity['start_date_local'])
 
     team = crud.get_team_by_user_id(session['user_id'])
 
-    if datetime.utcnow() - team.activities_last_updated > timedelta(0, 1):
-        print("Updating team activities...")
+    if datetime.utcnow() - team.activities_last_updated > timedelta(0, 10):
         crud.update_team_activities(team.id)
 
     return redirect('/dashboard')    
@@ -195,7 +204,7 @@ def add_comment():
 
     added_comment = crud.create_comment(activity.id, session['user_id'], activity.user_id, datetime.utcnow(), comment)
     
-    return redirect('/dashboard')
+    return redirect(request.referrer)
 
 @app.route('/api/get-comments/<int:activity_id>')
 def get_comments(activity_id):
