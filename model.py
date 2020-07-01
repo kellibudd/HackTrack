@@ -19,7 +19,6 @@ class User(db.Model):
     email = db.Column(db.String, nullable=False, unique=True)
     password = db.Column(db.String, nullable=False)
     prof_pic = db.Column(db.String)
-    timezone = db.Column(db.String)
     strava_id = db.Column(db.Integer)
     strava_access_token = db.Column(db.String)
     strava_access_token_expir = db.Column(db.String)
