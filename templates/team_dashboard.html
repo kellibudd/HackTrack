@@ -1,69 +1,36 @@
 {% extends 'base.html' %}
 
 {% block body %}
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark">
-  <a class="navbar-brand" href="#">HackTrack</a>
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
-  <div class="collapse navbar-collapse" id="navbarNavDropdown">
-    <ul class="navbar-nav">
-      <li class="nav-item active">
-        <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
-      </li>
-      <li class="nav-item active">
-        <a class="nav-link" href="#">Team Dashboard</a>
-      </li>
-      <li class="nav-item active">
-        <a class="nav-link" href="#">Messaging</a>
-      </li>
-      <li class="nav-item active">
-        <a class="nav-link" href="/logout">Logout</a>
-      </li>
-      {# <li class="nav-item dropdown" align="left">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        <img src="https://dgalywyr863hv.cloudfront.net/pictures/athletes/21398175/14898555/2/large.jpg" width="50px" class="rounded-circle" align="left"/>
-        </a>
-        <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-          <a class="dropdown-item" href="#">Settings</a>
-          <a class="dropdown-item" href="#">Log Out</a>
-        </div>
-      </li> #}
-    </ul>
-  </div>
-</nav>
-
-<br>
-<br>
-<br>
-<br>
-
-{# <h4>{{ team.name }}</h4> #}
-
-<nav aria-label="...">
-  <ul class="pager">
-    <a href="#" type="button" class="previous btn btn-primary" id="previous-button"><span aria-hidden="true">&larr;</span> Older</a>
-    <a href="#" type="button" class="next btn btn-primary" id="next-button" hidden="hidden"><span aria-hidden="true">&rarr;</span> Newer</a>
-  </ul>
-</nav>
 
 <div class="container-fluid">
-  <table id="team-table" class="table table-borderless">
-    <thead id="table-head">
-      <tr id="head-row" rowspan="2">
-        <th scope="col">
-          {# <form id="refresh" action="/create-activities" method="POST" align="left">
+  <div class="row">
+    <div class="col-1">
+    </div>
+    <div class="col-10">
+      <nav aria-label="...">
+        <ul class="pager">
+          <a href="#" type="button" class="previous btn btn-primary" id="previous-button"><span aria-hidden="true">&larr;</span> Older</a>
+          <a href="#" type="button" class="next btn btn-primary" id="next-button" hidden="hidden"><span aria-hidden="true">&rarr;</span> Newer</a>
+        </ul>
+      </nav>
+      <table id="team-table" class="table table-hover">
+        <thead id="table-head">
+        <tr id="head-row" rowspan="2">
+        <th class="athlete-img" scope="col">
+          <form id="refresh" action="/create-activities" method="POST" align="left">
             <button type="submit" class="comment btn btn-outline-warning"><img class="comment" src="/static/img/arrow-repeat-white.svg" width="20px"></button>
-          </form> #}
+          </form>
         </th>
-      </tr>
-
-    </thead>
-    <tbody id="table-body">
-    </tbody>
-  </table>
+        </tr>
+        </thead>
+        <tbody id="table-body">
+        </tbody>
+      </table>
+    </div>
+    <div class="col-1">
+    </div>
+  </div>
 </div>
 
 <div class="modal fade" id="comment-modal" tabindex="-1" role="dialog" aria-labelledby="comment-modal-title" aria-hidden="true">
@@ -81,6 +48,8 @@
     </div>
   </div>
 </div>
+
+
 
 <script src="/static/js/dashboard.js"></script>
 
