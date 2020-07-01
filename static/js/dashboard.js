@@ -7,7 +7,7 @@ function generateTableHead(table) {
 
   let tableHeadRow = $("#head-row");
 
-  tableHeadRow.append(`<th class="table-header" id="Athlete" scope="col">Athlete</th>`)
+  tableHeadRow.append(`<th class="table-header" id="athlete-header" scope="col">Athlete</th>`)
 
   for (let column of tableColumns) {
     tableHeadRow.append(`<th class="table-header" id="${column}" scope="col">
@@ -16,7 +16,7 @@ function generateTableHead(table) {
                         </th>`);
   };
 
-  tableHeadRow.append(`<th class="table-header" id="Total Miles" scope="col">Total Miles</th>`)
+  tableHeadRow.append(`<th class="table-header" id="total-miles-header" scope="col">Total Miles</th>`)
 };
 
 let table = $("#team-table");
@@ -36,9 +36,9 @@ function display_dashboard() {
     convertedDate = window.location.pathname.split("/")[2];
   };
 
-  getWeekDates(convertedDate)
+  displayWeekDates(convertedDate)
 
-  updatePagination(convertedDate)
+  updatePagerLinks(convertedDate)
 
   $.get('/get-team-data', (response) => {
     let athletes = response;
@@ -49,15 +49,15 @@ function display_dashboard() {
       for (let athlete of athletes) {
         let tbody = $("#table-body");
         let row = tbody.append(`<tr id="${athlete['id']}-row"></tr>`);
-        row.append(`<td><img src="${athlete['prof_pic']}" width="60px" class="rounded-circle" align="left"/></td>`);
+        row.append(`<td class="athlete-img"><img src="${athlete['prof_pic']}" width="50px" class="table-data rounded-circle" align="left"/></td>`);
         row.append(`<td scope="row">
-                      <button class="activity-data btn btn-dark" disabled>${athlete['name']}</button>
+                      <button class="table-data btn btn-dark" disabled>${athlete['f_name']}</button>
                     </td>`);
         // let run = row.append(`<td id="run-exercise" scope="row">Run</td>`);
         // let crossTrain = row.append(`<tr id="xt-workout" scope="row">Cross Train</tr>`);
 
         for (let i of Array(8).keys()) {
-          row.append(`<td id="user-${athlete['id']}-col${i+1}" scope="row"></td>`)
+          row.append(`<td class="table-data" id="user-${athlete['id']}-col${i+1}" scope="row"></td>`)
         };
 
         let weekMileage = 0
@@ -74,10 +74,10 @@ function display_dashboard() {
             $(`#user-${athlete['id']}-col${activity['weekday']}`).replaceWith(
             `<td scope="row">
               <div class="btn-group" role="group" aria-label="Basic example">
-                <button type="button" class="activity-data btn btn-light" id="${activity['strava_activity_id']}" 
+                <button type="button" class="table-data btn btn-light" id="popover-${activity['strava_activity_id']}" 
                   data-container="body" [dynamicPosition="false" data-toggle="popover" data-trigger="hover click" data-placement="bottom"
                   >${distance}</button>
-                <button type="button" class="comment btn btn-light" id="${activity['strava_activity_id']}" data-toggle="modal" data-target="#comment-modal"><img class="comment" src="/static/img/chat-left-text-fill.svg" width="15px"></button>
+                <button type="button" class="comment btn btn-light" id="comment-${activity['strava_activity_id']}" data-toggle="modal" data-target="#comment-modal"><img class="comment" src="/static/img/chat-left-text-fill.svg" width="15px"></button>
               </div>
             </td>`);
             
@@ -85,70 +85,51 @@ function display_dashboard() {
             let weekMileageRounded = reformatDistance(weekMileage);
             $(`#user-${athlete['id']}-col8`).replaceWith(
               `<td scope="row" id="user-${athlete['id']}-col8">
-                <button class="activity-data btn btn-warning" disabled>${weekMileageRounded}</button>
+                <button class="table-data btn btn-warning" disabled>${weekMileageRounded}</button>
               </td>`);
 
-            if (activity.hasOwnProperty("splits")) {
+            let splitSummary = "";
+
+            if (activity['splits'] !== null) {
 
               let activitySplits = activity['splits'];
               let splits = []
 
               for (let key of Object.keys(activitySplits)) {
-                // let splits = $('.splits');
-                // console.log(splits)
+
                 let split = `${parseInt(key)+1}` + " | " + reformatAvgSpeed(activitySplits[key].distance, activitySplits[key].moving_time)
-                // let splitDistance = reformatDistance(activitySplits[key].distance)
-                // $(`#${activity['strava_activity_id']}`).data('bs.popover').element.dataset.content = ;
                 splits.push(`<p class="split">${split}</p>`)
-                // $(`<p class="splits">${splitPace}</p>`).insertAfter(".splits");
+
               };
 
-              let splitsStr = splits.join('')
+              splits = splits.join('')
+              console.log(splits)
 
-
-              $(`#${activity['strava_activity_id']}`).popover({ 
-                            title : 'Activity Details',
-                            container: 'body',
-                            html: true,
-                            content : `<div class=activity-details>
-                                        Date: ${activityDate} <br/>
-                                        Distance: ${distance} <br/>
-                                        Time: ${workoutTime} <br/> 
-                                        Average Pace: ${avgSpeed} <br/>
-                                        Elevation Gain: ${elevationGain}<br/>
-                                        <details>
-                                          <summary>See Splits</summary>
-                                          ${splitsStr}
-                                        </details><br/>
-                                      <form id="comment-form" action="/add-comment" method="POST">
-                                        Comment:
-                                        <textarea rows="1" class="form-control" id="comment-text" name="comment"></textarea><br/>
-                                        <input id="activity-id" type="hidden" name="activity-id" value="${activity['strava_activity_id']}">
-                                        <input type="submit" class="submit-comment btn btn-warning">
-                                      </form>`
-              }); 
-            }
-
-            else {
-              $(`#${activity['strava_activity_id']}`).popover({ 
-                            title : 'Activity Details',
-                            container: 'body',
-                            html: true,
-                            content : `<div class=activity-details>
-                                        Date: ${activityDate} <br/>
-                                        Distance: ${distance} <br/>
-                                        Time: ${workoutTime} <br/> 
-                                        Average Pace: ${avgSpeed} <br/>
-                                        Elevation Gain: ${elevationGain}<br/>
-                                      <form id="comment-form" action="/add-comment" method="POST">
-                                        Comment:
-                                        <textarea rows="1" class="form-control" id="comment-text" name="comment"></textarea><br/>
-                                        <input id="activity-id" type="hidden" name="activity-id" value="${activity['strava_activity_id']}">
-                                        <input type="submit" class="submit-comment btn btn-warning">
-                                      </form>`
-
-              });
+              splitSummary = `<details>
+                                <summary>See Splits</summary>
+                                ${splits}
+                              </details>`;
             };
+
+            $(`#popover-${activity['strava_activity_id']}`).popover({ 
+                          title : 'Activity Details',
+                          container: 'body',
+                          html: true,
+                          content : `<div class=activity-details>
+                                      <div>Date: ${activityDate}</div>
+                                      <div>Distance: ${distance}</div>
+                                      <div>Time: ${workoutTime}</div>
+                                      <div>Average Pace: ${avgSpeed}</div>
+                                      <div>Elevation Gain: ${elevationGain}</div>
+                                      <div>${splitSummary}</div>
+                                      <div></div>
+                                    <form id="comment-form" action="/add-comment" method="POST">
+                                      Comment:
+                                      <textarea rows="1" class="form-control" id="comment-text" name="comment"></textarea><br/>
+                                      <input id="activity-id" type="hidden" name="activity-id" value="${activity['strava_activity_id']}">
+                                      <input type="submit" class="submit-comment btn btn-warning">
+                                    </form>`
+            }); 
           };  
         };
       };
@@ -163,7 +144,7 @@ function display_dashboard() {
             let comment_date = reformatDate(comment['date_utc'])
             $('.comment-modal-body').append(
               `<div class="col py-sm-2"><div class="rounded p-2 bg-light">
-                <img src="${comment['author_prof_pic']}" width="55px" class="rounded-circle" align="right"/>
+                <img src="${comment['author_prof_pic']}" width="40px" class="rounded-circle" align="right"/>
                 <h6>${comment['author_name']} on ${comment_date}</h6><br/>
                 ${comment['body']}<br/>
                 </div></div>`
@@ -184,7 +165,7 @@ function display_dashboard() {
 
 display_dashboard()
 
-function getWeekDates(date) {
+function displayWeekDates(date) {
 
   date = new Date(date.toString())
 
@@ -199,27 +180,22 @@ function getWeekDates(date) {
 
 };
 
-function updatePagination(date) {
+function updatePagerLinks(date) {
 
   date = new Date(date.toString())
 
   let previousWeek = new Date(date.getFullYear(), date.getMonth(), date.getDate() - 6);
   previousWeek = previousWeek.toISOString().split("T")[0]
-  console.log('previous: ', previousWeek)
 
   let nextWeek = new Date(date.getFullYear(), date.getMonth(), date.getDate() + 8);
   nextWeek = nextWeek.toISOString().split("T")[0]
-  console.log('next: ', nextWeek)
-  
-  let currentDate = new Date()
-  console.log('date is ', date)
-  if (date.toISOString().split("T")[0] !== new Date(currentDate.getTime() - (currentDate.getTimezoneOffset() * 60000)).toISOString().split("T")[0]) {
-    $('#previous-button').replaceWith(`<a href="/dashboard/${previousWeek}" type="button" class="previous btn btn-primary" id="previous-button"><span aria-hidden="true">&larr;</span> Older</a>`)
-    $('#next-button').replaceWith(`<a href="/dashboard/${nextWeek}" type="button" class="next btn btn-primary" id="next-button"><span aria-hidden="true">&rarr;</span> Newer</a>`)
-  }
 
-  else {
-    $('#previous-button').replaceWith(`<a href="/dashboard/${previousWeek}" type="button" class="previous btn btn-primary" id="previous-button"><span aria-hidden="true">&larr;</span> Older</a>`)
+  $('#previous-button').attr('href', `/dashboard/${previousWeek}`)
+
+  let currentDate = new Date()
+  if (date.toISOString().split("T")[0] !== new Date(currentDate.getTime() - (currentDate.getTimezoneOffset() * 60000)).toISOString().split("T")[0]) {
+    $('#next-button').attr('href', `/dashboard/${nextWeek}`)
+    $('#next-button').removeAttr('hidden')
   };
 };
 
@@ -243,16 +219,22 @@ function reformatWorkoutLength(workoutTime) {
     let seconds = Math.round((((time % 1) * 60) % 1) * 60);
 
     if (hours < 1 && seconds > 10) {
-        return `${minutes}:${seconds}`;
+      return `${minutes}:${seconds}`;
     }
     else if (hours < 1 && seconds < 10) {
-        return `${minutes}:0${seconds}`;
+      return `${minutes}:0${seconds}`;
     }
-    else if (hours >= 1 && seconds > 10) {
-        return `${hours}:${minutes}:${seconds}`;
+    else if (hours >= 1 && minutes < 10 && seconds < 10) {
+      return `${hours}:0${minutes}:0${seconds}`;
+    }
+    else if (hours >= 1 && minutes < 10 && seconds > 10) {
+      return `${hours}:0${minutes}:${seconds}`;
+    }
+    else if (hours >= 1 && minutes > 10 && seconds < 10) {
+      return `${hours}:${minutes}:0${seconds}`;
     }
     else {
-        return `${hours}:${minutes}:0${seconds}`;
+      return `${hours}:${minutes}:${seconds}`;
     };
 };
 
