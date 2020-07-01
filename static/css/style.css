@@ -61,7 +61,7 @@ table {
     padding-left: 0px;
     margin-right: 0px;
     margin-left: 0px;
-    padding-top: 75px;
+    padding-top: 100px;
 }
 
 .popover {
@@ -81,11 +81,24 @@ table {
 
 .nav-link {
     font-family: 'Roboto', sans-serif;
+    font-size: 1rem;
 }
 
 body {
     font-family: 'Roboto', sans-serif;
     font-size: .95rem;
+}
+.navbar-dark .navbar-brand {
+    font-family: 'Monoton', cursive;
+    font-size: 1.5rem;
+    color: #77ABD9;
+}
+
+.error {
+    font-family: 'Roboto', sans-serif;
+    font-size: .9rem;
+    color: red;
+    font-weight: bold;
 }
 
 
