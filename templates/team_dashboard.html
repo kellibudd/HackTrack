@@ -5,21 +5,27 @@
 
 <div class="container-fluid">
   <div class="row">
-    <div class="col-1">
-    </div>
-    <div class="col-10">
-      <nav aria-label="...">
+    <div class="col-1"></div>
+    <nav aria-label="...">
         <ul class="pager">
           <a href="#" type="button" class="previous btn btn-primary" id="previous-button"><span aria-hidden="true">&larr;</span> Older</a>
           <a href="#" type="button" class="next btn btn-primary" id="next-button" hidden="hidden"><span aria-hidden="true">&rarr;</span> Newer</a>
         </ul>
       </nav>
+    <div class="col-4">
+      <div class="team-name"></div>
+    </div>
+    <div class="col-4"></div>
+  </div>
+  <div class="row">
+    <div class="col-1"></div>
+    <div class="col-10">
       <table id="team-table" class="table table-hover">
         <thead id="table-head">
         <tr id="head-row" rowspan="2">
         <th class="athlete-img" scope="col">
           <form id="refresh" action="/create-activities" method="POST" align="left">
-            <button type="submit" class="comment btn btn-outline-warning"><img class="comment" src="/static/img/arrow-repeat-white.svg" width="20px"></button>
+            <button type="submit" class="comment btn btn-primary"><img class="comment" src="/static/img/arrow-repeat-white.svg" width="20px"></button>
           </form>
         </th>
         </tr>
@@ -28,8 +34,7 @@
         </tbody>
       </table>
     </div>
-    <div class="col-1">
-    </div>
+    <div class="col-1"></div>
   </div>
 </div>
 
