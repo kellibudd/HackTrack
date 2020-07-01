@@ -1,6 +1,21 @@
 {% extends 'base.html' %}
 
 {% block body %}
+
+<nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" href="#">HackTrack</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNavDropdown">
+      <ul class="navbar-nav">
+        <li class="nav-item active">
+          <a class="nav-link login" href="/">Login</a>
+        </li>
+      </ul>
+    </div>
+</nav>
+  
   <section id="user-registration">
     <h2>New User Sign-Up</h2>
     <br>
@@ -21,17 +36,6 @@
         Phone Number
         <p>
           <input id="phone-field" type="phone" name="phone" placeholder="Format: 123-456-7890" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" required>
-        </p>
-        Timezone
-        <p>
-          <select name="timezone">
-            <option value="US/Hawaii">Hawaiian</option>
-            <option value="US/Alaska">Alaskan</option>
-            <option value="US/Pacific">Pacific</option>
-            <option value="US/Mountain">Mountain</option>
-            <option value="US/Central">Central</option>
-            <option value="US/Eastern">Eastern</option>
-          </select>
         </p>
         <input id="strava-token" type="hidden" name="token" value="{{ token }}">
         <p>
