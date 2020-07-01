@@ -153,12 +153,12 @@ def create_activities():
         activities = crud.get_strava_activities(athlete)
 
         for activity in activities:
-            crud.create_activity(activity)
+            if activity['type'] == 'Run':
+                crud.create_activity(activity)
 
     team = crud.get_team_by_user_id(session['user_id'])
 
-    if datetime.utcnow() - team.activities_last_updated > timedelta(0, 10):
-        crud.update_team_activities(team.id)
+    crud.update_team_activities(team.id)
 
     return redirect('/dashboard')    
 
