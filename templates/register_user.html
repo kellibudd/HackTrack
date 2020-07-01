@@ -2,21 +2,58 @@
 
 {% block body %}
 
-<nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark">
-    <a class="navbar-brand" href="#">HackTrack</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNavDropdown">
-      <ul class="navbar-nav">
-        <li class="nav-item active">
-          <a class="nav-link login" href="/">Login</a>
-        </li>
-      </ul>
+      <div class="container-fluid">
+      <div class="row">
+      <div class="col-4"></div>
+      <div class="col-4">
+        <form class="px-4 py-3 user-reg-form" form action="/create-user" method="POST">
+        <div class="form-group">
+          <label for="reg-email-field">Email</label>
+          <input type="email" class="form-control" id="reg-email-field" required>
+          {% with errors = get_flashed_messages(category_filter=["email-error"]) %}
+          {% if errors %}
+          <div class="alert-message block-message error">
+              {% for msg in errors %}
+              <div><b>{{ msg }}<b></div>
+              {% endfor -%}
+          </div>
+          {% endif %}
+          {% endwith %}
+        </div>
+        <div class="form-group">
+          <label for="reg-password-field">Password</label>
+          <input type="password" class="form-control" id="reg-password-field" name="email" required>
+        </div>
+        <div class="form-group">
+          <label for="reg-password-confirm-field">Re-Enter Password</label>
+          <input type="password" class="form-control" id="reg-password-confirm-field" name="password-confirm" required>
+          {% with errors = get_flashed_messages(category_filter=["password-error"]) %}
+          {% if errors %}
+          <div class="alert-message block-message error">
+              {% for msg in errors %}
+              <div><b>{{ msg }}<b></div>
+              {% endfor -%}
+          </div>
+          {% endif %}
+          {% endwith %}
+        </div>
+
+      <div class="form-group">
+        <label for="reg-phone-field">Phone</label>
+        <input type="phone" class="form-control" id="reg-phone-field" type="phone" name="phone" placeholder="Format: 123-456-7890" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" required>
+      </div>
+      <div>
+        <input id="strava-token" type="hidden" name="token" value="{{ token }}">
+      </div>
+      <button type="submit" class="btn btn-primary">submit</button>
+    </form>
     </div>
-</nav>
+    <div class="col-4"></div>
+    </div>
+    </div>
+
   
-  <section id="user-registration">
+  <!--<section id="user-registration">
     <h2>New User Sign-Up</h2>
     <br>
     <h4>Create Account:</h4>
@@ -42,7 +79,7 @@
           <input type="submit">
         </p>
     </form>
-  </section>
+  </section>-->
 
   <script src="/static/js/register.js"></script>
 
