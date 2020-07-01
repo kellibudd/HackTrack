@@ -106,6 +106,42 @@ def create_comment(activity_id, author_id, recipient_id, date_utc, body):
 
     return comment
 
+def delete_user(user_id):
+
+    user = User.query.get(user_id)
+    print('deleted: ', user.firstname)
+    db.session.delete(user)
+    db.session.commit()
+
+def delete_team(team_id):
+
+    team = Team.query.get(team_id)
+    print('deleted: ', team.name)
+    db.session.delete(team)
+    db.session.commit()
+
+def delete_team_member(user_id):
+
+    member = Team_Member.query.get(team_id)
+    print('deleted: ', member.user.firstname)
+    db.session.delete(member)
+    db.session.commit()
+
+def delete_activity_comments(strava_activity_id):
+
+    comments = Comment.query.filter(Comment.activity.strava_activity_id == strava_activity_id)
+    print(f'deleted: {len(comments)} comments')
+    db.session.delete(comments)
+    db.session.commit()
+
+def delete_comment(comment_id):
+
+    comment = Comment.query.get(comment_id)
+    print(f'deleted: comment on {comment.date}, to user {comment.recipient_id}')
+    db.session.delete(comment)
+    db.session.commit()
+
+
 def get_comments_by_strava_activity_id(strava_id):
 
     activity = get_activity_by_strava_id(strava_id)
@@ -211,7 +247,7 @@ def get_all_athlete_data_by_team(team_id):
 
     return User.query.filter(User.id.in_(athletes)).all()
 
-def get_new_access_token_for_user(athlete):
+def update_user_access_token(athlete):
     """Update access token for a user"""
 
     token = strava_api.get_new_token(athlete.strava_refresh_token)
@@ -221,13 +257,13 @@ def get_new_access_token_for_user(athlete):
 
     return token['access_token']
 
-def get_new_access_tokens_for_team(team_id):
+def update_team_access_tokens(team_id):
     """Update access tokens for all users on a given team"""
 
     athletes = get_all_athlete_data_by_team(team_id)
 
     for athlete in athletes:
-        get_new_access_token_for_user(athlete)
+        update_user_access_token(athlete)
 
     updated_athlete_data = get_all_athlete_data_by_team(team_id)
 
@@ -248,6 +284,8 @@ def show_strava_activities_in_db(team_id):
     return strava_activity_ids
 
 def get_athletes_on_team(team_id):
+
+    team = get_team_by_id(team_id)
     
     athlete_ids = get_athlete_ids_by_team(team_id)
 
@@ -260,21 +298,20 @@ def get_athletes_on_team(team_id):
                         "f_name": f'{athlete.firstname}',
                         "l_name": f'{athlete.lastname}',
                         "name": f'{athlete.firstname} {athlete.lastname}',
-                        "prof_pic" : athlete.prof_pic}
+                        "prof_pic" : athlete.prof_pic,
+                        "team": team.name}
         json.append(athlete_dict)
 
     return sorted(json, key = lambda i: i['name']) 
 
 def update_team_activities(team_id):
 
-    athletes = get_new_access_tokens_for_team(team_id)
+    athletes = update_team_access_tokens(team_id)
 
     for athlete in athletes:
         activities = strava_api.get_strava_activities(athlete)
         
         for activity in activities:
-
-            if activity['type'] == 'Run'
             
             if not str(activity['id']) in show_strava_activities_in_db(team_id) and activity['type'] == 'Run':
 
@@ -290,7 +327,7 @@ def update_team_activities(team_id):
 
 def update_user_activities(athlete):
 
-    get_new_access_token_for_user(athlete)
+    update_user_access_token(athlete)
     
     activities = strava_api.get_strava_activities(athlete)
     counter = 0
