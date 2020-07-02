@@ -10,7 +10,6 @@ import os
 import json
 import ast
 from datetime import datetime, timedelta
-from pytz import timezone
 
 # from crud import create_user
 
