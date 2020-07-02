@@ -3,7 +3,6 @@
 from model import connect_to_db, db, User, Activity, Team, Team_Member, Comment
 import requests
 from datetime import datetime, timedelta
-from pytz import timezone
 import strava_api
 
 def create_user(firstname, lastname, phone, email, password, prof_pic, strava_id, 
