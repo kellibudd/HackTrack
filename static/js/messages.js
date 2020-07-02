@@ -14,7 +14,7 @@ function displayIncomingComments() {
           `<div class="incoming-comment">
             <div class="col py-sm-2"><div class="rounded p-2 bg-light" class="comment-stream" id="comment-${comment['id']}">
             <img src="${comment['author_prof_pic']}" width="50px" class="rounded-circle" align="right"/>
-            <div class="message-subject">${comment['author_name']}</div>
+            <div class="message-subject">From: ${comment['author_name']}</div>
             <div class="message-subject">Run Details: ${activityDistance} on ${activityDate}</div><br>
             <div>${comment['body']}</div>
             </div></div>
@@ -38,8 +38,8 @@ function displayOutgoingComments() {
         $('.sent').append(
           `<div class="outgoing-comment">
             <div class="col py-sm-2"><div class="rounded p-2 bg-light" class="comment-stream" id="comment-${comment['id']}">
-            <img src="${comment['author_prof_pic']}" width="50px" class="rounded-circle" align="right"/>
-            <div class="message-subject">${comment['author_name']}</div>
+            <img src="${comment['recipient_prof_pic']}" width="50px" class="rounded-circle" align="right"/>
+            <div class="message-subject">To: ${comment['recipient_name']}</div>
             <div class="message-subject">Run Details: ${activityDistance} on ${activityDate}</div><br>
             <div>${comment['body']}</div>
             </div></div>
