@@ -70,7 +70,7 @@
 
         {% endif %}
 
-        {% if authorize_url is defined and not 'user' in session %}
+        {% if authorize_url is defined %}
         <li class="nav-item active">
           <div class="dropdown">
           <a class="nav-link dropdown-toggle" role="button" id="login-dropdown dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -110,7 +110,7 @@
             <button type="submit" class="btn btn-primary">Sign in</button>
           </form>
           <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="#">New to HackTrack? Sign up here!</a>
+          <a class="dropdown-item" href="#"><b>New to HackTrack? Sign up here!</b></a>
           <a class="btn btn-sm" href="{{ authorize_url }}" role="button"><img src="/static/img/ConnectWithStrava.png"/>
           </a>
         </div>
