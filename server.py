@@ -24,7 +24,7 @@ def homepage():
 
     url = strava_api.request_user_authorization(url_for('.register_user', _external=True))
 
-    return render_template('base.html', authorize_url=url)
+    return render_template('homepage.html', authorize_url=url)
 
 
 @app.route('/register')
