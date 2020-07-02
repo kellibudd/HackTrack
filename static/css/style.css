@@ -20,7 +20,7 @@
 }
 
 .table th.athlete-img, .table td.athlete-img {
-    min-width: 60px;
+    min-width: 75px;
     text-align: center;
     vertical-align: middle;
     padding-right: 5px;
@@ -108,7 +108,7 @@ body {
 }
 
 nav.navbar.fixed-top.navbar-expand-lg.navbar-dark.bg-dark {
-    line-height: 1;
+    line-height: 1.5;
 }
 
 .error {
@@ -159,9 +159,9 @@ div.col-1.offset-2.next-pager {
 
 .rounded-circle {
     border: 2px solid;
-    padding: 5px;
-    width: 75px;
-    height: 75px;
+    padding: 1px;
+    width: 60px;
+    height: 60px;
     border-color: #343A40;
 }
 
