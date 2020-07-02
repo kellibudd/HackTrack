@@ -70,7 +70,7 @@
 
         {% endif %}
 
-        {% if authorize_url is defined %}
+        {% if authorize_url is defined and not 'user' in session %}
         <li class="nav-item active">
           <div class="dropdown">
           <a class="nav-link dropdown-toggle" role="button" id="login-dropdown dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

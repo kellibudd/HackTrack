@@ -103,6 +103,7 @@ body {
     font-family: 'Monoton', sans-serif;
     font-size: 1.7rem;
     color: #77ABD9;
+    border-bottom: 4px solid #ffc107;
 }
 
 .error {
@@ -137,5 +138,25 @@ html {
 
 div.col-1.offset-2.next-pager {
     padding-left: 0rem;
+}
+
+.homepage-text {
+    margin-top: auto;
+    text-align: center;
+    font-family: sans-serif;
+    font-weight: bold;
+    font-size: 72px;
+    color: #fff;
+    font-family: 'Roboto Condensed', sans-serif;
+    z-index: 1;
+    border-bottom: 4px solid #ffc107;
+}
+
+.rounded-circle {
+    border: 2px solid;
+    padding: 5px;
+    width: 75px;
+    height: 75px;
+    border-color: #343A40;
 }
 

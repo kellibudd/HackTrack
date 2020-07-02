@@ -48,7 +48,7 @@ function display_dashboard() {
       for (let athlete of athletes) {
         let tbody = $("#table-body");
         let row = tbody.append(`<tr id="${athlete['id']}-row"></tr>`);
-        row.append(`<td class="athlete-img"><img src="${athlete['prof_pic']}" width="50px" class="table-data rounded-circle" align="left"/></td>`);
+        row.append(`<td class="athlete-img"><img src="${athlete['prof_pic']}" class="table-data rounded-circle" align="left"/></td>`);
         row.append(`<td scope="row">
                       <button class="table-data btn btn-dark" disabled>${athlete['f_name']}</button>
                     </td>`);
