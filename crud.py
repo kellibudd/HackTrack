@@ -136,7 +136,7 @@ def delete_activity_comments(strava_activity_id):
 def delete_comment(comment_id):
 
     comment = Comment.query.get(comment_id)
-    print(f'deleted: comment on {comment.date}, to user {comment.recipient_id}')
+    print(f'deleted: comment on {comment.date_utc}, to user {comment.recipient_id}')
     db.session.delete(comment)
     db.session.commit()
 
