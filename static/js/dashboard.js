@@ -72,12 +72,9 @@ function display_dashboard() {
 
             $(`#user-${athlete['id']}-col${activity['weekday']}`).replaceWith(
             `<td scope="row">
-              <div class="btn-group" role="group" aria-label="Basic example">
-                <button type="button" class="table-data btn btn-light" id="popover-${activity['strava_activity_id']}" 
-                  data-container="body" [dynamicPosition="false" data-toggle="popover" data-trigger="hover click" data-placement="bottom"
-                  >${distance}</button>
-                <button type="button" class="comment btn btn-light" value="${activity['strava_activity_id']}" data-toggle="modal" data-target="#comment-modal"></button>
-              </div>
+              <button type="button" class="table-data btn btn-light" id="popover-${activity['strava_activity_id']}" 
+                data-container="body" [dynamicPosition="false" data-toggle="popover" data-trigger="hover click" data-placement="bottom"
+                >${distance}</button>
             </td>`);
             
             weekMileage += activity['distance'];
@@ -128,40 +125,12 @@ function display_dashboard() {
           };  
         };
       };
-
-      $(".comment").on('click', (evt) => {
-        let activityID = evt.target.value;
-        $.get(`/api/get-comments/${activityID}`, (response) => {
-          const comments = response;
-          console.log(comments.length)
-          $('#comment-modal').modal({
-            backdrop: true
-          });
-          for (let comment of comments) {
-            let comment_date = reformatDate(comment['date_utc'])
-            $('.comment-modal-body').append(
-              `<div class="col py-sm-2"><div class="rounded p-2 bg-light" class="comment-stream" id="comment-${comment['id']}">
-                <img src="${comment['author_prof_pic']}" width="40px" class="rounded-circle" align="right"/>
-                <div>${comment['author_name']} on ${comment_date}</div>
-                <div>${comment['body']}</div>
-                </div></div>`
-            );
-          };
-        });
-      });
-
-      $(".close-comment").on('click', (evt) => {
-        evt.preventDefault();
-          $('#comment-modal').modal({
-            backdrop: true
-          });
-            $('.comment-modal-body').empty();
-      });
     });
   });
 };
 
 display_dashboard()
+
 
 function displayWeekDates(date) {
 
@@ -238,12 +207,18 @@ function reformatWorkoutLength(workoutTime) {
 function reformatDistance(distance) {
 
   distance = distance * 0.000621371
+  console.log(distance)
   let miles = Math.floor(distance)
+  console.log(miles)
   let decimal = Math.round(distance % 1 * 100)
-
+  console.log(decimal)
   if (decimal >= 100 && miles === 0) {
-    let miles = decimal/100;
+    miles = decimal/100;
     return `${miles}.00 mi`
+  }
+  else if (miles >= 1 && decimal >= 100) {
+    miles = miles + (decimal/100);
+    return `${miles}.00 mi`;
   }
   else if (miles >= 1 && decimal < 10) {
     return `${miles}.0${decimal} mi`;

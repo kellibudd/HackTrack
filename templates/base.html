@@ -7,17 +7,12 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.bundle.min.js"></script>
 
-   <script src="/static/js/messages.js"></script>
-
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
   <link rel="stylesheet" href="/static/css/style.css">
   <link rel="stylesheet" href="/static/css/background.css">
 
-  
-
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Monoton&display=swap" rel="stylesheet">
-
+  <link href="https://fonts.googleapis.com/css?family=Cabin|Roboto:400,700|Roboto+Condensed:400,700" rel="stylesheet">
   <title>
     {% block title %}HackTrack{% endblock %}
   </title>
@@ -46,12 +41,25 @@
         <li class="nav-item active">
           <div class="dropdown">
           <a class="nav-link dropdown-toggle" role="button" id="messages-dropdown dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            Messages
+            Incoming
+          </a>
+          <div class="dropdown-menu" id="received-menu" aria-labelledby="dropdownMenuLink">
+          <div class="card">
+          <div class="card-header">
+            Received Messages
+          </div>
+          <div class="received"></div>
+          </div>
+        </li>
+        <li class="nav-item active">
+          <div class="dropdown">
+          <a class="nav-link dropdown-toggle" role="button" id="messages-dropdown dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Outgoing
           </a>
           <div class="dropdown-menu" id="sent-menu" aria-labelledby="dropdownMenuLink">
           <div class="card">
           <div class="card-header">
-            Outgoing
+            Sent Messages
           </div>
           <div class="sent"></div>
           </div>

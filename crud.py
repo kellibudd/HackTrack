@@ -196,7 +196,30 @@ def get_comments_to_user(user_id):
 
 def get_comments_from_user(user_id):
 
-    return Comment.query.filter(Comment.author_id==user_id).all()
+    comments = Comment.query.filter(Comment.author_id==user_id).order_by(Comment.date_utc.desc()).all()
+
+    json = []
+
+    for comment in comments:
+
+        activity = get_activity_by_id(comment.activity_id)
+        author = get_user_by_id(comment.author_id)
+        recipient = get_user_by_id(comment.recipient_id)
+
+        comment_dict = {'id': comment.id,
+                        'activity_distance': activity.distance,
+                        'activity_date': activity.date_local,
+                        'activity_type': activity.exercise_type,
+                        'activity_id': activity.id,
+                        'author_name': f'{author.firstname} {author.lastname}',
+                        'author_prof_pic': author.prof_pic,
+                        'recipient_name': f'{recipient.firstname} {recipient.lastname}',
+                        'recipient_prof_pic': recipient.prof_pic,
+                        'date_utc': comment.date_utc,
+                        'body': comment.body}
+        json.append(comment_dict)
+
+    return json
 
 def get_all_users():
     """Return all users."""

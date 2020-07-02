@@ -91,7 +91,7 @@ def create_user():
         return redirect(request.referrer)
 
     elif password != password_confirm:
-        flash(u'Passwords do not match. Please try again.','password-error')
+        flash(u'Passwords do not match. Please try again.','confirm-password-error')
     
         return redirect(request.referrer)
 
@@ -172,12 +172,16 @@ def create_activities():
 @app.route('/dashboard')
 def display_team_dashboard():
 
-    return render_template('team_dashboard.html')
+    team = crud.get_team_by_user_id(session['user_id'])
+
+    return render_template('team_dashboard.html', team=team)
 
 @app.route('/dashboard/<date>')
 def get_dashboard_week(date):
 
-    return render_template('team_dashboard.html')
+    team = crud.get_team_by_user_id(session['user_id'])
+
+    return render_template('team_dashboard.html', team=team)
 
 @app.route('/get-team-data')
 def get_team_data():
@@ -213,11 +217,6 @@ def add_comment():
     
     return redirect(request.referrer)
 
-@app.route('/messages')
-def get_messages():
-
-    return render_template('messages.html')
-
 @app.route('/api/get-comments/<int:activity_id>')
 def get_comments(activity_id):
 
@@ -231,6 +230,14 @@ def get_incoming_comments():
     comments = crud.get_comments_to_user(session['user_id'])
 
     return jsonify(comments)
+
+@app.route('/get-outgoing-comments')
+def get_outgoing_comments():
+
+    comments = crud.get_comments_from_user(session['user_id'])
+
+    return jsonify(comments)
+
 
 if __name__ == '__main__':
     connect_to_db(app)

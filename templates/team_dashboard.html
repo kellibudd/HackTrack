@@ -4,18 +4,25 @@
 
 
 <div class="container-fluid">
+    <div class="row"></div>
+    <div class="col-10 offset-2"></div>
   <div class="row">
     <div class="col-1"></div>
-    <nav aria-label="...">
-        <ul class="pager">
-          <a href="#" type="button" class="previous btn btn-primary" id="previous-button"><span aria-hidden="true">&larr;</span> Older</a>
-          <a href="#" type="button" class="next btn btn-primary" id="next-button" hidden="hidden"><span aria-hidden="true">&rarr;</span> Newer</a>
-        </ul>
-      </nav>
-    <div class="col-4">
-      <div class="team-name"></div>
+      <div class="col-3 previous-pager">
+        <nav aria-label="pager">
+      <a href="#" type="button" class="previous btn btn-primary" id="previous-button"><span aria-hidden="true">&larr;</span> Older</a>
     </div>
-    <div class="col-4"></div>
+    <div class="col-4">
+      <span>
+      <div class="team-name">{{ team['name']}}</div>
+    </span>
+    </div>
+    <div class="col-1 offset-2 next-pager">
+      <a href="#" type="button" class="next btn btn-primary" id="next-button" hidden="hidden"><span aria-hidden="true">&rarr;</span> Newer</a>
+    </nav>
+    </div>
+    <div class="col-1"></div>
+    </div>  
   </div>
   <div class="row">
     <div class="col-1"></div>
@@ -24,9 +31,9 @@
         <thead id="table-head">
         <tr id="head-row" rowspan="2">
         <th class="athlete-img" scope="col">
-          <form id="refresh" action="/create-activities" method="POST" align="left">
+          <!--<form id="refresh" action="/create-activities" method="POST" align="left">
             <button type="submit" class="comment btn btn-primary"><img class="comment" src="/static/img/arrow-repeat-white.svg" width="20px"></button>
-          </form>
+          </form>-->
         </th>
         </tr>
         </thead>
@@ -38,25 +45,11 @@
   </div>
 </div>
 
-<div class="modal fade" id="comment-modal" tabindex="-1" role="dialog" aria-labelledby="comment-modal-title" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="comment-modal">Comments</h5>
-        <button type="button" class="close close-comment" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="comment-modal-body">
-        <p class="comment-text"></p>
-      </div>
-    </div>
-  </div>
-</div>
-
 
 
 <script src="/static/js/dashboard.js"></script>
+<script src="/static/js/messages.js"></script>
+
 
 
 {% endblock %}

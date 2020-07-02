@@ -1,29 +1,54 @@
 "use strict";
 
-function displayMessages() {
+function displayIncomingComments() {
 
   $.get('/get-incoming-comments', (response) => {
       const comments = response;
-      console.log(comments.length)
+      // console.log(comments.length)
 
       for (let comment of comments) {
-        console.log(comment['author_prof_pic'])
-        let commentDate = reformatDate(comment['activity_date'])
+
+        let activityDate = reformatDate(comment['activity_date'])
         let activityDistance = reformatDistance(comment['activity_distance'])
-        $('.inbox').append(
-          `<button type="button" class="incoming-message list-group-item list-group-item-action">
+        $('.received').append(
+          `<div class="incoming-comment">
             <div class="col py-sm-2"><div class="rounded p-2 bg-light" class="comment-stream" id="comment-${comment['id']}">
             <img src="${comment['author_prof_pic']}" width="50px" class="rounded-circle" align="right"/>
-            <div class="message-subject">Subject: ${activityDistance} run on ${commentDate}</div>
-            <div>${comment['author_name']}</div>
+            <div class="message-subject">${comment['author_name']}</div>
+            <div class="message-subject">Run Details: ${activityDistance} on ${activityDate}</div><br>
             <div>${comment['body']}</div>
             </div></div>
-          </button>`)
+          </div>`)
       };
   });
 };
 
-displayMessages()
+displayIncomingComments()
+
+function displayOutgoingComments() {
+
+  $.get('/get-outgoing-comments', (response) => {
+      const comments = response;
+      console.log(comments.length)
+
+      for (let comment of comments) {
+
+        let activityDate = reformatDate(comment['activity_date'])
+        let activityDistance = reformatDistance(comment['activity_distance'])
+        $('.sent').append(
+          `<div class="outgoing-comment">
+            <div class="col py-sm-2"><div class="rounded p-2 bg-light" class="comment-stream" id="comment-${comment['id']}">
+            <img src="${comment['author_prof_pic']}" width="50px" class="rounded-circle" align="right"/>
+            <div class="message-subject">${comment['author_name']}</div>
+            <div class="message-subject">Run Details: ${activityDistance} on ${activityDate}</div><br>
+            <div>${comment['body']}</div>
+            </div></div>
+          </div>`)
+      };
+  });
+};
+
+displayOutgoingComments()
 
 function reformatDate(commentDate) {
 
@@ -39,12 +64,18 @@ function reformatDate(commentDate) {
 function reformatDistance(distance) {
 
   distance = distance * 0.000621371
+  console.log(distance)
   let miles = Math.floor(distance)
+  console.log(miles)
   let decimal = Math.round(distance % 1 * 100)
-
+  console.log(decimal)
   if (decimal >= 100 && miles === 0) {
-    let miles = decimal/100;
+    miles = decimal/100;
     return `${miles}.00 mi`
+  }
+  else if (miles >= 1 && decimal >= 100) {
+    miles = miles + (decimal/100);
+    return `${miles}.00 mi`;
   }
   else if (miles >= 1 && decimal < 10) {
     return `${miles}.0${decimal} mi`;

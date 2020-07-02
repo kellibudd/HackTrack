@@ -42,7 +42,7 @@
         "id": 23663631,
         "firstname": "Abigail",
         "lastname": "Anderson",
-        "profile": "https://dgalywyr863hv.cloudfront.net/pictures/athletes/23663631/14069445/5/large.jpg"
+        "profile": "/static/img/abby.jpg"
     },
     {
         "phone": "650-455-9866",
@@ -63,9 +63,10 @@
         "firstname": "Gary",
         "lastname": "Wilson",
         "phone": "651-555-1111",
-        "email": "gwils@umn.edu",
+        "email": "gary@gmail.com",
         "password": "password",
-        "timezone": "US/Central"
+        "timezone": "US/Central",
+        "profile": "/static/img/gary.jpg"
     },
     {
         "firstname": "Danny",

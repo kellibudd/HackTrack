@@ -3,15 +3,15 @@
 }
 
 .table thead th {
-    vertical-align: middle;
+    vertical-align: top;
     text-align: center;
-    font-weight: bold;
-    font-size: 1em;
+    font-size: 1.1em;
+    font-family: 'Roboto Condensed', Sans-Serif;
 }
 
 
 .table td, .table th {
-    min-width: 124px;
+    min-width: 100px;
     text-align: center;
     vertical-align: middle;
     padding-right: 5px;
@@ -26,6 +26,10 @@
     padding-left: 5px;
 }
 
+.card-header {
+    font-weight: 700;
+}
+
 .btn {
     border-radius: 50px;
     line-height: 1;
@@ -35,15 +39,20 @@ table {
     width: auto;
 }
 
-.pager {
-    padding-inline-start: 0;
+div.col-4.offset-1.previous-pager {
+    padding-left: 0;
 }
+
+div.col-1.offset-4.next-pager {
+    padding-left: 0;
+}
+
 
 .table-data .submit-comment {
     text-align: center;
     vertical-align: middle;
     max-width: 120px;
-    font-family: 'Roboto', sans-serif;
+    Font-Family: 'Roboto Condensed', Sans-Serif;
     padding: .2rem .9rem;
     font-size: .95rem;
     line-height: 1.5;
@@ -65,42 +74,68 @@ table {
 }
 
 .popover {
-    font-family: 'Roboto', sans-serif;
+    Font-Family: 'Roboto Condensed', Sans-Serif;
     font-size: .95rem;
 }
 
 .submit-comment{
-    font-family: 'Roboto', sans-serif;
+    Font-Family: 'Roboto Condensed', Sans-Serif;
     font-size: .95rem;
 }
 
 .popover-header {
-    font-family: 'Roboto', sans-serif;
+    Font-Family: 'Roboto Condensed', Sans-Serif;
     font-size: .95rem;
 }
 
 .nav-link {
-    font-family: 'Roboto', sans-serif;
-    font-size: 1rem;
+    Font-Family: 'Roboto Condensed', Sans-Serif;
+    font-size: 1.15rem;
 }
 
 body {
-    font-family: 'Roboto', sans-serif;
+    Font-Family: 'Roboto Condensed', Sans-Serif;
     font-size: .95rem;
+    height: 100%;
 }
+
 .navbar-dark .navbar-brand {
-    font-family: 'Monoton', cursive;
-    font-size: 1.5rem;
+    font-family: 'Monoton', sans-serif;
+    font-size: 1.7rem;
     color: #77ABD9;
 }
 
 .error {
-    font-family: 'Roboto', sans-serif;
+    Font-Family: 'Roboto Condensed', Sans-Serif;
     font-size: .9rem;
     color: red;
     font-weight: bold;
 }
 
+.dropdown-menu {
+    min-width: 30rem;
+    padding: 0;
+    margin: 0;
+}
 
+.message-subject {
+    font-weight: bold;
+}
 
+html {
+    height: 100%;
+}
+
+.team-name {
+    vertical-align: center;
+    text-align: center;
+    font-family: 'Roboto Condensed', Sans-Serif;
+    font-size: 2rem;
+    font-weight: bold;
+    padding-bottom: 10px;
+}
+
+div.col-1.offset-2.next-pager {
+    padding-left: 0rem;
+}
 
