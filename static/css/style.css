@@ -3,11 +3,11 @@
 }
 
 .table thead th {
-    vertical-align: top;
+    vertical-align: middle;
     text-align: center;
     font-size: 17px;
     font-family: 'Roboto Condensed', Sans-Serif;
-    line-height: 1;
+    line-height: 1.25;
 }
 
 
@@ -21,7 +21,7 @@
 
 .table th.athlete-img, .table td.athlete-img {
     min-width: 75px;
-    text-align: center;
+    text-align: top;
     vertical-align: middle;
     padding-right: 5px;
     padding-left: 5px;
@@ -109,6 +109,10 @@ body {
 
 nav.navbar.fixed-top.navbar-expand-lg.navbar-dark.bg-dark {
     line-height: 1;
+}
+
+.refresh {
+    vertical-align: top;
 }
 
 .error {
