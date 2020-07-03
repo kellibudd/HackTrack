@@ -356,12 +356,16 @@ def get_athletes_on_team(team_id):
 def update_team_activities(team_id):
 
     athletes = update_team_access_tokens(team_id)
+    team = get_team_by_id(team_id)
+    print('last updated: ', team.activities_last_updated)
 
     for athlete in athletes:
-        activities = strava_api.get_strava_activities(athlete)
-        
+        activities = strava_api.get_strava_activities(athlete, team.activities_last_updated.timestamp())
+        print("&"*60)
+        print(athlete.firstname)
+        print(len(activities))
         for activity in activities:
-            
+
             if not str(activity['id']) in show_strava_activities_in_db(team_id) and activity['type'] == 'Run':
 
                 activity_added = create_activity(activity)
@@ -373,6 +377,7 @@ def update_team_activities(team_id):
     
     team = get_team_by_id(team_id)
     team.activities_last_updated = datetime.utcnow()
+    db.session.commit()
 
 def update_user_activities(athlete):
 
