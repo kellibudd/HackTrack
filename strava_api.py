@@ -41,14 +41,12 @@ def get_new_token(refresh_token):
                                         client_secret=STRAVA_CLIENT_SECRET,
                                         refresh_token=refresh_token)
 
-def get_strava_activities(athlete):
-
-    team = crud.get_team_by_user_id(athlete.id)
+def get_strava_activities(athlete, date):
 
     access_token = athlete.strava_access_token
     header = {'Authorization': 'Bearer ' + access_token}
     activities_url = 'https://www.strava.com/api/v3/athlete/activities'
-    payload = {'after': int(team.activities_last_updated.timestamp()), 'per_page': 200}
+    payload = {'after': date, 'per_page': 200}
 
     return requests.get(activities_url, headers=header, params=payload).json()
 
