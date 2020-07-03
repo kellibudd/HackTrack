@@ -152,7 +152,9 @@ def create_new_team():
 @app.route('/create-activities', methods=['GET','POST'])
 def create_activities():
 
-    if crud.get_activities_by_user_id(session['user_id']) == []:
+    user_team_role = crud.get_user_role(session['user_id'])
+
+    if crud.get_activities_by_user_id(session['user_id']) == [] and user_team_role == 'Athlete':
         athlete = crud.get_user_by_email(session['user'])
 
         activities = strava_api.get_strava_activities_for_new_user(athlete)

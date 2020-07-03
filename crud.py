@@ -297,6 +297,12 @@ def get_team_by_id(id):
 
     return Team.query.get(id)
 
+def get_user_role(user_id):
+
+    member = Team_Member.query.filter(Team_Member.user_id == user_id).first()
+
+    return member.role
+
 
 def get_team_by_user_id(user_id):
     """Return team associated with a user."""
@@ -387,10 +393,10 @@ def update_team_activities(team_id):
 
     athletes = update_team_access_tokens(team_id)
     team = get_team_by_id(team_id)
-    print('last updated: ', team.activities_last_updated)
+    base_date = team.activities_last_updated-timedelta(days=3)
 
     for athlete in athletes:
-        activities = strava_api.get_strava_activities(athlete, team.activities_last_updated.timestamp())
+        activities = strava_api.get_strava_activities(athlete, base_date.timestamp())
         print("&"*60)
         print(athlete.firstname)
         print(len(activities))
