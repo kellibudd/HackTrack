@@ -56,6 +56,7 @@ def login_user():
     elif user.password == password:
         session['user'] = email
         session['user_id'] = user.id
+        print('user logged in: ', session['user_id'])
         return redirect('/create-activities')
 
 
@@ -145,26 +146,26 @@ def create_new_team():
 
     team_mem = crud.create_team_member(session['user_id'], team.id, role)
 
-    return redirect('/dashboard')
+    return redirect('/create-activities')
 
 
 @app.route('/create-activities', methods=['GET','POST'])
 def create_activities():
 
-    if crud.get_activities_by_user_id(session['user_id']) == None:
-
+    if crud.get_activities_by_user_id(session['user_id']) == []:
         athlete = crud.get_user_by_email(session['user'])
 
-        activities = crud.get_strava_activities(athlete)
+        activities = strava_api.get_strava_activities_for_new_user(athlete)
 
         for activity in activities:
+
             if activity['type'] == 'Run':
-                crud.create_activity(activity)
+                activity = crud.create_activity(activity)
+                print('ADDED: ', activity.desc)
 
     team = crud.get_team_by_user_id(session['user_id'])
 
-    if datetime.utcnow() - team.activities_last_updated > timedelta(0, 10800):
-        crud.update_team_activities(team.id)
+    crud.update_team_activities(team.id)
 
     return redirect('/dashboard')    
 

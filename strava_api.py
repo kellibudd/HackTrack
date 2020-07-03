@@ -46,7 +46,16 @@ def get_strava_activities(athlete, date):
     access_token = athlete.strava_access_token
     header = {'Authorization': 'Bearer ' + access_token}
     activities_url = 'https://www.strava.com/api/v3/athlete/activities'
-    payload = {'after': date, 'per_page': 200}
+    payload = {'after': date, 'per_page': 100}
+
+    return requests.get(activities_url, headers=header, params=payload).json()
+
+def get_strava_activities_for_new_user(athlete):
+
+    access_token = athlete.strava_access_token
+    header = {'Authorization': 'Bearer ' + access_token}
+    activities_url = 'https://www.strava.com/api/v3/athlete/activities'
+    payload = {'per_page': 100}
 
     return requests.get(activities_url, headers=header, params=payload).json()
 

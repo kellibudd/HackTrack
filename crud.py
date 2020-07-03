@@ -105,13 +105,6 @@ def create_comment(activity_id, author_id, recipient_id, date_utc, body):
 
     return comment
 
-def delete_user(user_id):
-
-    user = User.query.get(user_id)
-    print('deleted: ', user.firstname)
-    db.session.delete(user)
-    db.session.commit()
-
 def delete_team(team_id):
 
     team = Team.query.get(team_id)
@@ -121,10 +114,47 @@ def delete_team(team_id):
 
 def delete_team_member(user_id):
 
-    member = Team_Member.query.get(team_id)
-    print('deleted: ', member.user.firstname)
+    member = Team_Member.query.filter(Team_Member.user_id == user_id).first()
+    print('deleted: ', member.id)
     db.session.delete(member)
     db.session.commit()
+
+def delete_user(user_id):
+
+    delete_comments_associated_with_user(user_id)
+    delete_user_activities(user_id)
+    delete_team_member(user_id)
+
+    user = User.query.get(user_id)
+    print('deleted: ', user.firstname)
+    db.session.delete(user)
+    db.session.commit()
+
+def delete_user_activities(user_id):
+
+    activities = Activity.query.filter(Activity.user_id == user_id).all()
+
+    for activity in activities:
+        print('deleted: ', activity.desc)
+        db.session.delete(activity)
+        db.session.commit()
+
+def delete_comments_associated_with_user(user_id):
+
+    received_comments = Comment.query.filter(Comment.recipient_id == user_id).all()
+
+    for comment in received_comments:
+        print('deleted: ', comment.body)
+        db.session.delete(comment)
+        db.session.commit()
+
+    sent_comments = Comment.query.filter(Comment.author_id == user_id).all()
+
+    for comment in sent_comments:
+        print('deleted: ', comment.body)
+        db.session.delete(comment)
+        db.session.commit()
+
 
 def delete_activity_comments(strava_activity_id):
 
