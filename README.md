@@ -17,7 +17,7 @@
     - View message history
     - Login and Logout
 
-#### Registration using OAuth2.0
+#### Register as a new user
 ![registration](https://github.com/kellibudd/hacktrack/blob/master/static/img/registration.gif)
 #### View team activities and detailed metrics
 ![dashboard](https://github.com/kellibudd/hacktrack/blob/master/static/img/view_activities.gif)
