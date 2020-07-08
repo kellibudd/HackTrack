@@ -18,13 +18,13 @@
     - Login and Logout
 
 #### Registration using OAuth2.0
-![registration](https://github.com/kellibudd/hacktrack/master/static/img/registration.gif)
+![registration](https://github.com/kellibudd/hacktrack/blob/master/static/img/registration.gif)
 #### View team activities and detailed metrics
-![dashboard](https://github.com/kellibudd/hacktrack/master/static/img/view_activities.gif)
+![dashboard](https://github.com/kellibudd/hacktrack/blob/master/static/img/view_activities.gif)
 #### Access historical training data
-![history](https://github.com/kellibudd/hacktrack/master/static/img/navigate_weeks.gif)
+![history](https://github.com/kellibudd/hacktrack/blob/master/static/img/navigate_weeks.gif)
 #### Leave comments on activities and view message history
-![comments](https://github.com/kellibudd/hacktrack/master/static/img/comments.gif)
+![comments](https://github.com/kellibudd/hacktrack/blob/master/static/img/comments.gif)
 
 
 
@@ -76,7 +76,7 @@ Thank you to my mentors, classmates, and advisors for the endless support and gu
 
 [//]: # (These are reference links used in the body of this note and get stripped out when the markdown processor does its job. There is no need to format nicely because it shouldn't be seen. Thanks SO - http://stackoverflow.com/questions/4823468/store-comments-in-markdown-syntax)
 
-   [registration]: <https://github.com/kellibudd/hacktrack/master/static/img/registration.gif>
-   [dashboard]: <https://github.com/kellibudd/hacktrack/master/static/img/view_activities.gif>
-   [history]: <https://github.com/kellibudd/hacktrack/master/static/img/navigate_weeks.gif>
-   [comments]: <https://github.com/kellibudd/hacktrack/master/static/img/comments.gif>
+   [registration]: <https://github.com/kellibudd/hacktrack/blob/master/static/img/registration.gif>
+   [dashboard]: <https://github.com/kellibudd/hacktrack/blob/master/static/img/view_activities.gif>
+   [history]: <https://github.com/kellibudd/hacktrack/blob/master/static/img/navigate_weeks.gif>
+   [comments]: <https://github.com/kellibudd/hacktrack/blob/master/static/img/comments.gif>
