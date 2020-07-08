@@ -1,6 +1,6 @@
 # HackTrack
 
->HackTrack provides teams with a single platform for analyzing running data, sharing real-time feedback, accessing performance metrics, and navigating training history. The inspiration for this project stems from my experience as distance runner at a Division I program, where I manually tracked my workouts and mileage in a training diary. The applica
+>HackTrack provides teams with a single platform for analyzing running data, sharing real-time feedback, accessing performance metrics, and navigating training history. The inspiration for this project stems from my experience as distance runner at a Division I program, where I manually tracked my workouts and mileage in a training diary.
 
 
 ### Technologies
