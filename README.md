@@ -69,7 +69,7 @@ Prior to attending Hackbright Academy’s 12-week immersive full-stack software 
 
 ### Acknowledgments
 
-Thank you to my mentors, classmates and advisors who provided endless support and direction to bring this project to life.
+Thank you to my mentors, classmates, and advisors for the endless support and guidance.
 
 
 
