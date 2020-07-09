@@ -34,7 +34,7 @@
       <div class="navbar-nav">
       <ul class="navbar-nav">
 
-        {% if 'user' in session %}
+        {% if 'user' in session and not '/join-team' in request.path %}
         <li class="nav-item active">
           <a class="nav-link team-dashboard" href="/dashboard">Team Dashboard</a>
         </li>
