@@ -1,171 +1,171 @@
 .split {
-    margin-bottom: 0;
+  margin-bottom: 0;
 }
 
 .table thead th {
-    vertical-align: middle;
-    text-align: center;
-    font-size: 17px;
-    font-family: 'Roboto Condensed', Sans-Serif;
-    line-height: 1.25;
+  vertical-align: middle;
+  text-align: center;
+  font-size: 17px;
+  font-family: "Roboto Condensed", Sans-Serif;
+  line-height: 1.25;
 }
 
-
-.table td, .table th {
-    min-width: 100px;
-    text-align: center;
-    vertical-align: middle;
-    padding-right: 5px;
-    padding-left: 5px;
+.table td,
+.table th {
+  min-width: 100px;
+  text-align: center;
+  vertical-align: middle;
+  padding-right: 5px;
+  padding-left: 5px;
 }
 
-.table th.athlete-img, .table td.athlete-img {
-    min-width: 75px;
-    text-align: top;
-    vertical-align: middle;
-    padding-right: 5px;
-    padding-left: 5px;
+.table th.athlete-img,
+.table td.athlete-img {
+  min-width: 75px;
+  text-align: top;
+  vertical-align: middle;
+  padding-right: 5px;
+  padding-left: 5px;
 }
 
 .card-header {
-    font-weight: 700;
+  font-weight: 700;
 }
 
 .btn {
-    border-radius: 50px;
-    line-height: 1;
+  border-radius: 50px;
+  line-height: 1;
 }
 
 table {
-    width: auto;
+  width: auto;
 }
 
 div.col-4.offset-1.previous-pager {
-    padding-left: 0;
+  padding-left: 0;
 }
 
 div.col-1.offset-4.next-pager {
-    padding-left: 0;
+  padding-left: 0;
 }
 
-
 .table-data .submit-comment {
-    text-align: center;
-    vertical-align: middle;
-    max-width: 120px;
-    Font-Family: 'Roboto Condensed', Sans-Serif;
-    padding: .2rem .9rem;
-    font-size: .95rem;
-    line-height: 1;
-    border-radius: 1rem;
+  text-align: center;
+  vertical-align: middle;
+  max-width: 120px;
+  font-family: "Roboto Condensed", Sans-Serif;
+  padding: 0.2rem 0.9rem;
+  font-size: 0.95rem;
+  line-height: 1;
+  border-radius: 1rem;
 }
 
 .btn:disabled {
-    opacity: 1;
-    line-height: 1;
+  opacity: 1;
+  line-height: 1;
 }
 
 .container-fluid {
-    width: auto;
-    padding-right: 0px;
-    padding-left: 0px;
-    margin-right: 0px;
-    margin-left: 0px;
-    padding-top: 100px;
+  width: auto;
+  padding-right: 0px;
+  padding-left: 0px;
+  margin-right: 0px;
+  margin-left: 0px;
+  padding-top: 100px;
 }
 
 .popover {
-    Font-Family: 'Roboto Condensed', Sans-Serif;
-    font-size: .95rem;
+  font-family: "Roboto Condensed", Sans-Serif;
+  font-size: 0.95rem;
 }
 
-.submit-comment{
-    Font-Family: 'Roboto Condensed', Sans-Serif;
-    font-size: .95rem;
+.submit-comment {
+  font-family: "Roboto Condensed", Sans-Serif;
+  font-size: 0.95rem;
 }
 
 .popover-header {
-    Font-Family: 'Roboto Condensed', Sans-Serif;
-    font-size: .95rem;
+  font-family: "Roboto Condensed", Sans-Serif;
+  font-size: 0.95rem;
 }
 
 .nav-link {
-    Font-Family: 'Roboto Condensed', Sans-Serif;
-    font-size: 1.15rem;
+  font-family: "Roboto Condensed", Sans-Serif;
+  font-size: 1.15rem;
 }
 
 body {
-    Font-Family: 'Roboto Condensed', Sans-Serif;
-    font-size: .95rem;
-    height: 100%;
+  font-family: "Roboto Condensed", Sans-Serif;
+  font-size: 0.95rem;
+  height: 100%;
 }
 
 .navbar-dark .navbar-brand {
-    font-family: 'Monoton', sans-serif;
-    font-size: 1.7rem;
-    color: #77ABD9;
-    border-bottom: 4px solid #ffc107;
+  font-family: "Monoton", sans-serif;
+  font-size: 1.7rem;
+  color: #77abd9;
+  border-bottom: 4px solid #ffc107;
 }
 
 nav.navbar.fixed-top.navbar-expand-lg.navbar-dark.bg-dark {
-    line-height: 1;
+  line-height: 1;
 }
 
 .refresh {
-    vertical-align: top;
+  vertical-align: top;
 }
 
 .error {
-    Font-Family: 'Roboto Condensed', Sans-Serif;
-    font-size: .9rem;
-    color: red;
-    font-weight: bold;
+  font-family: "Roboto Condensed", Sans-Serif;
+  font-size: 0.9rem;
+  color: red;
+  font-weight: bold;
 }
 
-#received-menu.dropdown-menu.show, #sent-menu.dropdown-menu.show {
-    min-width: 30rem;
-    padding: 0;
-    margin: 0;
+#received-menu.dropdown-menu.show,
+#sent-menu.dropdown-menu.show {
+  min-width: 30rem;
+  padding: 0;
+  margin: 0;
 }
 
 .message-subject {
-    font-weight: bold;
+  font-weight: bold;
 }
 
 html {
-    height: 100%;
+  height: 100%;
 }
 
 .team-name {
-    vertical-align: center;
-    text-align: center;
-    font-family: 'Roboto Condensed', Sans-Serif;
-    font-size: 2rem;
-    font-weight: bold;
-    padding-bottom: 10px;
+  vertical-align: center;
+  text-align: center;
+  font-family: "Roboto Condensed", Sans-Serif;
+  font-size: 2rem;
+  font-weight: bold;
+  padding-bottom: 10px;
 }
 
 div.col-1.offset-2.next-pager {
-    padding-left: 0rem;
+  padding-left: 0rem;
 }
 
 .homepage-text {
-    margin-top: auto;
-    text-align: center;
-    font-family: sans-serif;
-    font-weight: bold;
-    font-size: 72px;
-    color: #fff;
-    font-family: 'Roboto Condensed', sans-serif;
-    z-index: 1;
-    border-bottom: 4px solid #ffc107;
+  margin-top: auto;
+  text-align: center;
+  font-family: sans-serif;
+  font-weight: bold;
+  font-size: 72px;
+  color: #fff;
+  font-family: "Roboto Condensed", sans-serif;
+  z-index: 1;
+  border-bottom: 4px solid #ffc107;
 }
 
 .rounded-circle {
-    border: 2px solid;
-    padding: 1px;
-    width: 60px;
-    height: 60px;
-    border-color: #343A40;
+  border: 2px solid;
+  padding: 1px;
+  width: 60px;
+  height: 60px;
+  border-color: #343a40;
 }
-

@@ -4,38 +4,37 @@
 
 
 <div class="container-fluid">
-    <div class="row"></div>
-    <div class="col-10 offset-2"></div>
   <div class="row">
     <div class="col-1"></div>
-      <div class="col-3 previous-pager">
-        <nav aria-label="pager">
-      <a href="#" type="button" class="previous btn btn-outline-dark" id="previous-button"><span aria-hidden="true">&larr;</span> Older</a>
+    <div class="col-3 previous-pager">
+      <nav aria-label="pager">
+        <a href="#" type="button" class="previous btn btn-outline-dark" id="previous-button"><span
+            aria-hidden="true">&larr;</span> Older</a>
     </div>
     <div class="col-4">
       <span>
-      <div class="team-name">{{ team['name']}}</div>
-    </span>
+        <div class="team-name">{{ team['name']}}</div>
+      </span>
     </div>
     <div class="col-1 offset-2 next-pager">
-      <a href="#" type="button" class="next btn btn-outline-dark" id="next-button" hidden="hidden"><span aria-hidden="true">&rarr;</span> Newer</a>
-    </nav>
+      <a href="#" type="button" class="next btn btn-outline-dark" id="next-button" hidden="hidden"><span
+          aria-hidden="true">&rarr;</span> Newer</a>
+      </nav>
     </div>
     <div class="col-1"></div>
-    </div>  
   </div>
   <div class="row">
     <div class="col-1"></div>
     <div class="col-10">
       <table id="team-table" class="table table-hover">
         <thead id="table-head">
-        <tr id="head-row" rowspan="2">
-        <th class="athlete-img" scope="col">
-          <form id="refresh" action="/create-activities" method="POST" align="left">
-            <button type="submit" class="refresh btn btn-outline-primary"><img class="refresh">Refresh</button>
-          </form>
-        </th>
-        </tr>
+          <tr id="head-row" rowspan="2">
+            <th class="athlete-img" scope="col">
+              <form id="refresh" action="/create-activities" method="POST" align="left">
+                <button type="submit" class="refresh btn btn-outline-primary"><img class="refresh">Refresh</button>
+              </form>
+            </th>
+          </tr>
         </thead>
         <tbody id="table-body">
         </tbody>

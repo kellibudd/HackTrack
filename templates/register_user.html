@@ -3,7 +3,7 @@
 {% block body %}
 
 <div class="container-fluid track-img">
-  <div class="row" >
+  <div class="row">
     <div class="col-4 offset-4">
       <div class="card">
         <div class="card-body">
@@ -13,13 +13,13 @@
               <label for="reg-email-field">Email</label>
               <input type="email" class="form-control" id="reg-email-field" name="email" required>
               {% with errors = get_flashed_messages(category_filter=["email-error"]) %}
-                {% if errors %}
-                  <div class="alert-message block-message error">
-                    {% for msg in errors %}
-                      <div><b>{{ msg }}</b></div>
-                    {% endfor -%}
-                  </div>
-                {% endif %}
+              {% if errors %}
+              <div class="alert-message block-message error">
+                {% for msg in errors %}
+                <div><b>{{ msg }}</b></div>
+                {% endfor -%}
+              </div>
+              {% endif %}
               {% endwith %}
             </div>
             <div class="form-group">
@@ -28,21 +28,23 @@
             </div>
             <div class="form-group">
               <label for="reg-password-confirm-field">Re-Enter Password</label>
-              <input type="password" class="form-control" id="reg-password-confirm-field" name="password-confirm" required>
+              <input type="password" class="form-control" id="reg-password-confirm-field" name="password-confirm"
+                required>
               {% with errors = get_flashed_messages(category_filter=["confirm-password-error"]) %}
-                {% if errors %}
-                  <div class="alert-message block-message error">
-                    {% for msg in errors %}
-                      <div><b>{{ msg }}</b></div>
-                    {% endfor -%}
-                  </div>
-                {% endif %}
+              {% if errors %}
+              <div class="alert-message block-message error">
+                {% for msg in errors %}
+                <div><b>{{ msg }}</b></div>
+                {% endfor -%}
+              </div>
+              {% endif %}
               {% endwith %}
             </div>
 
             <div class="form-group">
               <label for="reg-phone-field">Phone</label>
-              <input type="phone" class="form-control" id="reg-phone-field" type="phone" name="phone" placeholder="Format: 123-456-7890" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" required>
+              <input type="phone" class="form-control" id="reg-phone-field" type="phone" name="phone"
+                placeholder="Format: 123-456-7890" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" required>
             </div>
             <div>
               <input id="strava-token" type="hidden" name="token" value="{{ token }}">
@@ -53,37 +55,8 @@
       </div>
     </div>
   </div>
-</div>  
- 
-  
-  <!--<section id="user-registration">
-    <h2>New User Sign-Up</h2>
-    <br>
-    <h4>Create Account:</h4>
-    <form id="user-reg-form" action="/create-user" method="POST">
-        Email
-        <p>
-          <input id="email-field" type="email" name="email" required>
-        </p>
-        Password
-        <p> 
-          <input id="password-field" type="password" name="password" required>
-        </p>
-        Re-Enter Password
-        <p>
-          <input id="password-confirm-field" type="password" name="password-confirm" required>
-        </p>
-        Phone Number
-        <p>
-          <input id="phone-field" type="phone" name="phone" placeholder="Format: 123-456-7890" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" required>
-        </p>
-        <input id="strava-token" type="hidden" name="token" value="{{ token }}">
-        <p>
-          <input type="submit">
-        </p>
-    </form>
-  </section>-->
+</div>
 
-  <script src="/static/js/register.js"></script>
+<script src="/static/js/register.js"></script>
 
 {% endblock %}

@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-  <link rel="shortcut icon" href="/static/img/favicon.ico"/> 
+  <link rel="shortcut icon" href="/static/img/favicon.ico" />
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -20,135 +21,142 @@
   {% block head %}{% endblock %}
 
 </head>
+
 <body>
 
   <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark">
     <nav class="navbar">
-    <span class="navbar-brand mb-0 h1">HackTrack</span>
+      <span class="navbar-brand mb-0 h1">HackTrack</span>
     </nav>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown"
+      aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
-    
+
     <div class="collapse navbar-collapse" id="navbarNavDropdown">
       <div class="navbar-nav">
-      <ul class="navbar-nav">
+        <ul class="navbar-nav">
 
-        {% if 'user' in session and not '/join-team' in request.path %}
-        <li class="nav-item active">
-          <a class="nav-link team-dashboard" href="/dashboard">Team Dashboard</a>
-        </li>
-        <li class="nav-item active">
-          <div class="dropdown">
-          <a class="nav-link dropdown-toggle" role="button" id="messages-dropdown dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            Incoming
-          </a>
-          <div class="dropdown-menu" id="received-menu" aria-labelledby="dropdownMenuLink">
-          <div class="card">
-          <div class="card-header">
-            Received Messages
-          </div>
-          <div class="received"></div>
-          </div>
-        </li>
-        <li class="nav-item active">
-          <div class="dropdown">
-          <a class="nav-link dropdown-toggle" role="button" id="messages-dropdown dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            Outgoing
-          </a>
-          <div class="dropdown-menu" id="sent-menu" aria-labelledby="dropdownMenuLink">
-          <div class="card">
-          <div class="card-header">
-            Sent Messages
-          </div>
-          <div class="sent"></div>
-          </div>
-        </li>
-        <li class="nav-item active">
-          <a class="nav-link logout" type="button" id="logout-button" href="/logout">Logout</a>
-        </li>
+          {% if 'user' in session and not '/join-team' in request.path %}
+          <li class="nav-item active">
+            <a class="nav-link team-dashboard" href="/dashboard">Team Dashboard</a>
+          </li>
+          <li class="nav-item active">
+            <div class="dropdown">
+              <a class="nav-link dropdown-toggle" role="button" id="messages-dropdown dropdownMenuLink"
+                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Incoming
+              </a>
+              <div class="dropdown-menu" id="received-menu" aria-labelledby="dropdownMenuLink">
+                <div class="card">
+                  <div class="card-header">
+                    Received Messages
+                  </div>
+                  <div class="received"></div>
+                </div>
+          </li>
+          <li class="nav-item active">
+            <div class="dropdown">
+              <a class="nav-link dropdown-toggle" role="button" id="messages-dropdown dropdownMenuLink"
+                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Outgoing
+              </a>
+              <div class="dropdown-menu" id="sent-menu" aria-labelledby="dropdownMenuLink">
+                <div class="card">
+                  <div class="card-header">
+                    Sent Messages
+                  </div>
+                  <div class="sent"></div>
+                </div>
+          </li>
+          <li class="nav-item active">
+            <a class="nav-link logout" type="button" id="logout-button" href="/logout">Logout</a>
+          </li>
 
-        {% endif %}
+          {% endif %}
 
-        {% if authorize_url is defined and not 'user' in session %}
-        <li class="nav-item active">
-          <div class="dropdown">
-          <a class="nav-link dropdown-toggle" role="button" id="login-dropdown dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            Login
-          </a>
+          {% if authorize_url is defined and not 'user' in session %}
+          <li class="nav-item active">
+            <div class="dropdown">
+              <a class="nav-link dropdown-toggle" role="button" id="login-dropdown dropdownMenuLink"
+                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Login
+              </a>
 
-          <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-          <form class="px-4 py-3" id="login-form" form action="/login" method="POST">
-            <div class="form-group">
-              <label for="email">Email address</label>
-              <input type="email" class="form-control" id="email" name="email" required>
-              {% with errors = get_flashed_messages(category_filter=["email-error"]) %}
-              {% if errors %}
-              <div class="alert-message block-message error">
-                  {% for msg in errors %}
-                  <div><b>{{ msg }}<b></div>
-                  {% endfor -%}
+              <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                <form class="px-4 py-3" id="login-form" form action="/login" method="POST">
+                  <div class="form-group">
+                    <label for="email">Email address</label>
+                    <input type="email" class="form-control" id="email" name="email" required>
+                    {% with errors = get_flashed_messages(category_filter=["email-error"]) %}
+                    {% if errors %}
+                    <div class="alert-message block-message error">
+                      {% for msg in errors %}
+                      <div><b>{{ msg }}<b></div>
+                      {% endfor -%}
+                    </div>
+                    {% endif %}
+                    {% endwith %}
+                  </div>
+                  <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" class="form-control" id="password" name="password" required>
+                    {% with errors = get_flashed_messages(category_filter=["password-error"]) %}
+                    {% if errors %}
+                    <div class="alert-message block-message error">
+                      {% for msg in errors %}
+                      <div><b>{{ msg }}<b></div>
+                      {% endfor -%}
+                    </div>
+                    {% endif %}
+                    {% endwith %}
+                  </div>
+                  <div class="form-group">
+                  </div>
+                  <button type="submit" class="btn btn-dark">Sign in</button>
+                </form>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="#"><b>New to HackTrack? Sign up here!</b></a>
+                <a class="btn btn-sm" href="{{ authorize_url }}" role="button"><img
+                    src="/static/img/ConnectWithStrava.png" />
+                </a>
               </div>
-              {% endif %}
-              {% endwith %}
             </div>
-            <div class="form-group">
-              <label for="password">Password</label>
-                <input type="password" class="form-control" id="password" name="password" required>
-              {% with errors = get_flashed_messages(category_filter=["password-error"]) %}
-              {% if errors %}
-              <div class="alert-message block-message error">
-                  {% for msg in errors %}
-                  <div><b>{{ msg }}<b></div>
-                  {% endfor -%}
-              </div>
-              {% endif %}
-              {% endwith %}
-            </div>
-            <div class="form-group">
-            </div>
-            <button type="submit" class="btn btn-dark">Sign in</button>
-          </form>
-          <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="#"><b>New to HackTrack? Sign up here!</b></a>
-          <a class="btn btn-sm" href="{{ authorize_url }}" role="button"><img src="/static/img/ConnectWithStrava.png"/>
-          </a>
-        </div>
-        </div>
-        </li>
-         {% endif %}
+          </li>
+          {% endif %}
 
-        {% if '/register' in request.path or '/join-team' in request.path %}
+          {% if '/register' in request.path or '/join-team' in request.path %}
 
-        <li class="nav-item active">
-          <a class="nav-link login" type="button" id="login-button" href="/">Homepage</a>
-        </li>
+          <li class="nav-item active">
+            <a class="nav-link login" type="button" id="login-button" href="/">Homepage</a>
+          </li>
 
-        {% endif %}
+          {% endif %}
 
-      </ul>
+        </ul>
+      </div>
     </div>
-  </div>
   </nav>
 
   {% if request.path == '/'%}
- 
+
   {% endif %}
 
 
 
- 
 
-    {% for msg in get_flashed_messages() %}
-      <p class="flash-msg">
-        {{ msg }}
-      </p>
-    {% endfor %}
 
- 
+  {% for msg in get_flashed_messages() %}
+  <p class="flash-msg">
+    {{ msg }}
+  </p>
+  {% endfor %}
 
-    {% block body %}
 
-    {% endblock %}
+
+  {% block body %}
+
+  {% endblock %}
 </body>
+
 </html>
