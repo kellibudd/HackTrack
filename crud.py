@@ -147,7 +147,7 @@ def delete_team_member(user_id):
 
 
 def delete_user(user_id):
-    """Delete a user and all related activities, comments,
+    """Delete a user and of their activities, comments,
     and team member data."""
 
     delete_user_comments(user_id)
@@ -161,7 +161,7 @@ def delete_user(user_id):
 
 
 def delete_user_activities(user_id):
-    """Delete all activities associated with a user."""
+    """Delete a user's activities."""
 
     activities = Activity.query.filter(Activity.user_id == user_id).all()
 
@@ -172,7 +172,7 @@ def delete_user_activities(user_id):
 
 
 def delete_user_comments(user_id):
-    """Delete all comments associated with a user."""
+    """Delete a user's received and sent comments."""
 
     received_comments = Comment.query.filter(
         Comment.recipient_id == user_id
@@ -203,7 +203,7 @@ def delete_activity_comments(strava_activity_id):
 
 
 def delete_comment(comment_id):
-    """Delete a comments."""
+    """Delete a comment."""
 
     comment = Comment.query.get(comment_id)
 
@@ -212,6 +212,7 @@ def delete_comment(comment_id):
 
 
 def get_comments_by_strava_activity_id(strava_id):
+    """Pull all comments associated with a strava activity and return as JSON."""
 
     activity = get_activity_by_strava_id(strava_id)
 
@@ -244,6 +245,7 @@ def get_comments_by_strava_activity_id(strava_id):
 
 
 def get_comments_to_user(user_id):
+    """Pull all comments received by a user and return as JSON."""
 
     comments = (
         Comment.query.filter(Comment.recipient_id == user_id)
@@ -278,6 +280,7 @@ def get_comments_to_user(user_id):
 
 
 def get_comments_from_user(user_id):
+    """Pull all comments sent by a user and return as JSON."""
 
     comments = (
         Comment.query.filter(Comment.author_id == user_id)
@@ -318,7 +321,7 @@ def get_all_users():
 
 
 def get_user_by_id(user_id):
-    """Return a user by email."""
+    """Return a user by id."""
 
     return User.query.get(user_id)
 
@@ -329,7 +332,8 @@ def get_user_by_email(email):
     return User.query.filter(User.email == email).first()
 
 
-def get_athlete_by_strava_activity(activity_id):
+def get_user_by_strava_activity(activity_id):
+    """Return a user associated with a given strava activity id."""
 
     activity = Activity.query.filter(
         Activity.strava_activity_id == str(activity_id)
@@ -339,12 +343,13 @@ def get_athlete_by_strava_activity(activity_id):
 
 
 def get_activities_by_user_id(user_id):
-    """Return a user by email."""
+    """Return all activities associated with a given user id."""
 
     return Activity.query.filter(Activity.user_id == user_id).all()
 
 
 def get_activity_by_strava_id(activity_id):
+    """Return an activity associated with a given strava activity id."""
 
     return Activity.query.filter(
         Activity.strava_activity_id == str(activity_id)
@@ -352,6 +357,7 @@ def get_activity_by_strava_id(activity_id):
 
 
 def get_activity_by_id(activity_id):
+    """Return an activity."""
 
     return Activity.query.get(activity_id)
 
@@ -369,6 +375,7 @@ def get_team_by_id(id):
 
 
 def get_user_role(user_id):
+    """Return the team role of a user."""
 
     member = Team_Member.query.filter(Team_Member.user_id == user_id).first()
 
@@ -431,6 +438,7 @@ def update_team_access_tokens(team_id):
 
 
 def show_strava_activities_in_db(team_id):
+    """Return all strava activity ids stored in the database."""
 
     athlete_ids = get_athlete_ids_by_team(team_id)
 
@@ -445,6 +453,7 @@ def show_strava_activities_in_db(team_id):
 
 
 def get_athletes_on_team(team_id):
+    """Return all users on a given team"""
 
     team = get_team_by_id(team_id)
 
@@ -469,6 +478,7 @@ def get_athletes_on_team(team_id):
 
 
 def update_team_activities(team_id):
+    """Pull all new team activities and add to the database"""
 
     athletes = update_team_access_tokens(team_id)
     team = get_team_by_id(team_id)
@@ -502,6 +512,7 @@ def update_team_activities(team_id):
 
 
 def update_user_activities(athlete):
+    """Pull all new user activities and add to the database"""
 
     update_user_access_token(athlete)
 
@@ -518,25 +529,8 @@ def update_user_activities(athlete):
     team.activities_last_updated = datetime.utcnow()
 
 
-def convert_time_format(time):
-
-    time = time / 3600
-    hours = int(time)
-    minutes = int((time % 1) * 60)
-    seconds = round((((time % 1) * 60) % 1) * 60)
-    if hours < 1 and seconds > 10:
-        return f"{minutes}:{seconds}"
-    elif hours < 1 and seconds < 10:
-        return f"{minutes}:0{seconds}"
-    elif hours >= 1 and seconds > 10:
-        return f"{hours}:{minutes}:{seconds}"
-    else:
-        return f"{hours}:{minutes}:0{seconds}"
-
-
 def get_week_activities_json(team_id, week):
-    """Return a list of activities completed by users on a team during
-    the current week."""
+    """Return team activities from a given week as JSON."""
 
     athlete_ids = get_athlete_ids_by_team(team_id)
 
