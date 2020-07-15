@@ -176,21 +176,22 @@ def create_new_team():
 def create_activities():
     """Add user and team activities."""
 
-    user_team_role = crud.get_user_role(session["user_id"])
+    # user_team_role = crud.get_user_role(session["user_id"])
 
-    if (
-        crud.get_activities_by_user_id(session["user_id"]) == []
-        and user_team_role == "Athlete"
-    ):
-        athlete = crud.get_user_by_email(session["user"])
+    # if (
+    #     crud.get_activities_by_user_id(session["user_id"]) == []
+    #     and user_team_role == "Athlete"
+    # ):
+    #     athlete = crud.get_user_by_email(session["user"])
 
-        activities = strava_api.get_strava_activities_for_new_user(athlete)
+    #     activities = strava_api.get_strava_activities_for_new_user(athlete)
 
-        for activity in activities:
-
-            if activity["type"] == "Run":
-                activity = crud.create_activity(activity)
-                print("ADDED: ", activity.desc)
+    #     for activity in activities:
+    #         print("*" * 60)
+    #         print("Activity is:", activity)
+    #         if activity["type"] == "Run":
+    #             activity = crud.create_activity(activity)
+    #             print("ADDED: ", activity.desc)
 
     team = crud.get_team_by_user_id(session["user_id"])
 
