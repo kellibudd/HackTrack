@@ -1,6 +1,4 @@
-{% extends 'base.html' %}
-
-{% block body %}
+{% extends 'base.html' %} {% block body %}
 
 <div class="container-fluid track-img">
   <div class="row">
@@ -8,46 +6,81 @@
       <div class="card">
         <div class="card-body">
           <h4>Register as New User:</h4>
-          <form class="px-4 py-3 user-reg-form" form action="/create-user" method="POST">
+          <form
+            class="px-4 py-3 user-reg-form"
+            form
+            action="/register"
+            method="POST"
+          >
             <div class="form-group">
               <label for="reg-email-field">Email</label>
-              <input type="email" class="form-control" id="reg-email-field" name="email" required>
-              {% with errors = get_flashed_messages(category_filter=["email-error"]) %}
+              <input
+                type="email"
+                class="form-control"
+                id="reg-email-field"
+                name="email"
+                required
+              />
+              {% with errors =
+              get_flashed_messages(category_filter=["register-email-error"]) %}
               {% if errors %}
               <div class="alert-message block-message error">
                 {% for msg in errors %}
                 <div><b>{{ msg }}</b></div>
                 {% endfor -%}
               </div>
-              {% endif %}
-              {% endwith %}
+              {% endif %} {% endwith %}
             </div>
             <div class="form-group">
               <label for="reg-password-field">Password</label>
-              <input type="password" class="form-control" id="reg-password-field" name="password" required>
+              <input
+                type="password"
+                class="form-control"
+                id="reg-password-field"
+                name="password"
+                required
+              />
             </div>
             <div class="form-group">
               <label for="reg-password-confirm-field">Re-Enter Password</label>
-              <input type="password" class="form-control" id="reg-password-confirm-field" name="password-confirm"
-                required>
-              {% with errors = get_flashed_messages(category_filter=["confirm-password-error"]) %}
-              {% if errors %}
+              <input
+                type="password"
+                class="form-control"
+                id="reg-password-confirm-field"
+                name="password-confirm"
+                required
+              />
+              {% with errors =
+              get_flashed_messages(category_filter=["confirm-password-error"])
+              %} {% if errors %}
               <div class="alert-message block-message error">
                 {% for msg in errors %}
                 <div><b>{{ msg }}</b></div>
                 {% endfor -%}
               </div>
-              {% endif %}
-              {% endwith %}
+              {% endif %} {% endwith %}
             </div>
 
             <div class="form-group">
               <label for="reg-phone-field">Phone</label>
-              <input type="phone" class="form-control" id="reg-phone-field" type="phone" name="phone"
-                placeholder="Format: 123-456-7890" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" required>
+              <input
+                type="phone"
+                class="form-control"
+                id="reg-phone-field"
+                type="phone"
+                name="phone"
+                placeholder="Format: 123-456-7890"
+                pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
+                required
+              />
             </div>
             <div>
-              <input id="strava-token" type="hidden" name="token" value="{{ token }}">
+              <input
+                id="strava-token"
+                type="hidden"
+                name="token"
+                value="{{ token }}"
+              />
             </div>
             <button type="submit" class="btn btn-primary">submit</button>
           </form>
