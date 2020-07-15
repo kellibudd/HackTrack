@@ -15,7 +15,7 @@ db.create_all()
 
 def seed_users():
 
-    with open("data/users.json") as f:
+    with open("data/seed-users.json") as f:
         user_data = json.loads(f.read())
 
     for user in user_data:
@@ -55,7 +55,7 @@ def seed_users():
 
 def seed_teams():
 
-    with open("data/teams.json") as f:
+    with open("data/seed-teams.json") as f:
         team_data = json.loads(f.read())
 
     for team in team_data:
@@ -75,7 +75,7 @@ def seed_teams():
 
 def seed_team_members():
 
-    with open("data/team_members.json") as f:
+    with open("data/seed-team-members.json") as f:
         team_member_data = json.loads(f.read())
 
     for member in team_member_data:
