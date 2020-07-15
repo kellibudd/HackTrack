@@ -214,6 +214,7 @@ function reformatDate(activityDate) {
 
   return reformatDate;
 }
+export { reformatDate };
 
 function reformatWorkoutLength(workoutTime) {
   let time = workoutTime / 3600;
@@ -238,11 +239,9 @@ function reformatWorkoutLength(workoutTime) {
 
 function reformatDistance(distance) {
   distance = distance * 0.000621371;
-  console.log(distance);
   let miles = Math.floor(distance);
-  console.log(miles);
   let decimal = Math.round((distance % 1) * 100);
-  console.log(decimal);
+
   if (decimal >= 100 && miles === 0) {
     miles = decimal / 100;
     return `${miles}.00 mi`;
@@ -258,6 +257,7 @@ function reformatDistance(distance) {
   }
   return `${miles}.${decimal} mi`;
 }
+export { reformatDistance };
 
 function reformatAvgSpeed(distance, workoutTime) {
   distance = distance * 0.000621371;
@@ -269,6 +269,9 @@ function reformatAvgSpeed(distance, workoutTime) {
 
     if (avgSeconds < 10) {
       return `${avgMinutes}:0${avgSeconds}/mi`;
+    } else if (avgSeconds == 60) {
+      avgMinutes = avgMinutes + 1;
+      return `${avgMinutes}:00/mi`;
     } else {
       return `${avgMinutes}:${avgSeconds}/mi`;
     }

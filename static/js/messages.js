@@ -1,9 +1,10 @@
 "use strict";
 
+import { reformatDate, reformatDistance } from "./dashboard.js";
+
 function displayIncomingComments() {
   $.get("/get-incoming-comments", (response) => {
     const comments = response;
-    // console.log(comments.length)
 
     for (let comment of comments) {
       let activityDate = reformatDate(comment["activity_date"]);
@@ -27,7 +28,6 @@ displayIncomingComments();
 function displayOutgoingComments() {
   $.get("/get-outgoing-comments", (response) => {
     const comments = response;
-    console.log(comments.length);
 
     for (let comment of comments) {
       let activityDate = reformatDate(comment["activity_date"]);
@@ -47,36 +47,3 @@ function displayOutgoingComments() {
 }
 
 displayOutgoingComments();
-
-function reformatDate(commentDate) {
-  let formatDate = new Date(commentDate);
-  let activityMonth = formatDate.getMonth() + 1;
-  let activityDay = formatDate.getDate();
-  let activityYear = formatDate.getFullYear();
-  let reformatDate = activityMonth + "-" + activityDay + "-" + activityYear;
-
-  return reformatDate;
-}
-
-function reformatDistance(distance) {
-  distance = distance * 0.000621371;
-  console.log(distance);
-  let miles = Math.floor(distance);
-  console.log(miles);
-  let decimal = Math.round((distance % 1) * 100);
-  console.log(decimal);
-  if (decimal >= 100 && miles === 0) {
-    miles = decimal / 100;
-    return `${miles}.00 mi`;
-  } else if (miles >= 1 && decimal >= 100) {
-    miles = miles + decimal / 100;
-    return `${miles}.00 mi`;
-  } else if (miles >= 1 && decimal < 10) {
-    return `${miles}.0${decimal} mi`;
-  } else if (miles < 1 && decimal < 10) {
-    return `0.0${decimal} mi`;
-  } else if (miles < 1 && decimal >= 10) {
-    return `0.${decimal} mi`;
-  }
-  return `${miles}.${decimal} mi`;
-}
