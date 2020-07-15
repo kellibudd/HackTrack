@@ -4,4 +4,4 @@ __pycache__
 *.pyc
 *.DS*
 .vscode/
-seed-users.json
+*data/seed*
