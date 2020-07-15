@@ -27,22 +27,13 @@ app.jinja_env.undefined = StrictUndefined
 
 @app.route("/")
 def homepage():
+    """Display homepage."""
 
     url = strava_api.request_user_authorization(
         url_for(".register_user", _external=True)
     )
 
     return render_template("homepage.html", authorize_url=url)
-
-
-@app.route("/register")
-def register_user():
-    """Register a new user."""
-
-    code = request.args.get("code")
-    token = strava_api.get_token(code)
-
-    return render_template("register_user.html", token=token)
 
 
 @app.route("/login", methods=["POST"])
@@ -71,6 +62,7 @@ def login_user():
 
 @app.route("/logout")
 def logout_user():
+    """Log out a user."""
 
     if "user" in session:
         session["user"]
@@ -80,8 +72,21 @@ def logout_user():
     return redirect("/")
 
 
-@app.route("/create-user", methods=["POST"])
+@app.route("/register", methods=["GET"])
+def register_user():
+    """Display user registration form."""
+
+    code = request.args.get("code")
+    print("code: ", code)
+    token = strava_api.get_token(code)
+    print("token: ", token)
+
+    return render_template("register_user.html", token=token)
+
+
+@app.route("/register", methods=["POST"])
 def create_user():
+    """Add a new user."""
 
     email = request.form.get("email")
     password = request.form.get("password")
@@ -95,10 +100,10 @@ def create_user():
     if user is not None:
         flash(
             u"Account already exists with provided email. Please login.",
-            "email-error",
+            "register-email-error",
         )
 
-        return redirect(request.referrer)
+        return render_template("register_user.html", token=token)
 
     elif password != password_confirm:
         flash(
@@ -106,7 +111,7 @@ def create_user():
             "confirm-password-error",
         )
 
-        return redirect(request.referrer)
+        return render_template("register_user.html", token=token)
 
     else:
         user_data = strava_api.get_strava_user_data()
@@ -130,7 +135,8 @@ def create_user():
 
 
 @app.route("/join-team")
-def get_teams():
+def join_team():
+    """Display team registration form."""
 
     teams = crud.get_teams()
 
@@ -139,18 +145,19 @@ def get_teams():
 
 @app.route("/create-team-mem", methods=["POST"])
 def create_new_team_mem():
+    """Add user as a team member."""
 
-    team_id = int(request.form.get("team"))
-
-    role = request.form.get("role")
-
-    crud.create_team_member(session["user_id"], team_id, role)
+    if session["user"]:
+        team_id = int(request.form.get("team"))
+        role = request.form.get("role")
+        crud.create_team_member(session["user_id"], team_id, role)
 
     return redirect("/create-activities")
 
 
 @app.route("/create-team", methods=["POST"])
 def create_new_team():
+    """Add a team."""
 
     team_name = request.form.get("team_name")
 
@@ -167,6 +174,7 @@ def create_new_team():
 
 @app.route("/create-activities", methods=["GET", "POST"])
 def create_activities():
+    """Add user and team activities."""
 
     user_team_role = crud.get_user_role(session["user_id"])
 
@@ -193,6 +201,8 @@ def create_activities():
 
 @app.route("/dashboard")
 def display_team_dashboard():
+    """Display dashboard of all team members and their activities
+    from the current week."""
 
     team = crud.get_team_by_user_id(session["user_id"])
 
@@ -201,6 +211,8 @@ def display_team_dashboard():
 
 @app.route("/dashboard/<date>")
 def get_dashboard_week(date):
+    """Display dashboard of all team members and their activities
+    from the chosen week."""
 
     team = crud.get_team_by_user_id(session["user_id"])
 
@@ -209,6 +221,7 @@ def get_dashboard_week(date):
 
 @app.route("/get-team-data")
 def get_team_data():
+    """Pull team data."""
 
     team = crud.get_team_by_user_id(session["user_id"])
     athletes = crud.get_athletes_on_team(team.id)
@@ -218,6 +231,7 @@ def get_team_data():
 
 @app.route("/api/get-activity-data/<date>")
 def get_activity_data(date):
+    """Pull week activity data based on given date."""
 
     print(date)
     print(type(date))
@@ -234,6 +248,7 @@ def get_activity_data(date):
 
 @app.route("/add-comment", methods=["POST"])
 def add_comment():
+    """Add a comment."""
 
     strava_activity_id = request.form.get("activity-id")
     comment = request.form.get("comment")
@@ -252,6 +267,7 @@ def add_comment():
 
 @app.route("/api/get-comments/<int:activity_id>")
 def get_comments(activity_id):
+    """Pull comments associated with given activity id."""
 
     comments = crud.get_comments_by_strava_activity_id(activity_id)
     print(comments)
@@ -260,6 +276,7 @@ def get_comments(activity_id):
 
 @app.route("/get-incoming-comments")
 def get_incoming_comments():
+    """Pull comments received by a user."""
 
     comments = crud.get_comments_to_user(session["user_id"])
 
@@ -268,6 +285,7 @@ def get_incoming_comments():
 
 @app.route("/get-outgoing-comments")
 def get_outgoing_comments():
+    """Pull comments sent by a user."""
 
     comments = crud.get_comments_from_user(session["user_id"])
 
