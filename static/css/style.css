@@ -77,6 +77,8 @@ div.col-1.offset-4.next-pager {
 .popover {
   font-family: "Roboto Condensed", Sans-Serif;
   font-size: 0.95rem;
+  height: 325px;
+  overflow-y: scroll;
 }
 
 .submit-comment {
