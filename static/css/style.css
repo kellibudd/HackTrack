@@ -129,6 +129,8 @@ nav.navbar.fixed-top.navbar-expand-lg.navbar-dark.bg-dark {
   min-width: 30rem;
   padding: 0;
   margin: 0;
+  max-height: 340px;
+  overflow-y: scroll;
 }
 
 .message-subject {
